@@ -1,0 +1,5 @@
+/vendor/
+/build/*.phar
+.DS_Store
+/.idea/
+*.ics

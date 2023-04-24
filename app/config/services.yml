@@ -1,0 +1,59 @@
+services:
+  nicoSWD\IfscCalendar\Application\Command\:
+    resource: '../../src/Application/Command'
+    autowire: true
+    public: true
+    tags: [console.command]
+
+  # Calendar
+  nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase:
+    class: nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase
+    arguments:
+      - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder'
+
+  nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder:
+    class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher'
+
+  nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar:
+    class: nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar
+    arguments:
+      - '@Eluceo\iCal\Presentation\Factory\CalendarFactory'
+
+  Eluceo\iCal\Presentation\Factory\CalendarFactory:
+    class: Eluceo\iCal\Presentation\Factory\CalendarFactory
+
+  # IFSC Seasons
+  nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase:
+    class: nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase
+    arguments:
+      - '@nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcher'
+
+  nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcher:
+    class: nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcher
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\Season\GuzzleSeasonFetcher'
+
+  nicoSWD\IfscCalendar\Infrastructure\Season\GuzzleSeasonFetcher:
+    class: nicoSWD\IfscCalendar\Infrastructure\Season\GuzzleSeasonFetcher
+    arguments:
+      - '@GuzzleHttp\Client'
+
+  # League
+  nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher:
+    class: nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsScraper'
+      - '@GuzzleHttp\Client'
+
+  # Events
+  nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsScraper:
+    class: nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsScraper
+    arguments:
+      - '@GuzzleHttp\Client'
+
+  # Common
+  GuzzleHttp\Client:
+    class: GuzzleHttp\Client

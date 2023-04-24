@@ -1,0 +1,42 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+use Symfony\Component\Finder\Finder;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+if (!isset($argv[1])) {
+    echo 'No output filename supplied', PHP_EOL;
+    exit(1);
+}
+
+$pharFile = $argv[1];
+$baseDir = dirname(__DIR__);
+
+if (is_file($pharFile)) {
+    unlink($pharFile);
+}
+
+$dirs = [
+    $baseDir . '/app',
+    $baseDir . '/src',
+    $baseDir . '/vendor'
+];
+
+$finder = (new Finder())
+    ->files()
+    ->in($dirs)
+    ->name('/\.(php|yml)$/')
+    ->notPath('Tests');
+
+$stub = "#!/usr/bin/env php\n";
+$stub .= "<?php Phar::mapPhar('ifsc-calendar.phar');\n";
+$stub .= "require 'phar://ifsc-calendar.phar/app/run.php';\n";
+$stub .= "__HALT_COMPILER();";
+
+$phar = new Phar($pharFile);
+$phar->setStub($stub);
+$phar->compress(Phar::GZ);
+$phar->buildFromIterator($finder->getIterator(), $baseDir);
+
+echo "$pharFile successfully created", PHP_EOL;

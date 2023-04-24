@@ -1,0 +1,30 @@
+{
+    "name": "nicoswd/ifsc-calendar",
+    "description": "Generate personalized IFSC calendar as .cal",
+    "type": "project",
+    "require": {
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "symfony/console": "^6.0",
+        "symfony/config": "^6.0",
+        "symfony/yaml": "^6.0",
+        "symfony/dependency-injection": "^6.0",
+        "eluceo/ical": "^2.12",
+        "guzzlehttp/guzzle": "^7.5",
+        "symfony/filesystem": "^6.0",
+        "symfony/finder": "^6.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "nicoSWD\\IfscCalendar\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Nico Oelgart",
+            "email": "nicoswd@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
