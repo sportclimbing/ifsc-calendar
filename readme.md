@@ -21,9 +21,10 @@ $ docker build --tag ifsc-calendar .
 Generate `.ics` calendar file
 ```shell
 $ docker run -it ifsc-calendar \
+    --volume "$PWD:/calendar" ifsc-calendar \
     --season 2023 \
     --league "World Cups and World Championships" \
-    --output "ifsc-calendar.ics"
+    --output "/calendar/ifsc-calendar.ics"
 ```
 
 #### Build it yourself
