@@ -36,7 +36,8 @@ Generate `.ics` calendar file
 ```shell
 $ ./build/ifsc-calendar.phar \
   --season 2023 \
-  --league "World Cups and World Championships"
+  --league "World Cups and World Championships" \
+  --output "ifsc-calendar.ics"
 ```
 
 ### Requirements
