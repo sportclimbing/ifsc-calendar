@@ -3,7 +3,7 @@
 ![ifsc-logo](resources/images/ifsc-logo.png)
 
 ### TL;DR
-Import the `.ics` from the [releases](https://github.com/nicoSWD/ifsc-calendar/releases/tag/2023) page file to your favorite calendar and never miss an IFSC event again
+Import the `.ics` file from the [download page](https://nicoswd.github.io/ifsc-calendar/) to your favorite calendar and never miss an IFSC event again.
 
 ### Intro
 If you're constantly missing IFSC events because of a lacking calendar, or timezone confusions,
