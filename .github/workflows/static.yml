@@ -29,7 +29,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: 'pages/index.html'
+          path: 'pages/'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
