@@ -14,8 +14,8 @@ use nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Helper;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Filesystem\Filesystem;
@@ -33,9 +33,9 @@ final class BuildCommand extends Command
     {
         $this->setName('nicoswd:build-ifsc-calender')
             ->setDescription('Build a custom IFSC calender (.ics)')
-            ->addArgument('season', InputArgument::OPTIONAL, 'IFSC Season')
-            ->addArgument('leagues', InputArgument::OPTIONAL, 'IFSC Leagues')
-            ->addArgument('output', InputArgument::OPTIONAL, 'Calendar file name', 'ifsc-calendar.ics')
+            ->addOption('season', null, InputOption::VALUE_OPTIONAL, 'IFSC Season')
+            ->addOption('league', null, InputOption::VALUE_OPTIONAL, 'IFSC League')
+            ->addOption('output', null, InputOption::VALUE_OPTIONAL, '.ics output file name', 'ifsc-calendar.ics')
         ;
     }
 
@@ -44,31 +44,27 @@ final class BuildCommand extends Command
         $helper = $this->getHelper('question');
         $seasons = $this->getSeasons();
 
-        $selectedSeason = $input->getArgument('season');
-        $selectedLeagues = $input->getArgument('leagues');
-        $fileName = $input->getArgument('output');
+        $selectedSeason = $input->getOption('season');
+        $selectedLeague = $input->getOption('league');
+        $fileName = $input->getOption('output');
 
         if (!$selectedSeason) {
             $selectedSeason = $this->getSelectedSeason($seasons, $helper, $input, $output);
         }
 
+        $selectedSeason = (int) $selectedSeason;
         $leaguesByName = [];
 
         foreach ($seasons[$selectedSeason]->leagues as $league) {
             $leaguesByName[$league->name] = $league;
         }
 
-        if (!$selectedLeagues) {
-            $selectedLeagues = $this->getSelectedLeague($leaguesByName, $helper, $input, $output);
+        if (!$selectedLeague) {
+            $selectedLeague = $this->getSelectedLeague($leaguesByName, $helper, $input, $output);
         }
 
-        $leagues = [];
-
-        foreach ($selectedLeagues as $league) {
-            $leagues[] = $leaguesByName[$league];
-        }
-
-        $response = $this->buildCalendar($selectedSeason, $leagues, $output);
+        $league = $leaguesByName[$selectedLeague];
+        $response = $this->buildCalendar($selectedSeason, [$league], $output);
         $this->saveCalendar($fileName, $response->calendarContents, $output);
 
         $output->writeln("[+] Done!");
@@ -76,7 +72,7 @@ final class BuildCommand extends Command
         return self::SUCCESS;
     }
 
-    public function buildCalendar(mixed $selectedSeason, array $leagues, OutputInterface $output): BuildCalendarResponse
+    public function buildCalendar(int $selectedSeason, array $leagues, OutputInterface $output): BuildCalendarResponse
     {
         $output->writeln("[+] Fetching event info...");
 
@@ -100,7 +96,7 @@ final class BuildCommand extends Command
         return $seasons;
     }
 
-    public function getSelectedSeason(array $seasons, Helper $helper, InputInterface $input, OutputInterface $output): mixed
+    public function getSelectedSeason(array $seasons, Helper $helper, InputInterface $input, OutputInterface $output): string
     {
         $seasonNames = array_keys($seasons);
         $seasonNames = array_slice($seasonNames, 0, 3);
@@ -115,14 +111,14 @@ final class BuildCommand extends Command
         return $helper->ask($input, $output, $question);
     }
 
-    public function getSelectedLeague(array $leaguesByName, Helper $helper, InputInterface $input, OutputInterface $output): array
+    public function getSelectedLeague(array $leaguesByName, Helper $helper, InputInterface $input, OutputInterface $output): string
     {
         $question = new ChoiceQuestion(
             'Please select a or multiple leagues (defaults to "' . key($leaguesByName) . '")',
             array_keys($leaguesByName),
             0
         );
-        $question->setMultiselect(true);
+        $question->setMultiselect(false);
         $question->setErrorMessage('League %s is invalid.');
 
         return $helper->ask($input, $output, $question);
