@@ -3,6 +3,7 @@
     "description": "Generate personalized IFSC calendar as .cal",
     "type": "project",
     "require": {
+        "php": ">=8.2",
         "ext-dom": "*",
         "ext-libxml": "*",
         "symfony/console": "^6.0",

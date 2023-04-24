@@ -96,7 +96,7 @@ final class BuildCommand extends Command
         return $seasons;
     }
 
-    public function getSelectedSeason(array $seasons, Helper $helper, InputInterface $input, OutputInterface $output): string
+    public function getSelectedSeason(array $seasons, Helper $helper, InputInterface $input, OutputInterface $output): int
     {
         $seasonNames = array_keys($seasons);
         $seasonNames = array_slice($seasonNames, 0, 3);
@@ -108,7 +108,7 @@ final class BuildCommand extends Command
         );
         $question->setErrorMessage('Season %s is invalid.');
 
-        return $helper->ask($input, $output, $question);
+        return (int) $helper->ask($input, $output, $question);
     }
 
     public function getSelectedLeague(array $leaguesByName, Helper $helper, InputInterface $input, OutputInterface $output): string
