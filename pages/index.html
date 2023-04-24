@@ -1,1 +1,115 @@
-test
+<!doctype html>
+<html lang="en">
+<head>
+    <title>IFSC 2023 Climbing Calendar (.ics)</title>
+
+    <meta charset="utf-8">
+    <meta name="description" content="IFSC 2023 Climbing Calendar for all upcoming events">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/calendar.css" rel="stylesheet">
+</head>
+<body>
+<header>
+    <template id="news-item-template">
+        <div class="col-md-4">
+            <div class="card mb-4 box-shadow">
+                <img class="card-img-top" id="ifsc-image" src="" alt="Card image cap">
+                <div class="card-body">
+                    <p class="card-text"><a class="link-secondary" id="ifsc-title" href=""></a></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span id="ifsc-date"></span> <small class="text-muted"></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <div class="collapse bg-dark" id="navbarHeader">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8 col-md-7 py-4">
+                    <h4 class="text-white">About</h4>
+                    <p class="text-muted">This is a handy, automagically generated <code>.ics</code> file ready to be imported into your favorite calendar.
+                        More info about this can be found in the GitHub repository.</p>
+                </div>
+                <div class="col-sm-4 offset-md-1 py-4">
+                    <h4 class="text-white">Contact</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="https://github.com/nicoSWD/ifsc-calendar/issues" class="text-white">Report Issue</a></li>
+                        <li><a href="https://twitter.com/nicoSWD" class="text-white">Follow on Twitter</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="navbar navbar-dark bg-dark box-shadow">
+        <div class="container d-flex justify-content-between">
+            <a href="#" class="navbar-brand d-flex align-items-center">
+                <strong>IFSC Calendar 2023</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<main role="main">
+
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">IFSC 2023 Calendar</h1>
+            <p class="lead text-muted">Never miss an IFSC World Cup or World Championship again by importing this <code>.ics</code> file to your favorite calendar, such as <a href="https://calendar.google.com">Google's</a></p>
+            <p>
+                <a class="btn btn-primary" href="https://github.com/nicoSWD/ifsc-calendar/releases/download/2023/2023-World-Cups-and-World-Championships.ics" role="button">Download Calendar (.ics)</a>
+                <a class="btn btn-secondary my-2" href="https://github.com/nicoSWD/ifsc-calendar">View GitHub repo</a>
+            </p>
+        </div>
+    </section>
+
+    <div class="album py-5 bg-light">
+        <div class="container">
+            <h2>Recent News</h2>
+            <div class="row" id="container"></div>
+        </div>
+    </div>
+</main>
+
+<script>
+    const RSS_URL = `feed/rss.xml`;
+    const container = document.getElementById("container");
+    const template = document.getElementById("news-item-template");
+
+    function html(el, selector) {
+        let e = el.querySelector(selector);
+        return e ? e.innerHTML : null;
+    }
+
+    fetch(RSS_URL)
+        .then(response => response.text())
+        .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+        .then((data) => {
+            data.querySelectorAll("item").forEach(el => {
+                try {
+                    const clone = template.content.cloneNode(true);
+                    clone.getElementById('ifsc-title').innerText = html(el, "title");
+                    clone.getElementById('ifsc-title').href = html(el, "guid");
+                    clone.getElementById('ifsc-image').src = html(el, "description").match(/src="([^"]+)"/)[1];
+                    clone.getElementById('ifsc-date').innerText = new Date(html(el, "pubDate")).toLocaleString();
+
+                    container.appendChild(clone);
+                } catch (e) {}
+            })
+        });
+</script>
+
+<footer class="text-muted">
+    <div class="container"></div>
+</footer>
+
+<script src="js/jquery-3.2.1.slim.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>
