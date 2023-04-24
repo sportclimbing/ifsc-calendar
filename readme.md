@@ -42,3 +42,6 @@ $ ./build/ifsc-calendar.phar \
 - PHP 8.2
 - ext-dom
 - ext-libxml
+
+### Legal note
+This is in no way affiliated with, or endorsed by IFSC.
