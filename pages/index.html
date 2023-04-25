@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>IFSC 2023 Climbing Calendar (.ics)</title>
+    <title>IFSC Climbing Calendar 2023 (.ics)</title>
 
     <meta charset="utf-8">
     <meta name="description" content="IFSC 2023 Climbing Calendar for all upcoming events">
@@ -11,21 +11,20 @@
     <link href="css/calendar.css" rel="stylesheet">
 </head>
 <body>
-<header>
-    <template id="news-item-template">
-        <div class="col-md-4">
-            <div class="card mb-4 box-shadow">
-                <img class="card-img-top" id="ifsc-image" src="" alt="Card image cap">
-                <div class="card-body">
-                    <p class="card-text"><a class="link-secondary" id="ifsc-title" href=""></a></p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span id="ifsc-date"></span> <small class="text-muted"></small>
-                    </div>
+<template id="news-item-template">
+    <div class="col-md-4">
+        <div class="card mb-4 box-shadow">
+            <img class="card-img-top" id="ifsc-image" src="" alt="Card image cap">
+            <div class="card-body">
+                <p class="card-text"><a class="link-secondary" id="ifsc-title" href=""></a></p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span id="ifsc-date"></span> <small class="text-muted"></small>
                 </div>
             </div>
         </div>
-    </template>
-
+    </div>
+</template>
+<header>
     <div class="collapse bg-dark" id="navbarHeader">
         <div class="container">
             <div class="row">
@@ -57,10 +56,9 @@
 </header>
 
 <main role="main">
-
     <section class="jumbotron text-center">
         <div class="container">
-            <h1 class="jumbotron-heading">IFSC 2023 Calendar</h1>
+            <h1 class="jumbotron-heading">IFSC Calendar 2023</h1>
             <p class="lead text-muted">Never miss an IFSC World Cup or World Championship again by importing this <code>.ics</code> file to your favorite calendar, such as <a href="https://calendar.google.com">Google's</a></p>
             <p>
                 <a class="btn btn-primary" href="https://github.com/nicoSWD/ifsc-calendar/releases/download/2023/2023-World-Cups-and-World-Championships.ics" role="button">Download Calendar (.ics)</a>
@@ -77,38 +75,11 @@
     </div>
 </main>
 
-<script>
-    const RSS_URL = `feed/rss.xml`;
-    const container = document.getElementById("container");
-    const template = document.getElementById("news-item-template");
-
-    function html(el, selector) {
-        let e = el.querySelector(selector);
-        return e ? e.innerHTML : null;
-    }
-
-    fetch(RSS_URL)
-        .then(response => response.text())
-        .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
-        .then((data) => {
-            data.querySelectorAll("item").forEach(el => {
-                try {
-                    const clone = template.content.cloneNode(true);
-                    clone.getElementById('ifsc-title').innerText = html(el, "title");
-                    clone.getElementById('ifsc-title').href = html(el, "guid");
-                    clone.getElementById('ifsc-image').src = html(el, "description").match(/src="([^"]+)"/)[1];
-                    clone.getElementById('ifsc-date').innerText = new Date(html(el, "pubDate")).toLocaleString();
-
-                    container.appendChild(clone);
-                } catch (e) {}
-            })
-        });
-</script>
-
 <footer class="text-muted">
     <div class="container"></div>
 </footer>
 
+<script src="js/feed.js"></script>
 <script src="js/jquery-3.2.1.slim.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 </body>
