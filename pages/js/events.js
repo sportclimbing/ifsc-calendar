@@ -63,6 +63,34 @@
         return event_start >= now && event_start <= (now.addHours(3));
     }
 
+    function pretty_starts_in(event) {
+        let { days, hours, minutes } = starts_in(event);
+
+        let text = 'Starts in ';
+
+        if (days > 0) {
+            text += `${days} days`;
+        }
+
+        if (hours > 0) {
+            if (days > 0) {
+                text += ', ';
+            }
+
+            text += `${hours} hours`;
+        }
+
+        if (minutes > 0) {
+            if (days > 0 || minutes > 0) {
+                text += ' and ';
+            }
+
+            text += `${minutes} minutes`;
+        }
+
+        return text;
+    }
+
     let nextEvent = upcomingEvents.at(0);
     let nextLeague = [...pastEvents, ...upcomingEvents].filter((event) => {
         return event.description === nextEvent.description;
@@ -100,8 +128,7 @@
                 status.classList.add('text-danger');
                 liveEvent = event;
             } else if (new Date(event.start_time) > now) {
-                let starts = starts_in(event);
-                clone.getElementById('ifsc-starts-in').innerText = `⏰ Starts in ${starts.days} days, ${starts.hours} hours and ${starts.minutes} minutes`;
+                clone.getElementById('ifsc-starts-in').innerText = `⏰ ${pretty_starts_in(event)}`;
                 status.innerHTML = `🔜 &nbsp; Upcoming`;
                 status.classList.add('text-success');
 
@@ -121,11 +148,9 @@
         }
     });
 
-    let { days, hours, minutes } = starts_in(nextEvent);
-
     if (liveEvent) {
         document.getElementById('next-event').innerHTML = `<p><strong>${nextEvent.description}</strong></p><div class="alert alert-danger" role="alert">🔴 Live Now: <strong>${liveEvent.name}</strong></div>`;
     } else {
-        document.getElementById('next-event').innerHTML = `<p><strong>${nextEvent.description}</strong></p><div class="alert alert-success" role="alert">Starts in ${days} days, ${hours} hours and ${minutes} minutes</div>`;
+        document.getElementById('next-event').innerHTML = `<p><strong>${nextEvent.description}</strong></p><div class="alert alert-success" role="alert">${pretty_starts_in(nextEvent)}</div>`;
     }
 })();
