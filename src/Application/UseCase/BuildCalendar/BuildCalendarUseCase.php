@@ -28,6 +28,7 @@ final readonly class BuildCalendarUseCase
         return $this->calendarBuilder->generateForLeagues(
             season: $buildCalendarRequest->season,
             leagues: $buildCalendarRequest->leagues,
+            format: $buildCalendarRequest->format,
         );
     }
 }

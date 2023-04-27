@@ -3,7 +3,8 @@
 ![ifsc-logo](resources/images/ifsc-logo.png)
 
 ### TL;DR
-Import the `.ics` file from the [download page](https://nicoswd.github.io/ifsc-calendar/) to your favorite calendar and never miss an IFSC event again.
+Import the `.ics` file from the **[IFSC Calendar 2023](https://nicoswd.github.io/ifsc-calendar/)** page to your
+favorite calendar and never miss an IFSC Climbing event again.
 
 ### Intro
 If you're constantly missing IFSC events because of a lacking calendar, or timezone confusions,

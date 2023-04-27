@@ -11,6 +11,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use DOMDocument;
+use DOMElement;
 use DOMNode;
 use DOMNodeList;
 use DOMXPath;
@@ -20,6 +21,9 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 final readonly class IFSCGuzzleEventsScraper
 {
     private const XPATH_PARAGRAPHS = "//*[@id='ifsc_event']/div/div/div[@class='text']/p";
+
+    private const XPATH_POSTER = "//div[@class='text2']/*/img[contains(@data-src,'https://cdn.ifsc-climbing.org/images/Events/')]";
+
     private const IFSC_EVENT_PAGE_URL = 'https://www.ifsc-climbing.org/component/ifsc/?view=event&WetId=%d';
 
     private const WEEK_DAYS = [
@@ -31,6 +35,7 @@ final readonly class IFSCGuzzleEventsScraper
         'SATURDAY',
         'SUNDAY',
     ];
+
     private const MONTHS = [
         'JANUARY' => 1,
         'FEBRUARY' => 2,
@@ -54,7 +59,10 @@ final readonly class IFSCGuzzleEventsScraper
     public function fetchEventsForLeague(int $season, int $eventId, string $timezone, string $eventName): array
     {
         $response = $this->client->request('GET', $this->buildLeagueUri($eventId))->getBody()->getContents();
-        $paragraphs = $this->getParagraphs($response);
+        $xpath = $this->getXPath($response);
+        $paragraphs = $this->getParagraphs($xpath);
+        $poster = $this->getPoster($xpath);
+
         $weekDays = implode('|', self::WEEK_DAYS);
         $months = implode('|', array_keys(self::MONTHS));
         $schedules = [];
@@ -68,12 +76,12 @@ final readonly class IFSCGuzzleEventsScraper
                 foreach ($paragraph->getElementsByTagName('span') as $span) {
                     if (preg_match($timeRegx, trim($span->nodeValue), matches: $time)) {
                         $schedules[] = [
-                            'day'    => $date['day'],
-                            'month'  => $date['month'],
-                            'time'   => $time['time'],
-                            'season' => $season,
-                            'league' => $this->leagueName($time['league']),
-                            'url'    => $this->getEventUrl($span),
+                            'day'       => $date['day'],
+                            'month'     => $date['month'],
+                            'time'      => $time['time'],
+                            'season'    => $season,
+                            'league'    => $this->leagueName($time['league']),
+                            'url'       => $this->getEventUrl($span),
                         ];
                     }
                 }
@@ -85,9 +93,11 @@ final readonly class IFSCGuzzleEventsScraper
             $endDateTime = $this->getEndDateTime($startDateTime);
 
             $events[] = new IFSCEvent(
-                name: "IFSC: {$schedule['league']}",
+                name: $schedule['league'],
                 id: $eventId,
                 description: $eventName,
+                streamUrl: $schedule['url'],
+                poster: $poster,
                 startTime: $startDateTime,
                 endTime: $endDateTime,
             );
@@ -109,18 +119,41 @@ final readonly class IFSCGuzzleEventsScraper
         return $url;
     }
 
-    public function getParagraphs(string $response): DOMNodeList
+    private function getXPath(string $response): DOMXPath
     {
         libxml_use_internal_errors(true);
 
         $dom = new DOMDocument();
         $dom->loadHTML($response);
-        $xpath = new DOMXPath($dom);
 
+        return new DOMXPath($dom);
+    }
+
+    private function getParagraphs(DOMXPath $xpath): DOMNodeList
+    {
         return $xpath->query(self::XPATH_PARAGRAPHS);
     }
 
-    public function getStartDateTime(array $schedule, string $timezone): DateTimeImmutable
+    private function getPoster(DOMXPath $xpath): string
+    {
+        $images = $xpath->query(self::XPATH_POSTER);
+
+        if (!is_iterable($images)) {
+            return '';
+        }
+
+        foreach ($images as $image) {
+            foreach ($image->attributes as $name => $attribute) {
+                if ($name === 'data-src') {
+                    return (string) $attribute->textContent;
+                }
+            }
+        }
+
+        return '';
+    }
+
+    private function getStartDateTime(array $schedule, string $timezone): DateTimeImmutable
     {
         [$hour, $minute] = explode(':', $schedule['time']);
 
@@ -132,7 +165,7 @@ final readonly class IFSCGuzzleEventsScraper
         return DateTimeImmutable::createFromMutable($date);
     }
 
-    public function getEndDateTime(DateTimeImmutable $date): DateTimeImmutable
+    private function getEndDateTime(DateTimeImmutable $date): DateTimeImmutable
     {
         $endDate = DateTime::createFromImmutable($date);
         $endDate->modify('+2 hours');
@@ -145,12 +178,12 @@ final readonly class IFSCGuzzleEventsScraper
         return self::MONTHS[$month];
     }
 
-    public function buildLeagueUri(int $id): string
+    private function buildLeagueUri(int $id): string
     {
         return sprintf(self::IFSC_EVENT_PAGE_URL, $id);
     }
 
-    public function leagueName(string $league): string
+    private function leagueName(string $league): string
     {
         return ucwords(strtolower(trim($league)));
     }

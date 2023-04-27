@@ -13,16 +13,18 @@ use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
 final readonly class IFSCCalendarBuilder
 {
     public function __construct(
-        private CalendarGeneratorInterface $calendarGenerator,
+        private IFSCCalendarBuilderFactory $calendarBuilderFactory,
         private IFSCEventFetcherInterface $eventFetcher,
     ) {
     }
 
     /**
      * @param int $season
-     * @var IFSCLeague[] $leagues
+     * @param IFSCLeague[] $leagues
+     * @param string $format
+     * @return string
      */
-    public function generateForLeagues(int $season, array $leagues): string
+    public function generateForLeagues(int $season, array $leagues, string $format): string
     {
         $events = [];
 
@@ -30,6 +32,6 @@ final readonly class IFSCCalendarBuilder
             $events += $this->eventFetcher->fetchEventsForLeague($season, $league);
         }
 
-        return $this->calendarGenerator->generateForEvents($events);
+        return $this->calendarBuilderFactory->generateForFormat($format, $events);
     }
 }

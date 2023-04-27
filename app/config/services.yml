@@ -11,11 +11,20 @@ services:
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder'
 
+  nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory:
+    class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar'
+
   nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder:
     class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar'
+      - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory'
       - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher'
+
+  nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar:
+    class: nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar
 
   nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar:
     class: nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar

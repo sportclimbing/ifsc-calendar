@@ -7,14 +7,18 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
+use DateTimeImmutable;
+
 final readonly class IFSCEvent
 {
     public function __construct(
         public string $name,
         public int $id,
         public string $description,
-        public \DateTimeInterface $startTime,
-        public \DateTimeInterface $endTime,
+        public string $streamUrl,
+        public string $poster,
+        public DateTimeImmutable $startTime,
+        public DateTimeImmutable $endTime,
     ) {
     }
 }

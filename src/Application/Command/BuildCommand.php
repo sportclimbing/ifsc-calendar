@@ -35,6 +35,7 @@ final class BuildCommand extends Command
             ->setDescription('Build a custom IFSC calender (.ics)')
             ->addOption('season', null, InputOption::VALUE_OPTIONAL, 'IFSC Season')
             ->addOption('league', null, InputOption::VALUE_OPTIONAL, 'IFSC League')
+            ->addOption('format', null, InputOption::VALUE_OPTIONAL, 'Output format')
             ->addOption('output', null, InputOption::VALUE_OPTIONAL, '.ics output file name', 'ifsc-calendar.ics')
         ;
     }
@@ -47,6 +48,7 @@ final class BuildCommand extends Command
         $selectedSeason = $input->getOption('season');
         $selectedLeague = $input->getOption('league');
         $fileName = $input->getOption('output');
+        $format = $input->getOption('format');
 
         if (!$selectedSeason) {
             $selectedSeason = $this->getSelectedSeason($seasons, $helper, $input, $output);
@@ -64,7 +66,7 @@ final class BuildCommand extends Command
         }
 
         $league = $leaguesByName[$selectedLeague];
-        $response = $this->buildCalendar($selectedSeason, [$league], $output);
+        $response = $this->buildCalendar($selectedSeason, [$league], $format, $output);
         $this->saveCalendar($fileName, $response->calendarContents, $output);
 
         $output->writeln("[+] Done!");
@@ -72,7 +74,7 @@ final class BuildCommand extends Command
         return self::SUCCESS;
     }
 
-    public function buildCalendar(int $selectedSeason, array $leagues, OutputInterface $output): BuildCalendarResponse
+    public function buildCalendar(int $selectedSeason, array $leagues, string $format, OutputInterface $output): BuildCalendarResponse
     {
         $output->writeln("[+] Fetching event info...");
 
@@ -80,6 +82,7 @@ final class BuildCommand extends Command
             new BuildCalendarRequest(
                 season: $selectedSeason,
                 leagues: $leagues,
+                format: $format,
             )
         );
     }
@@ -126,7 +129,7 @@ final class BuildCommand extends Command
 
     private function saveCalendar(string $fileName, string $calendarContents, OutputInterface $output): void
     {
-        $output->writeln("[+] Saving .ics file...");
+        $output->writeln("[+] Saving file as $fileName...");
 
         $filesystem = new Filesystem();
         $filesystem->dumpFile($fileName, $calendarContents);

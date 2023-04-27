@@ -14,10 +14,12 @@ final readonly class BuildCalendarRequest
     /** @var IFSCLeague[] */
     public array $leagues;
     public int $season;
+    public string $format;
 
-    public function __construct(int $season, array $leagues)
+    public function __construct(int $season, array $leagues, string $format)
     {
         $this->season = $season;
         $this->leagues = $leagues;
+        $this->format = $format;
     }
 }

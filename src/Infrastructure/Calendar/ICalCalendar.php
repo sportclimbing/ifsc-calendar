@@ -47,7 +47,7 @@ final readonly class ICalCalendar implements CalendarGeneratorInterface
     public function createEvent(IFSCEvent $event): Event
     {
         return (new Event())
-            ->setSummary($event->name)
+            ->setSummary("IFSC: {$event->name}")
             ->setDescription($event->description)
             ->setUrl($this->buildUrl($event))
             ->setOccurrence($this->buildTimeSpan($event));
