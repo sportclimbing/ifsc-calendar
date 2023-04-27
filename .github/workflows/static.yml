@@ -26,6 +26,12 @@ jobs:
         uses: actions/checkout@v3
       - name: Update RSS file
         run: curl "https://www.ifsc-climbing.org/index.php/news?format=feed&type=rss" --output pages/feed/rss.xml
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Generate events JSON
+        run:  php app/run.php --season 2023 --league "World Cups and World Championships" --output "pages/events/events.json" --format json
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
