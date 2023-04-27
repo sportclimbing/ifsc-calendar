@@ -33,6 +33,7 @@ jobs:
       - name: Generate events JSON
         run: |
           sh build/install-composer.sh
+          composer install --no-dev --optimize-autoloader 
           php app/run.php \
               --season 2023 \
               --league "World Cups and World Championships" \
