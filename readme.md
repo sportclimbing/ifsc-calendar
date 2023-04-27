@@ -3,7 +3,7 @@
 ![ifsc-logo](resources/images/ifsc-logo.png)
 
 ### TL;DR
-Import the `.ics` file from the **[IFSC Calendar 2023](https://nicoswd.github.io/ifsc-calendar/)** page to your
+Import the `.ics` file from the **[IFSC Calendar 2023](https://ifsc.stream/)** page to your
 favorite calendar and never miss an IFSC Climbing event again.
 
 ### Intro
