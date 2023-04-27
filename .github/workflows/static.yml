@@ -31,7 +31,13 @@ jobs:
         with:
           php-version: '8.2'
       - name: Generate events JSON
-        run:  php app/run.php --season 2023 --league "World Cups and World Championships" --output "pages/events/events.json" --format json
+        run: |
+          sh build/install-composer.sh
+          php app/run.php \
+              --season 2023 \
+              --league "World Cups and World Championships" \
+              --output "pages/events/events.json" \
+              --format json
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
