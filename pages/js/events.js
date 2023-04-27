@@ -1,4 +1,76 @@
-(async () => {
+Date.prototype.addHours = function(hours) {
+    this.setTime(this.getTime() + (hours * 60 * 60 * 1000));
+    return this;
+}
+
+function sort_by_date(event1, event2) {
+    if (new Date(event1.start_time) < new Date(event2.start_time)) {
+        return -1;
+    }
+    if (new Date(event1.start_time) > new Date(event2.start_time)) {
+        return 1;
+    }
+    return 0;
+}
+
+function starts_in(event) {
+    let eventDate = new Date(event.start_time)
+    //   let d = date.toLocaleString(navigator.language, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+
+    const dateNow = new Date();
+    const seconds = Math.floor((eventDate - dateNow) / 1000);
+
+    let minutes = Math.floor(seconds / 60);
+    let hours = Math.floor(minutes / 60);
+    let days = Math.floor(hours / 24);
+
+    hours = hours - (days * 24);
+    minutes = minutes - (days * 24 * 60) - (hours * 60);
+
+    return {
+        days: days,
+        hours: hours,
+        minutes: minutes,
+        seconds: seconds,
+    }
+}
+
+function event_is_streaming(event) {
+    const now = new Date();
+    const event_start = new Date(event.start_time);
+
+    return event_start >= now && event_start <= (now.addHours(3));
+}
+
+function pretty_starts_in(event) {
+    let { days, hours, minutes } = starts_in(event);
+
+    let text = 'Starts in ';
+
+    if (days > 0) {
+        text += `${days} days`;
+    }
+
+    if (hours > 0) {
+        if (days > 0) {
+            text += ', ';
+        }
+
+        text += `${hours} hours`;
+    }
+
+    if (minutes > 0) {
+        if (days > 0 || minutes > 0) {
+            text += ' and ';
+        }
+
+        text += `${minutes} minutes`;
+    }
+
+    return text;
+}
+
+const refresh = (async () => {
     const response = await fetch("events/events.json");
     const jsonData = await response.json();
 
@@ -16,80 +88,8 @@
         }
     });
 
-    let sortByDate = (event1, event2) => {
-        if (new Date(event1.start_time) < new Date(event2.start_time)) {
-            return -1;
-        }
-        if (new Date(event1.start_time) > new Date(event2.start_time)) {
-            return 1;
-        }
-        return 0;
-    };
-
-    upcomingEvents.sort(sortByDate);
-    pastEvents.sort(sortByDate);
-
-    function starts_in(event) {
-        let eventDate = new Date(event.start_time)
-        //   let d = date.toLocaleString(navigator.language, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
-
-        const dateNow = new Date();
-        const seconds = Math.floor((eventDate - (dateNow)) / 1000);
-
-        let minutes = Math.floor(seconds / 60);
-        let hours = Math.floor(minutes / 60);
-        let days = Math.floor(hours / 24);
-
-        hours = hours - (days * 24);
-        minutes = minutes - (days * 24 * 60) - (hours * 60);
-
-        return {
-            days: days,
-            hours: hours,
-            minutes: minutes,
-            seconds: seconds,
-        }
-    }
-
-    Date.prototype.addHours = function(hours) {
-        this.setTime(this.getTime() + (hours * 60 * 60 * 1000));
-        return this;
-    }
-
-    function event_is_streaming(event) {
-        const now = new Date();
-        const event_start = new Date(event.start_time);
-
-        return event_start >= now && event_start <= (now.addHours(3));
-    }
-
-    function pretty_starts_in(event) {
-        let { days, hours, minutes } = starts_in(event);
-
-        let text = 'Starts in ';
-
-        if (days > 0) {
-            text += `${days} days`;
-        }
-
-        if (hours > 0) {
-            if (days > 0) {
-                text += ', ';
-            }
-
-            text += `${hours} hours`;
-        }
-
-        if (minutes > 0) {
-            if (days > 0 || minutes > 0) {
-                text += ' and ';
-            }
-
-            text += `${minutes} minutes`;
-        }
-
-        return text;
-    }
+    upcomingEvents.sort(sort_by_date);
+    pastEvents.sort(sort_by_date);
 
     let nextEvent = upcomingEvents.at(0);
     let nextLeague = [...pastEvents, ...upcomingEvents].filter((event) => {
@@ -100,6 +100,10 @@
     const template = document.getElementById("ifsc-event");
     let now = new Date();
     let liveEvent = null;
+
+    while (container.lastElementChild) {
+        container.removeChild(container.lastElementChild);
+    }
 
     nextLeague.forEach((event) => {
         try {
@@ -153,4 +157,9 @@
     } else {
         document.getElementById('next-event').innerHTML = `<p><strong>${nextEvent.description}</strong></p><div class="alert alert-success" role="alert">${pretty_starts_in(nextEvent)}</div>`;
     }
+});
+
+(async () => {
+    await refresh();
+    window.setInterval(refresh, 1000 * 60);
 })();
