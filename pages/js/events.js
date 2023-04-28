@@ -2,12 +2,17 @@ dayjs.extend(window.dayjs_plugin_relativeTime);
 dayjs.extend(window.dayjs_plugin_isBetween);
 
 function sort_by_date(event1, event2) {
-    if (new Date(event1.start_time) < new Date(event2.start_time)) {
+    let eventDate1 = new Date(event1.start_time);
+    let eventDate2 = new Date(event2.start_time);
+
+    if (eventDate1 < eventDate2) {
         return -1;
     }
-    if (new Date(event1.start_time) > new Date(event2.start_time)) {
+
+    if (eventDate1 > eventDate2) {
         return 1;
     }
+
     return 0;
 }
 
@@ -19,7 +24,7 @@ function event_is_streaming(event) {
 }
 
 function pretty_starts_in(event) {
-    return `Starts ${dayjs(event.start_time).fromNow()}`;
+    return dayjs(event.start_time).fromNow();
 }
 
 function pretty_started_ago(event) {
@@ -94,7 +99,7 @@ const refresh = (async () => {
 
                 clone.getRootNode().firstChild.nextSibling.style.opacity = '100%'
             } else if (new Date(event.start_time) > now) {
-                clone.getElementById('ifsc-starts-in').innerText = `⏰ ${pretty_starts_in(event)}`;
+                clone.getElementById('ifsc-starts-in').innerText = `⏰ Starts ${pretty_starts_in(event)}`;
 
                 if (lastEventFinished) {
                     lastEventFinished = false;
@@ -124,7 +129,7 @@ const refresh = (async () => {
     if (liveEvent) {
         document.getElementById('next-event').innerHTML = `<p><strong>${nextEvent.description}</strong></p><div class="alert alert-danger" role="alert">🔴 Live Now: <strong>${liveEvent.name}</strong></div>`;
     } else {
-        document.getElementById('next-event').innerHTML = `<p><strong>👉 ${nextEvent.description}</strong></p><div class="alert alert-success" role="alert">${pretty_starts_in(nextEvent)}: <strong>${nextEvent.name}</strong></div>`;
+        document.getElementById('next-event').innerHTML = `<p><strong>👉 ${nextEvent.description}</strong></p><div class="alert alert-success" role="alert">Next event ${pretty_starts_in(nextEvent)}: <strong>${nextEvent.name}</strong></div>`;
     }
 });
 
