@@ -35,7 +35,7 @@ final class BuildCommand extends Command
             ->setDescription('Build a custom IFSC calender (.ics)')
             ->addOption('season', null, InputOption::VALUE_OPTIONAL, 'IFSC Season')
             ->addOption('league', null, InputOption::VALUE_OPTIONAL, 'IFSC League')
-            ->addOption('format', null, InputOption::VALUE_OPTIONAL, 'Output format')
+            ->addOption('format', null, InputOption::VALUE_OPTIONAL, 'Output format', 'ics')
             ->addOption('output', null, InputOption::VALUE_OPTIONAL, '.ics output file name', 'ifsc-calendar.ics')
         ;
     }
