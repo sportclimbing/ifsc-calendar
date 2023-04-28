@@ -1,8 +1,3 @@
-Date.prototype.addHours = function(hours) {
-    this.setTime(this.getTime() + (hours * 60 * 60 * 1000));
-    return this;
-}
-
 function sort_by_date(event1, event2) {
     if (new Date(event1.start_time) < new Date(event2.start_time)) {
         return -1;
@@ -39,7 +34,7 @@ function event_is_streaming(event) {
     const now = new Date();
     const event_start = new Date(event.start_time);
 
-    return event_start >= now && event_start <= (now.addHours(3));
+    return event_start >= now && event_start.getTime() - now.getTime() < 3 * 60 * 60 * 1000;
 }
 
 function pretty_starts_in(event) {
@@ -116,7 +111,7 @@ const refresh = (async () => {
             if (event.stream_url) {
                 clone.getElementById('button-stream').href = event.stream_url;
             } else {
-                clone.getElementById('button-stream').href = 'javascript:void(alert("Not available yet"));';
+                clone.getElementById('button-stream').href = 'https://www.youtube.com/@sportclimbing/streams';
             }
 
             clone.getElementById('button-event').href = event.event_url;
@@ -126,11 +121,11 @@ const refresh = (async () => {
             if (event_is_streaming(event)) {
                 let starts = starts_in(event);
                 clone.getElementById('ifsc-starts-in').innerText = `⏰ Started ${starts.hours} hours and ${starts.minutes} minutes ago`;
-                clone.getRootNode().firstChild.nextSibling.style.opacity = '100%'
-
                 status.innerHTML = `🔴 &nbsp; Live Now`;
                 status.classList.add('text-danger');
                 liveEvent = event;
+
+                clone.getRootNode().firstChild.nextSibling.style.opacity = '100%'
             } else if (new Date(event.start_time) > now) {
                 clone.getElementById('ifsc-starts-in').innerText = `⏰ ${pretty_starts_in(event)}`;
                 status.innerHTML = `🔜 &nbsp; Upcoming`;
@@ -139,7 +134,6 @@ const refresh = (async () => {
                 clone.getRootNode().firstChild.nextSibling.style.opacity = '50%'
             } else {
                 clone.getElementById('ifsc-starts-in').innerText = `⏰ Finished`;
-
                 status.innerHTML = `🏁 &nbsp; Finished`;
                 status.classList.add('text-warning');
 
