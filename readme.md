@@ -3,8 +3,13 @@
 ![ifsc-logo](resources/images/ifsc-logo.png)
 
 ### TL;DR
-Import the `.ics` file from the **[IFSC Calendar 2023](https://ifsc.stream/)** page to your
-favorite calendar and never miss an IFSC Climbing event again.
+This automatically generates a calendar you can subscribe to, to never miss an IFSC climbing event every again.
+
+Simply copy and paste `.ics` file URL from the **[IFSC Calendar 2023](https://ifsc.stream/)** page into your
+calendar subscriptions, and it will automatically update. This works for Apple devices, Google Calendar,
+Proton Calendar, etc...
+
+Take a look at the **[setup guides](https://github.com/nicoSWD/ifsc-calendar/wiki)** for help.
 
 ### Intro
 If you're constantly missing IFSC events because of a lacking calendar, or timezone confusions,
