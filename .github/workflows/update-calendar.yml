@@ -1,0 +1,36 @@
+name: Update calendar release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-calendar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+
+      - name: Generate events JSON
+        run: |
+          composer install --no-dev --optimize-autoloader 
+          php app/run.php \
+              --season 2023 \
+              --league "World Cups and World Championships" \
+              --output "IFSC-World-Cups-and-World-Championships.ics"
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: IFSC-World-Cups-and-World-Championships.ics
+          tag_name: latest
+          body: Test
