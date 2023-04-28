@@ -93,6 +93,7 @@ const refresh = (async () => {
 
             if (event_is_streaming(event)) {
                 clone.getElementById('ifsc-starts-in').innerText = `⏰ ${pretty_started_ago(event)}`;
+                clone.getRootNode().firstChild.nextSibling.style.backgroundColor = '#f7f7f7';
                 status.innerHTML = `🔴 &nbsp; Live Now`;
                 status.classList.add('text-danger');
                 liveEvent = event;
@@ -103,9 +104,11 @@ const refresh = (async () => {
 
                 if (lastEventFinished) {
                     lastEventFinished = false;
-                    clone.getRootNode().firstChild.nextSibling.style.opacity = '100%'
                     status.innerHTML = `🟢 &nbsp; <strong>Next Event</strong>`;
                     status.classList.add('text-success');
+
+                    clone.getRootNode().firstChild.nextSibling.style.backgroundColor = '#f7f7f7';
+                    clone.getRootNode().firstChild.nextSibling.style.opacity = '100%'
                 } else {
                     clone.getRootNode().firstChild.nextSibling.style.opacity = '50%'
                     status.innerHTML = `⌛️ &nbsp; Very Soon`;
