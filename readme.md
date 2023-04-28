@@ -73,7 +73,8 @@ $ ./build/ifsc-calendar.phar \
  - [ ] Add Google Analytics (and cookie notice)
  - [ ] Check if there's an API to fetch events from instead of relying on scraping
  - [ ] Add default poster if none exists
- - [x] Change `opacity` to 100 for next event in line (if not currenlty streaming)
+ - [ ] Add warning about qualification streams likely not being available
+ - [x] Change `opacity` to 100 for next event in line (if not currently streaming)
  - [x] Automatically regenerate calendar and update release
 
 ### Requirements
