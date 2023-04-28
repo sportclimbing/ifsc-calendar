@@ -18,13 +18,6 @@ function event_is_streaming(event) {
     return eventStart.isBetween(now, now.subtract(3, 'hour'));
 }
 
-function event_starts_soon(event) {
-    const now = dayjs();
-    const eventStart = dayjs(event.start_time);
-
-    return eventStart.isBefore(now.add(8, 'hour'));
-}
-
 function pretty_starts_in(event) {
     return `Starts ${dayjs(event.start_time).fromNow()}`;
 }
@@ -72,6 +65,8 @@ const refresh = (async () => {
         container.removeChild(container.lastElementChild);
     }
 
+    let lastEventFinished = false;
+
     nextLeague.forEach((event) => {
         try {
             const clone = template.content.cloneNode(true);
@@ -100,13 +95,16 @@ const refresh = (async () => {
                 clone.getRootNode().firstChild.nextSibling.style.opacity = '100%'
             } else if (new Date(event.start_time) > now) {
                 clone.getElementById('ifsc-starts-in').innerText = `⏰ ${pretty_starts_in(event)}`;
-                status.innerHTML = `🔜 &nbsp; Upcoming`;
-                status.classList.add('text-success');
 
-                if (!liveEvent && event_starts_soon(event)) {
+                if (lastEventFinished) {
+                    lastEventFinished = false;
                     clone.getRootNode().firstChild.nextSibling.style.opacity = '100%'
+                    status.innerHTML = `🟢 &nbsp; <strong>Next Event</strong>`;
+                    status.classList.add('text-success');
                 } else {
                     clone.getRootNode().firstChild.nextSibling.style.opacity = '50%'
+                    status.innerHTML = `⌛️ &nbsp; Very Soon`;
+                    status.classList.add('text-warning');
                 }
             } else {
                 clone.getElementById('ifsc-starts-in').innerText = `⏰ ${pretty_finished_ago(event)}`;
@@ -114,6 +112,7 @@ const refresh = (async () => {
                 status.classList.add('text-danger');
 
                 clone.getRootNode().firstChild.nextSibling.style.opacity = '50%'
+                lastEventFinished = true;
             }
 
             container.appendChild(clone);
@@ -125,7 +124,7 @@ const refresh = (async () => {
     if (liveEvent) {
         document.getElementById('next-event').innerHTML = `<p><strong>${nextEvent.description}</strong></p><div class="alert alert-danger" role="alert">🔴 Live Now: <strong>${liveEvent.name}</strong></div>`;
     } else {
-        document.getElementById('next-event').innerHTML = `<p><strong>${nextEvent.description}</strong></p><div class="alert alert-success" role="alert">${pretty_starts_in(nextEvent)}: <strong>${nextEvent.name}</strong></div>`;
+        document.getElementById('next-event').innerHTML = `<p><strong>👉 ${nextEvent.description}</strong></p><div class="alert alert-success" role="alert">${pretty_starts_in(nextEvent)}: <strong>${nextEvent.name}</strong></div>`;
     }
 });
 
