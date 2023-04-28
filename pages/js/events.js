@@ -1,3 +1,5 @@
+dayjs.extend(window.dayjs_plugin_relativeTime);
+
 function sort_by_date(event1, event2) {
     if (new Date(event1.start_time) < new Date(event2.start_time)) {
         return -1;
@@ -33,36 +35,21 @@ function starts_in(event) {
 function event_is_streaming(event) {
     const now = new Date();
     const event_start = new Date(event.start_time);
+    const diff = (dayjs(event.start_time).diff(now, 'hour'));
 
-    return event_start >= now && event_start.getTime() - now.getTime() < 3 * 60 * 60 * 1000;
+    return event_start >= now && diff <= 3;
 }
 
 function pretty_starts_in(event) {
-    let { days, hours, minutes } = starts_in(event);
+    return `Starts ${dayjs(event.start_time).fromNow()}`;
+}
 
-    let text = 'Starts in ';
+function pretty_started_ago(event) {
+    return `Started ${dayjs(event.start_time).toNow()}`;
+}
 
-    if (days > 0) {
-        text += `${days} days`;
-    }
-
-    if (hours > 0) {
-        if (days > 0) {
-            text += ', ';
-        }
-
-        text += `${hours} hours`;
-    }
-
-    if (minutes > 0) {
-        if (days > 0 || minutes > 0) {
-            text += ' and ';
-        }
-
-        text += `${minutes} minutes`;
-    }
-
-    return text;
+function pretty_finished_ago(event) {
+    return `Finished ${dayjs(event.start_time).fromNow()}`;
 }
 
 const refresh = (async () => {
@@ -119,8 +106,7 @@ const refresh = (async () => {
             let status = clone.getElementById('ifsc-status');
 
             if (event_is_streaming(event)) {
-                let starts = starts_in(event);
-                clone.getElementById('ifsc-starts-in').innerText = `⏰ Started ${starts.hours} hours and ${starts.minutes} minutes ago`;
+                clone.getElementById('ifsc-starts-in').innerText = `⏰ ${pretty_started_ago(event)}`;
                 status.innerHTML = `🔴 &nbsp; Live Now`;
                 status.classList.add('text-danger');
                 liveEvent = event;
@@ -133,7 +119,7 @@ const refresh = (async () => {
 
                 clone.getRootNode().firstChild.nextSibling.style.opacity = '50%'
             } else {
-                clone.getElementById('ifsc-starts-in').innerText = `⏰ Finished`;
+                clone.getElementById('ifsc-starts-in').innerText = `⏰ ${pretty_finished_ago(event)}`;
                 status.innerHTML = `🏁 &nbsp; Finished`;
                 status.classList.add('text-warning');
 
