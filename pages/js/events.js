@@ -18,6 +18,13 @@ function event_is_streaming(event) {
     return eventStart.isBetween(now, now.subtract(3, 'hour'));
 }
 
+function event_starts_soon(event) {
+    const now = dayjs();
+    const eventStart = dayjs(event.start_time);
+
+    return eventStart.isBefore(now.add(8, 'hour'));
+}
+
 function pretty_starts_in(event) {
     return `Starts ${dayjs(event.start_time).fromNow()}`;
 }
@@ -69,7 +76,8 @@ const refresh = (async () => {
         try {
             const clone = template.content.cloneNode(true);
 
-            clone.getElementById('ifsc-poster').src = event.poster;
+            clone.getElementById('ifsc-poster').src = 'img/posters/230329_Poster_SEOUL23_thumb.jpg';
+            // clone.getElementById('ifsc-poster').src = event.poster;
             clone.getElementById('ifsc-description').innerText = event.description;
             clone.getElementById('ifsc-name').innerText = `👉 ${event.name}`;
 
@@ -95,11 +103,15 @@ const refresh = (async () => {
                 status.innerHTML = `🔜 &nbsp; Upcoming`;
                 status.classList.add('text-success');
 
-                clone.getRootNode().firstChild.nextSibling.style.opacity = '50%'
+                if (!liveEvent && event_starts_soon(event)) {
+                    clone.getRootNode().firstChild.nextSibling.style.opacity = '100%'
+                } else {
+                    clone.getRootNode().firstChild.nextSibling.style.opacity = '50%'
+                }
             } else {
                 clone.getElementById('ifsc-starts-in').innerText = `⏰ ${pretty_finished_ago(event)}`;
                 status.innerHTML = `🏁 &nbsp; Finished`;
-                status.classList.add('text-warning');
+                status.classList.add('text-danger');
 
                 clone.getRootNode().firstChild.nextSibling.style.opacity = '50%'
             }
