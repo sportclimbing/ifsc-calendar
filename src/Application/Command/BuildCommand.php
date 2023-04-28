@@ -52,6 +52,8 @@ final class BuildCommand extends Command
 
         if (!$selectedSeason) {
             $selectedSeason = $this->getSelectedSeason($seasons, $helper, $input, $output);
+        } elseif ($selectedSeason === 'current') {
+            $selectedSeason = key($seasons);
         }
 
         $selectedSeason = (int) $selectedSeason;
@@ -66,8 +68,13 @@ final class BuildCommand extends Command
         }
 
         $league = $leaguesByName[$selectedLeague];
-        $response = $this->buildCalendar($selectedSeason, [$league], $format, $output);
-        $this->saveCalendar($fileName, $response->calendarContents, $output);
+
+        foreach (explode(',', $format) as $calFormat) {
+            $fileName = pathinfo($fileName, PATHINFO_FILENAME) . '.' . $calFormat;
+
+            $response = $this->buildCalendar($selectedSeason, [$league], $calFormat, $output);
+            $this->saveCalendar($fileName, $response->calendarContents, $output);
+        }
 
         $output->writeln("[+] Done!");
 
