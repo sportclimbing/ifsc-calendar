@@ -70,7 +70,8 @@ final class BuildCommand extends Command
         $league = $leaguesByName[$selectedLeague];
 
         foreach (explode(',', $format) as $calFormat) {
-            $fileName = pathinfo($fileName, PATHINFO_FILENAME) . '.' . $calFormat;
+            $pathInfo = pathinfo($fileName);
+            $fileName = "{$pathInfo['dirname']}/{$pathInfo['filename']}.{$calFormat}";
 
             $response = $this->buildCalendar($selectedSeason, [$league], $calFormat, $output);
             $this->saveCalendar($fileName, $response->calendarContents, $output);
