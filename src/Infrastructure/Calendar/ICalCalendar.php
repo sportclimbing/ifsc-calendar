@@ -19,7 +19,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 
 final readonly class ICalCalendar implements CalendarGeneratorInterface
 {
-    private const IFSC_EVENT_INFO_URL = 'https://www.ifsc-climbing.org/component/ifsc/?view=event&WetId=%d';
+    private const IFSC_EVENT_INFO_URL = 'https://ifsc.stream/';
 
     public function __construct(
         private CalendarFactory $calendarFactory,
@@ -49,7 +49,7 @@ final readonly class ICalCalendar implements CalendarGeneratorInterface
         return (new Event())
             ->setSummary("IFSC: {$event->name}")
             ->setDescription($event->description)
-            ->setUrl($this->buildUrl($event))
+            ->setUrl($this->buildUrl())
             ->setOccurrence($this->buildTimeSpan($event));
     }
 
@@ -58,9 +58,9 @@ final readonly class ICalCalendar implements CalendarGeneratorInterface
         return fn (IFSCEvent $event): Event => $this->createEvent($event);
     }
 
-    public function buildUrl(IFSCEvent $event): Uri
+    public function buildUrl(): Uri
     {
-        return new Uri(sprintf(self::IFSC_EVENT_INFO_URL, $event->id));
+        return new Uri(self::IFSC_EVENT_INFO_URL);
     }
 
     public function buildTimeSpan(IFSCEvent $event): TimeSpan
