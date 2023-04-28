@@ -1,4 +1,4 @@
-# IFSC Calendar
+# IFSC Climbing Calendar and Streams
 
 ![ifsc-logo](resources/images/ifsc-logo.png)
 
@@ -55,6 +55,26 @@ $ ./build/ifsc-calendar.phar \
   --league "World Cups and World Championships" \
   --output "ifsc-calendar.ics"
 ```
+
+### Todo
+ - [ ] Make landing site prettier and responsive
+ - [ ] Calculate average event duration and add it to `events.json` and to the calendar
+ - [ ] Download posters and save them locally (preferably downsized versions too)
+ - [ ] Add VPN note and link (to ProtonVPN?)
+ - [ ] Validate newly generated calendar before publishing site
+ - [ ] Finish writing calendar setup guides
+ - [ ] Change favicon when an event started streaming
+ - [ ] Show past and future events
+ - [ ] Cleanup PHP code
+ - [ ] Add tests
+ - [ ] Fetch stream links from YouTube API if none can be scraped
+ - [ ] Make scraping more robust and fail on errors or missing data
+ - [ ] Show exact streaming date/time in addition to "in X hours" (maybe via tooltip?)
+ - [ ] Add Google Analytics (and cookie notice)
+ - [ ] Check if there's an API to fetch events from instead of relying on scraping
+ - [ ] Add default poster if none exists
+ - [x] Change `opacity` to 100 for next event in line (if not currenlty streaming)
+ - [x] Automatically regenerate calendar and update release
 
 ### Requirements
 - PHP 8.2
