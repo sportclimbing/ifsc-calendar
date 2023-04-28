@@ -168,7 +168,7 @@ final readonly class IFSCGuzzleEventsScraper
     private function getEndDateTime(DateTimeImmutable $date): DateTimeImmutable
     {
         $endDate = DateTime::createFromImmutable($date);
-        $endDate->modify('+2 hours');
+        $endDate->modify('+3 hours');
 
         return DateTimeImmutable::createFromMutable($endDate);
     }
