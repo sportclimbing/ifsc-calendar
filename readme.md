@@ -28,6 +28,16 @@ $ docker run -it ifsc-calendar \
     --output "/calendar/ifsc-calendar.ics"
 ```
 
+Generate `.json` calendar file
+```shell
+$ docker run -it ifsc-calendar \
+    --volume "$PWD:/calendar" ifsc-calendar \
+    --season 2023 \
+    --league "World Cups and World Championships" \
+    --output "/calendar/ifsc-calendar.json" \
+    --format json
+```
+
 #### Build it yourself
 Build executable
 ```shell
