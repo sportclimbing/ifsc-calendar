@@ -19,7 +19,7 @@ jobs:
           php-version: '8.2'
           tools: composer
 
-      - name: Generate events JSON
+      - name: Generate calendar file
         run: |
           composer install --no-dev --optimize-autoloader 
           php app/run.php \
