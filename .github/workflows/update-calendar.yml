@@ -1,6 +1,8 @@
 name: Update calendar release
 
 on:
+  schedule:
+    - cron:  '0 */4 * * *'
   workflow_dispatch:
 
 permissions:
@@ -10,26 +12,29 @@ jobs:
   update-calendar:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: "Checkout code"
         uses: actions/checkout@master
 
-      - name: Setup PHP
+      - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           tools: composer
 
-      - name: Generate calendar file
+      - name: "Generate calendar file"
         run: |
           composer install --no-dev --optimize-autoloader 
           php app/run.php \
-              --season 2023 \
+              --season current \
               --league "World Cups and World Championships" \
-              --output "IFSC-World-Cups-and-World-Championships.ics"
+              --output "IFSC-World-Cups-and-World-Championships.ics" \
+              --format "ics,json"
 
-      - name: Release
+      - name: "Add release"
         uses: softprops/action-gh-release@v1
         with:
-          files: IFSC-World-Cups-and-World-Championships.ics
+          files: |
+            IFSC-World-Cups-and-World-Championships.ics
+            IFSC-World-Cups-and-World-Championships.json
           tag_name: latest
-          body: Test
+          body: Latest calendar release
