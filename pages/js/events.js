@@ -1,4 +1,5 @@
 dayjs.extend(window.dayjs_plugin_relativeTime);
+dayjs.extend(window.dayjs_plugin_isBetween);
 
 function sort_by_date(event1, event2) {
     if (new Date(event1.start_time) < new Date(event2.start_time)) {
@@ -10,34 +11,11 @@ function sort_by_date(event1, event2) {
     return 0;
 }
 
-function starts_in(event) {
-    let eventDate = new Date(event.start_time)
-    //   let d = date.toLocaleString(navigator.language, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
-
-    const dateNow = new Date();
-    const seconds = Math.floor((eventDate - dateNow) / 1000);
-
-    let minutes = Math.floor(seconds / 60);
-    let hours = Math.floor(minutes / 60);
-    let days = Math.floor(hours / 24);
-
-    hours = hours - (days * 24);
-    minutes = minutes - (days * 24 * 60) - (hours * 60);
-
-    return {
-        days: days,
-        hours: hours,
-        minutes: minutes,
-        seconds: seconds,
-    }
-}
-
 function event_is_streaming(event) {
-    const now = new Date();
-    const event_start = new Date(event.start_time);
-    const diff = (dayjs(event.start_time).diff(now, 'hour'));
+    const now = dayjs();
+    const eventStart = dayjs(event.start_time);
 
-    return event_start >= now && diff <= 3;
+    return eventStart.isBetween(now, now.subtract(3, 'hour'));
 }
 
 function pretty_starts_in(event) {
@@ -45,11 +23,11 @@ function pretty_starts_in(event) {
 }
 
 function pretty_started_ago(event) {
-    return `Started ${dayjs(event.start_time).toNow()}`;
+    return `Started ${dayjs(event.start_time).fromNow()}`;
 }
 
 function pretty_finished_ago(event) {
-    return `Finished ${dayjs(event.start_time).fromNow()}`;
+    return `Streamed ${dayjs(event.start_time).fromNow()}`;
 }
 
 const refresh = (async () => {
@@ -135,7 +113,7 @@ const refresh = (async () => {
     if (liveEvent) {
         document.getElementById('next-event').innerHTML = `<p><strong>${nextEvent.description}</strong></p><div class="alert alert-danger" role="alert">🔴 Live Now: <strong>${liveEvent.name}</strong></div>`;
     } else {
-        document.getElementById('next-event').innerHTML = `<p><strong>${nextEvent.description}</strong></p><div class="alert alert-success" role="alert">${pretty_starts_in(nextEvent)}</div>`;
+        document.getElementById('next-event').innerHTML = `<p><strong>${nextEvent.description}</strong></p><div class="alert alert-success" role="alert">${pretty_starts_in(nextEvent)}: <strong>${nextEvent.name}</strong></div>`;
     }
 });
 
