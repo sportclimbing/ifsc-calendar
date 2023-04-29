@@ -15,7 +15,7 @@ final readonly class YouTubeLinkMatcher
     private const YOUTUBE_URL = 'https://youtu.be/';
 
     // Eg: IFSC - Climbing World Cup (B,S) - Seoul (KOR) 2023
-    private const REGEX_LOCATION_AND_SEASON = '~.+\s-\s+(?<location>.+)\s+\([A-Z]{3}\)\s+(?<season>20\d{2})$~';
+    private const REGEX_LOCATION_AND_SEASON = '~.+\s-\s+(?<location>.+)\s+\([a-z]{3}\)\s+(?<season>20\d{2})$~';
 
     public function findStreamUrlForEvent(IFSCEvent $event, YouTubeVideoCollection $videoCollection): ?string
     {
