@@ -87,7 +87,7 @@ const refresh = (async () => {
                 clone.getElementById('button-stream').href = 'https://www.youtube.com/@sportclimbing/streams';
             }
 
-            clone.getElementById('button-event').href = event.event_url;
+            clone.getElementById('button-results').href = `https://ifsc.results.info/#/event/${event.id}`;
 
             let status = clone.getElementById('ifsc-status');
 
@@ -132,7 +132,7 @@ const refresh = (async () => {
     if (liveEvent) {
         document.getElementById('next-event').innerHTML = `<p><strong>${nextEvent.description}</strong></p><div class="alert alert-danger" role="alert">🔴 Live Now: <strong>${liveEvent.name}</strong></div>`;
     } else {
-        document.getElementById('next-event').innerHTML = `<p><strong>👉 ${nextEvent.description}</strong></p><div class="alert alert-success" role="alert">Next event ${pretty_starts_in(nextEvent)}: <strong>${nextEvent.name}</strong></div>`;
+        document.getElementById('next-event').innerHTML = `<p><strong>👉 ${nextEvent.description}</strong></p><div class="alert alert-success" role="alert"><a class="btn btn-secondary float-lg-end" href="" role="button" id="button-event" target="_blank">📆️ Official Event Page</a>Next event ${pretty_starts_in(nextEvent)}: <strong>${nextEvent.name}</strong></div>`;
     }
 });
 

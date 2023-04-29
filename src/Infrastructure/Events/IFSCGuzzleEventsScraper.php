@@ -11,7 +11,6 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use DOMDocument;
-use DOMElement;
 use DOMNode;
 use DOMNodeList;
 use DOMXPath;
@@ -121,10 +120,12 @@ final readonly class IFSCGuzzleEventsScraper
 
     private function getXPath(string $response): DOMXPath
     {
-        libxml_use_internal_errors(true);
+        $lastValue = libxml_use_internal_errors(true);
 
         $dom = new DOMDocument();
         $dom->loadHTML($response);
+
+        libxml_use_internal_errors($lastValue);
 
         return new DOMXPath($dom);
     }

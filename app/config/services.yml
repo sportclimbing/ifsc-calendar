@@ -1,3 +1,6 @@
+parameters:
+  ifsc_youtube_channel_id: 'UC2MGuhIaOP6YLpUx106kTQw'
+
 services:
   nicoSWD\IfscCalendar\Application\Command\:
     resource: '../../src/Application/Command'
@@ -22,6 +25,8 @@ services:
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory'
       - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher'
+      - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher'
+      - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher'
 
   nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar:
     class: nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar
@@ -33,6 +38,22 @@ services:
 
   Eluceo\iCal\Presentation\Factory\CalendarFactory:
     class: Eluceo\iCal\Presentation\Factory\CalendarFactory
+
+  # YouTube
+  nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher:
+    class: nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\YouTube\GuzzleYouTubeClient'
+      - '%ifsc_youtube_channel_id%'
+
+  nicoSWD\IfscCalendar\Infrastructure\YouTube\GuzzleYouTubeClient:
+    class: nicoSWD\IfscCalendar\Infrastructure\YouTube\GuzzleYouTubeClient
+    arguments:
+      - '@GuzzleHttp\Client'
+      - '%ifsc_youtube_channel_id%'
+
+  nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher:
+    class: nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher
 
   # IFSC Seasons
   nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase:

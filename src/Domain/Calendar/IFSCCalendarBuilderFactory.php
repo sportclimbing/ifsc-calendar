@@ -21,6 +21,7 @@ final readonly class IFSCCalendarBuilderFactory
     /**
      * @param string $format
      * @param IFSCEvent[] $events
+     * @throws Exception
      */
     public function generateForFormat(string $format, array $events): string
     {

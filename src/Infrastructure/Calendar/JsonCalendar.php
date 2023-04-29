@@ -7,11 +7,9 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\Calendar;
 
-use Closure;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
-use DateTimeZone;
 use nicoSWD\IfscCalendar\Domain\Calendar\CalendarGeneratorInterface;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 
@@ -39,16 +37,13 @@ final readonly class JsonCalendar implements CalendarGeneratorInterface
         return json_encode($jsonEvents, flags: JSON_PRETTY_PRINT);
     }
 
-    public function buildUrl(IFSCEvent $event): string
+    private function buildUrl(IFSCEvent $event): string
     {
         return sprintf(self::IFSC_EVENT_INFO_URL, $event->id);
     }
 
     public function formatDate(DateTimeImmutable $date): string
     {
-        $dateMutable = DateTime::createFromImmutable($date);
-        // $dateMutable->setTimezone(new DateTimeZone('UTC'));
-
-        return $dateMutable->format(DateTimeInterface::RFC3339);
+        return DateTime::createFromImmutable($date)->format(DateTimeInterface::RFC3339);
     }
 }

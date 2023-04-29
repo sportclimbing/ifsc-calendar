@@ -33,10 +33,11 @@ final class BuildCommand extends Command
     {
         $this->setName('nicoswd:build-ifsc-calender')
             ->setDescription('Build a custom IFSC calender (.ics)')
-            ->addOption('season', null, InputOption::VALUE_OPTIONAL, 'IFSC Season')
-            ->addOption('league', null, InputOption::VALUE_OPTIONAL, 'IFSC League')
-            ->addOption('format', null, InputOption::VALUE_OPTIONAL, 'Output format', 'ics')
-            ->addOption('output', null, InputOption::VALUE_OPTIONAL, '.ics output file name', 'ifsc-calendar.ics')
+            ->addOption('season', mode: InputOption::VALUE_OPTIONAL, description: 'IFSC Season')
+            ->addOption('league', mode: InputOption::VALUE_OPTIONAL, description: 'IFSC League')
+            ->addOption('format', mode: InputOption::VALUE_OPTIONAL, description: 'Output format', default: 'ics')
+            ->addOption('output', mode: InputOption::VALUE_OPTIONAL, description: '.ics output file name', default: 'ifsc-calendar.ics')
+            ->addOption('skip-youtube-fetch', mode: InputOption::VALUE_OPTIONAL, description: 'Do not fetch stream URLs from YouTube API (requires API key)', default: false)
         ;
     }
 
@@ -49,6 +50,7 @@ final class BuildCommand extends Command
         $selectedLeague = $input->getOption('league');
         $fileName = $input->getOption('output');
         $format = $input->getOption('format');
+        $skipYouTubeFetch = $input->getOption('skip-youtube-fetch') !== false;
 
         if (!$selectedSeason) {
             $selectedSeason = $this->getSelectedSeason($seasons, $helper, $input, $output);
@@ -73,7 +75,7 @@ final class BuildCommand extends Command
             $pathInfo = pathinfo($fileName);
             $fileName = "{$pathInfo['dirname']}/{$pathInfo['filename']}.{$calFormat}";
 
-            $response = $this->buildCalendar($selectedSeason, [$league], $calFormat, $output);
+            $response = $this->buildCalendar($selectedSeason, [$league], $calFormat, $output, $skipYouTubeFetch);
             $this->saveCalendar($fileName, $response->calendarContents, $output);
         }
 
@@ -82,8 +84,13 @@ final class BuildCommand extends Command
         return self::SUCCESS;
     }
 
-    public function buildCalendar(int $selectedSeason, array $leagues, string $format, OutputInterface $output): BuildCalendarResponse
-    {
+    public function buildCalendar(
+        int $selectedSeason,
+        array $leagues,
+        string $format,
+        OutputInterface $output,
+        bool $skipYouTubeFetch
+    ): BuildCalendarResponse {
         $output->writeln("[+] Fetching event info...");
 
         return $this->buildCalendarUseCase->execute(
@@ -91,6 +98,7 @@ final class BuildCommand extends Command
                 season: $selectedSeason,
                 leagues: $leagues,
                 format: $format,
+                skipYouTubeFetch: $skipYouTubeFetch,
             )
         );
     }

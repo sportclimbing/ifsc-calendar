@@ -19,6 +19,12 @@ This command line tool uses IFSC's API, plus some scraping (because some endpoin
 authentication) to generate an up-to-date calendar with all necessary info.
 
 ### Usage
+By default, it'll look for an environment variable called `YOUTUBE_API_KEY` to fetch stream URLs from the YouTube
+API. If you don't have one, or don't need it, use the flag `--skip-youtube-fetch`.
+
+To generate an API key, enable the API in your [Google Cloud Console](https://console.cloud.google.com/apis/api/youtube.googleapis.com/)
+and [create credentials](https://console.cloud.google.com/apis/credentials).
+
 #### Docker
 Build Docker image
 ```shell
@@ -30,7 +36,8 @@ $ docker run -it ifsc-calendar \
     --volume "$PWD:/calendar" ifsc-calendar \
     --season 2023 \
     --league "World Cups and World Championships" \
-    --output "/calendar/ifsc-calendar.ics"
+    --output "/calendar/ifsc-calendar.ics" \
+    --env YOUTUBE_API_KEY=xxxxxxxxxxxx
 ```
 
 Generate `.json` calendar file
@@ -40,7 +47,8 @@ $ docker run -it ifsc-calendar \
     --season 2023 \
     --league "World Cups and World Championships" \
     --output "/calendar/ifsc-calendar.json" \
-    --format json
+    --format json \
+    --env YOUTUBE_API_KEY=xxxxxxxxxxxx
 ```
 
 #### Build it yourself
@@ -48,8 +56,12 @@ Build executable
 ```shell
 $ make
 ```
-Generate `.ics` calendar file
+Set the API key
 ```shell
+$ export YOUTUBE_API_KEY=xxxxxxxxxxxx
+```
+Generate `.ics` calendar file
+```
 $ ./build/ifsc-calendar.phar \
   --season 2023 \
   --league "World Cups and World Championships" \
@@ -67,15 +79,21 @@ $ ./build/ifsc-calendar.phar \
  - [ ] Show past and future events
  - [ ] Cleanup PHP code
  - [ ] Add tests
- - [ ] Fetch stream links from YouTube API if none can be scraped
  - [ ] Make scraping more robust and fail on errors or missing data
  - [ ] Show exact streaming date/time in addition to "in X hours" (maybe via tooltip?)
  - [ ] Add Google Analytics (and cookie notice)
  - [ ] Check if there's an API to fetch events from instead of relying on scraping
  - [ ] Add default poster if none exists
  - [ ] Add warning about qualification streams likely not being available
+ - [x] Fetch stream links from YouTube API if none can be scraped
  - [x] Change `opacity` to 100 for next event in line (if not currently streaming)
  - [x] Automatically regenerate calendar and update release
+
+### IFSC API Endpoints
+ - https://ifsc.results.info/api/v1/events/1291 (auth required)
+ - https://components.ifsc-climbing.org/results-api.php?api=event_top3&event_id=1291
+ - https://components.ifsc-climbing.org/results-api.php?api=season_leagues_calendar&league=418
+ - https://components.ifsc-climbing.org/results-api.php?api=index
 
 ### Requirements
 - PHP 8.2

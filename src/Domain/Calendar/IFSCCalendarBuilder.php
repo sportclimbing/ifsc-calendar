@@ -7,14 +7,20 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Calendar;
 
+use Exception;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
 use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
+use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher;
+use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher;
 
 final readonly class IFSCCalendarBuilder
 {
     public function __construct(
         private IFSCCalendarBuilderFactory $calendarBuilderFactory,
         private IFSCEventFetcherInterface $eventFetcher,
+        private YouTubeLinkFetcher $linkFetcher,
+        private YouTubeLinkMatcher $linkMatcher,
     ) {
     }
 
@@ -23,8 +29,9 @@ final readonly class IFSCCalendarBuilder
      * @param IFSCLeague[] $leagues
      * @param string $format
      * @return string
+     * @throws Exception
      */
-    public function generateForLeagues(int $season, array $leagues, string $format): string
+    public function generateForLeagues(int $season, array $leagues, string $format, bool $skipYouTubeFetch): string
     {
         $events = [];
 
@@ -32,6 +39,24 @@ final readonly class IFSCCalendarBuilder
             $events += $this->eventFetcher->fetchEventsForLeague($season, $league);
         }
 
+        if (!$skipYouTubeFetch) {
+            $this->fetchEventStreamUrls($events);
+        }
+
         return $this->calendarBuilderFactory->generateForFormat($format, $events);
+    }
+
+    /** @param IFSCEvent[] $events */
+    private function fetchEventStreamUrls(array &$events): void
+    {
+        $videoCollection = $this->linkFetcher->fetchRecentVideos();
+
+        foreach ($events as &$event) {
+            $streamUrl = $this->linkMatcher->findStreamUrlForEvent($event, $videoCollection);
+
+            if ($streamUrl) {
+                $event = $event->updateStreamUrl($streamUrl);
+            }
+        }
     }
 }

@@ -8,6 +8,9 @@ on:
 permissions:
   contents: write
 
+env:
+  YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+
 jobs:
   update-calendar:
     runs-on: ubuntu-latest

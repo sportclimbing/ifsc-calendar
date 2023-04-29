@@ -21,4 +21,17 @@ final readonly class IFSCEvent
         public DateTimeImmutable $endTime,
     ) {
     }
+
+    public function updateStreamUrl(string $streamUrl): self
+    {
+        return new self(
+            name: $this->name,
+            id: $this->id,
+            description: $this->description,
+            streamUrl: $streamUrl,
+            poster: $this->poster,
+            startTime: $this->startTime,
+            endTime: $this->endTime,
+        );
+    }
 }
