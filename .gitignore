@@ -3,4 +3,5 @@
 .DS_Store
 /.idea/
 *.ics
+/.composer
 /pages/events/events.json
