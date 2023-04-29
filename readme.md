@@ -32,23 +32,25 @@ $ docker build --tag ifsc-calendar .
 ```
 Generate `.ics` calendar file
 ```shell
-$ docker run -it ifsc-calendar \
-    --volume "$PWD:/calendar" ifsc-calendar \
+$ docker run -it \
+    --volume "$PWD:/calendar" \
+    --env YOUTUBE_API_KEY=xxxxxxxxxxxx \
+    ifsc-calendar \
     --season 2023 \
     --league "World Cups and World Championships" \
-    --output "/calendar/ifsc-calendar.ics" \
-    --env YOUTUBE_API_KEY=xxxxxxxxxxxx
+    --output "/calendar/ifsc-calendar.ics"
 ```
 
 Generate `.json` calendar file
 ```shell
-$ docker run -it ifsc-calendar \
-    --volume "$PWD:/calendar" ifsc-calendar \
+$ docker run -it \
+    --volume "$PWD:/calendar" \
+    --env YOUTUBE_API_KEY=xxxxxxxxxxxx \
+    ifsc-calendar \
     --season 2023 \
     --league "World Cups and World Championships" \
     --output "/calendar/ifsc-calendar.json" \
-    --format json \
-    --env YOUTUBE_API_KEY=xxxxxxxxxxxx
+    --format json
 ```
 
 #### Build it yourself
