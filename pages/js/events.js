@@ -132,7 +132,7 @@ const refresh = (async () => {
     if (liveEvent) {
         document.getElementById('next-event').innerHTML = `<p><strong>${nextEvent.description}</strong></p><div class="alert alert-danger" role="alert">🔴 Live Now: <strong>${liveEvent.name}</strong></div>`;
     } else {
-        document.getElementById('next-event').innerHTML = `<p><strong>👉 ${nextEvent.description}</strong></p><div class="alert alert-success" role="alert"><a class="btn btn-secondary float-lg-end" href="" role="button" id="button-event" target="_blank">📆️ Official Event Page</a>Next event ${pretty_starts_in(nextEvent)}: <strong>${nextEvent.name}</strong></div>`;
+        document.getElementById('next-event').innerHTML = `<p><strong>👉 ${nextEvent.description}</strong></p><div class="alert alert-success" role="alert"><a class="btn btn-secondary float-lg-end" href="https://www.ifsc-climbing.org/component/ifsc/?view=event&amp;WetId=${nextEvent.id}" role="button" id="button-event" target="_blank">📆️ Official Event Page</a>Next event ${pretty_starts_in(nextEvent)}: <strong>${nextEvent.name}</strong></div>`;
     }
 });
 
