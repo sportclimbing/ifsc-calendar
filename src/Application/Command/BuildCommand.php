@@ -145,7 +145,7 @@ final class BuildCommand extends Command
 
     private function saveCalendar(string $fileName, string $calendarContents, OutputInterface $output): void
     {
-        $output->writeln("[+] Saving file as $fileName...");
+        $output->writeln("[+] Saved file as {$fileName}");
 
         $filesystem = new Filesystem();
         $filesystem->dumpFile($fileName, $calendarContents);

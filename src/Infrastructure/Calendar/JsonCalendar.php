@@ -10,10 +10,10 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Calendar;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
-use nicoSWD\IfscCalendar\Domain\Calendar\CalendarGeneratorInterface;
+use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 
-final readonly class JsonCalendar implements CalendarGeneratorInterface
+final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
 {
     private const IFSC_EVENT_INFO_URL = 'https://www.ifsc-climbing.org/component/ifsc/?view=event&WetId=%d';
 

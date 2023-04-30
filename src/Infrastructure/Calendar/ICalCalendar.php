@@ -14,10 +14,10 @@ use Eluceo\iCal\Domain\ValueObject\DateTime;
 use Eluceo\iCal\Domain\ValueObject\TimeSpan;
 use Eluceo\iCal\Domain\ValueObject\Uri;
 use Eluceo\iCal\Presentation\Factory\CalendarFactory;
-use nicoSWD\IfscCalendar\Domain\Calendar\CalendarGeneratorInterface;
+use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 
-final readonly class ICalCalendar implements CalendarGeneratorInterface
+final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 {
     private const IFSC_EVENT_INFO_URL = 'https://ifsc.stream/';
 

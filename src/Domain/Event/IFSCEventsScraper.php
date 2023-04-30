@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\Events;
+namespace nicoSWD\IfscCalendar\Domain\Event;
 
 use DateTime;
 use DateTimeImmutable;
@@ -14,10 +14,9 @@ use DOMDocument;
 use DOMNode;
 use DOMNodeList;
 use DOMXPath;
-use GuzzleHttp\Client;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 
-final readonly class IFSCGuzzleEventsScraper
+final readonly class IFSCEventsScraper
 {
     private const XPATH_PARAGRAPHS = "//*[@id='ifsc_event']/div/div/div[@class='text']/p";
 
@@ -51,13 +50,13 @@ final readonly class IFSCGuzzleEventsScraper
     ];
 
     public function __construct(
-        private Client $client,
+        private HttpClientInterface $client,
     ) {
     }
 
     public function fetchEventsForLeague(int $season, int $eventId, string $timezone, string $eventName): array
     {
-        $response = $this->client->request('GET', $this->buildLeagueUri($eventId))->getBody()->getContents();
+        $response = $this->client->get($this->buildLeagueUri($eventId));
         $xpath = $this->getXPath($response);
         $paragraphs = $this->getParagraphs($xpath);
         $poster = $this->getPoster($xpath);

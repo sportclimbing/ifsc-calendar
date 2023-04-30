@@ -38,18 +38,17 @@ final readonly class YouTubeLinkMatcher
         }
 
         $videoTags = $this->fetchTagsFromTitle($videoTitle);
+        $eventTags = $this->fetchTagsFromTitle($eventName);
 
         if ($this->videoIsHighlights($videoTags)) {
             return false;
         }
 
-        $eventTags = $this->fetchTagsFromTitle($eventName);
-
-        if ($videoTags != $eventTags) {
-            return false;
+        if ($this->videoIsMensAndWomensCombined($videoTags, $eventTags)) {
+            return true;
         }
 
-        return true;
+        return $videoTags == $eventTags;
     }
 
     private function fetchTagsFromTitle(string $title): array
@@ -94,6 +93,35 @@ final readonly class YouTubeLinkMatcher
 
     public function videoIsHighlights(array $videoTags): bool
     {
-        return in_array(IFSCEventTagsRegex::HIGHLIGHTS, $videoTags, strict: true);
+        return $this->hasTag($videoTags, IFSCEventTagsRegex::HIGHLIGHTS);
+    }
+
+    private function videoIsMensAndWomensCombined(array $videoTags, array $eventTags): bool
+    {
+        if (!$this->hasTag($videoTags, IFSCEventTagsRegex::MENS) &&
+            !$this->hasTag($videoTags, IFSCEventTagsRegex::WOMENS)
+        ) {
+            $eventTags = $this->removeTags(
+                $eventTags,
+                IFSCEventTagsRegex::MENS,
+                IFSCEventTagsRegex::WOMENS,
+            );
+        }
+
+        return $videoTags == $eventTags;
+    }
+
+    private function hasTag(array $item, IFSCEventTagsRegex $tag): bool
+    {
+        return in_array($tag, $item, strict: true);
+    }
+
+    private function removeTags(array $items, IFSCEventTagsRegex ...$tags): array
+    {
+        foreach ($tags as $tag) {
+            unset($items[array_search($tag, $items)]);
+        }
+
+        return $items;
     }
 }

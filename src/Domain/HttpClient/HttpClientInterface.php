@@ -5,9 +5,9 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Domain\Calendar;
+namespace nicoSWD\IfscCalendar\Domain\HttpClient;
 
-interface CalendarGeneratorInterface
+interface HttpClientInterface
 {
-    public function generateForEvents(array $events): string;
+    public function get(string $url): string;
 }

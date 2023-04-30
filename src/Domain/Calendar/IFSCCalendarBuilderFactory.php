@@ -13,8 +13,8 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 final readonly class IFSCCalendarBuilderFactory
 {
     public function __construct(
-        private CalendarGeneratorInterface $icsCalendarGenerator,
-        private CalendarGeneratorInterface $jsonCalendarGenerator,
+        private IFSCCalendarGeneratorInterface $icsCalendarGenerator,
+        private IFSCCalendarGeneratorInterface $jsonCalendarGenerator,
     ) {
     }
 
@@ -29,7 +29,7 @@ final readonly class IFSCCalendarBuilderFactory
     }
 
     /** @throws Exception */
-    private function getGeneratorForFormat(string $format): CalendarGeneratorInterface
+    private function getGeneratorForFormat(string $format): IFSCCalendarGeneratorInterface
     {
         return match ($format) {
             'ics' => $this->icsCalendarGenerator,

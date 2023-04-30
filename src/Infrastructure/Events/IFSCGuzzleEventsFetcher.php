@@ -9,12 +9,13 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Events;
 
 use GuzzleHttp\Client;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper;
 use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
 
 final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterface
 {
     public function __construct(
-        private IFSCGuzzleEventsScraper $eventsScraper,
+        private IFSCEventsScraper $eventsScraper,
         private Client $client,
     ) {
     }

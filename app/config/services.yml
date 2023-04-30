@@ -75,12 +75,18 @@ services:
   nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher:
     class: nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsScraper'
+      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper'
       - '@GuzzleHttp\Client'
 
   # Events
-  nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsScraper:
-    class: nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsScraper
+  nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper:
+    class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
+
+  # HTTP Client
+  nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient:
+    class: nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient
     arguments:
       - '@GuzzleHttp\Client'
 
