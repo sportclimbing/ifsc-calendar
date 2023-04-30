@@ -72,6 +72,7 @@ $ ./build/ifsc-calendar.phar \
 
 ### Todo
  - [ ] Make landing site prettier and responsive
+ - [ ] Create user-friendly calendar URL (https://calendar.ifsc.stream)
  - [ ] Calculate average event duration and add it to `events.json` and to the calendar
  - [ ] Download posters and save them locally (preferably downsized versions too)
  - [ ] Add VPN note and link (to ProtonVPN?)
@@ -80,13 +81,14 @@ $ ./build/ifsc-calendar.phar \
  - [ ] Change favicon when an event started streaming
  - [ ] Show past and future events
  - [ ] Cleanup PHP code
- - [ ] Add tests
+ - [ ] Add more tests
  - [ ] Make scraping more robust and fail on errors or missing data
  - [ ] Show exact streaming date/time in addition to "in X hours" (maybe via tooltip?)
  - [ ] Add Google Analytics (and cookie notice)
  - [ ] Check if there's an API to fetch events from instead of relying on scraping
  - [ ] Add default poster if none exists
  - [ ] Add warning about qualification streams likely not being available
+ - [ ] Add an option to override events (sometimes they're cancelled but the site is not updated)
  - [x] Fetch stream links from YouTube API if none can be scraped
  - [x] Change `opacity` to 100 for next event in line (if not currently streaming)
  - [x] Automatically regenerate calendar and update release

@@ -20,9 +20,11 @@ final readonly class IFSCEventsScraper
 {
     private const XPATH_PARAGRAPHS = "//*[@id='ifsc_event']/div/div/div[@class='text']/p";
 
-    private const XPATH_POSTER = "//div[@class='text2']/*/img[contains(@data-src,'https://cdn.ifsc-climbing.org/images/Events/')]";
+    private const XPATH_SIDEBAR = "//div[@class='text2']";
 
     private const IFSC_EVENT_PAGE_URL = 'https://www.ifsc-climbing.org/component/ifsc/?view=event&WetId=%d';
+
+    private const POSTER_IMAGE_PREFIX = 'https://cdn.ifsc-climbing.org/images/Events/';
 
     private const WEEK_DAYS = [
         'MONDAY',
@@ -67,21 +69,21 @@ final readonly class IFSCEventsScraper
         $events = [];
 
         $dateRegex = "~^(?:$weekDays),\s+(?<day>\d{1,2})\s+(?<month>$months)~";
-        $timeRegx = '~^(?<time>\d{1,2}:\d{2})\s+(?<league>[^•]+)~u';
 
         foreach ($paragraphs as $paragraph) {
             if (preg_match($dateRegex, trim($paragraph->nodeValue), matches: $date)) {
-                foreach ($paragraph->getElementsByTagName('span') as $span) {
-                    if (preg_match($timeRegx, trim($span->nodeValue), matches: $time)) {
-                        $schedules[] = [
-                            'day'       => $date['day'],
-                            'month'     => $date['month'],
-                            'time'      => $time['time'],
-                            'season'    => $season,
-                            'league'    => $this->leagueName($time['league']),
-                            'url'       => $this->getEventUrl($span),
-                        ];
-                    }
+                foreach ($paragraph->getElementsByTagName('em') as $span) {
+                    $event = $this->trim($span->nextSibling->nodeValue);
+                    $time = $this->trim($span->nodeValue);
+
+                    $schedules[] = [
+                        'day'    => $date['day'],
+                        'month'  => $date['month'],
+                        'time'   => $time,
+                        'season' => $season,
+                        'league' => $this->leagueName($event),
+                        'url'    => $this->getEventUrl($span->parentNode),
+                    ];
                 }
             }
         }
@@ -104,7 +106,7 @@ final readonly class IFSCEventsScraper
         return $events;
     }
 
-    public function getEventUrl(DOMNode $span): string
+    private function getEventUrl(DOMNode $span): string
     {
         $links = $span->getElementsByTagName('a');
 
@@ -136,7 +138,8 @@ final readonly class IFSCEventsScraper
 
     private function getPoster(DOMXPath $xpath): string
     {
-        $images = $xpath->query(self::XPATH_POSTER);
+        $sideBar = $xpath->query(self::XPATH_SIDEBAR)->item(0);
+        $images = $sideBar->getElementsByTagName('img');
 
         if (!is_iterable($images)) {
             return '';
@@ -144,7 +147,7 @@ final readonly class IFSCEventsScraper
 
         foreach ($images as $image) {
             foreach ($image->attributes as $name => $attribute) {
-                if ($name === 'data-src') {
+                if ($name === 'data-src' && str_starts_with($attribute->textContent, self::POSTER_IMAGE_PREFIX)) {
                     return (string) $attribute->textContent;
                 }
             }
@@ -155,6 +158,12 @@ final readonly class IFSCEventsScraper
 
     private function getStartDateTime(array $schedule, string $timezone): DateTimeImmutable
     {
+        if (in_array($schedule['time'], ['TBC', 'TBD'], strict: true)) {
+            // set arbitrary time for now. It will eventually update automatically
+            // once IFSC sets the correct time
+            $schedule['time'] = '08:00';
+        }
+
         [$hour, $minute] = explode(':', $schedule['time']);
 
         $date = new DateTime();
@@ -186,5 +195,10 @@ final readonly class IFSCEventsScraper
     private function leagueName(string $league): string
     {
         return ucwords(strtolower(trim($league)));
+    }
+
+    private function trim(string $string): string
+    {
+        return preg_replace(['~^\W+~', '~\W+$~'], '', trim($string));
     }
 }
