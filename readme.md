@@ -5,7 +5,7 @@
 ### TL;DR
 This automatically generates a calendar you can subscribe to, to never miss an IFSC climbing event ever again.
 
-Simply copy and paste calendar URL (**http://calendar.ifsc.stream**) into your calendar subscriptions, and it will
+Simply copy and paste calendar URL (**https://calendar.ifsc.stream**) into your calendar subscriptions, and it will
 automatically sync with your device. This works for Apple devices, Google Calendar, Proton Calendar, etc...
 
 Take a look at the **[setup guides](https://github.com/nicoSWD/ifsc-calendar/wiki)** for help.
@@ -87,7 +87,7 @@ $ ./build/ifsc-calendar.phar \
  - [ ] Add default poster if none exists
  - [ ] Add warning about qualification streams likely not being available
  - [ ] Add an option to override events (sometimes they're cancelled but the site is not updated)
- - [ ] Add SSL support to http://calendar.ifsc.stream
+ - [x] Add SSL support to http://calendar.ifsc.stream
  - [x] Create user-friendly calendar URL (http://calendar.ifsc.stream)
  - [x] Fetch stream links from YouTube API if none can be scraped
  - [x] Change `opacity` to 100 for next event in line (if not currently streaming)
