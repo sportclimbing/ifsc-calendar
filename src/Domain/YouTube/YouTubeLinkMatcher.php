@@ -51,6 +51,7 @@ final readonly class YouTubeLinkMatcher
         return $videoTags == $eventTags;
     }
 
+    /** @return IFSCEventTagsRegex[] */
     private function fetchTagsFromTitle(string $title): array
     {
         $tags = [];
@@ -64,7 +65,7 @@ final readonly class YouTubeLinkMatcher
         return $tags;
     }
 
-    public function getLocationAndSeason(IFSCEvent $event): array
+    private function getLocationAndSeason(IFSCEvent $event): array
     {
         if (preg_match(self::REGEX_LOCATION_AND_SEASON, strtolower($event->description), $eventDetails)) {
             return [
@@ -91,7 +92,7 @@ final readonly class YouTubeLinkMatcher
             str_contains($videoTitle, $season);
     }
 
-    public function videoIsHighlights(array $videoTags): bool
+    private function videoIsHighlights(array $videoTags): bool
     {
         return $this->hasTag($videoTags, IFSCEventTagsRegex::HIGHLIGHTS);
     }
