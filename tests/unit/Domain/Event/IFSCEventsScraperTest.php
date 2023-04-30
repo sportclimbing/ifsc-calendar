@@ -206,7 +206,7 @@ final class IFSCEventsScraperTest extends TestCase
     }
 
     /** @return IFSCEvent[] */
-    public function fetchEventsFromFile(string $fileName, string $timeZone, string $eventName): array
+    private function fetchEventsFromFile(string $fileName, string $timeZone, string $eventName): array
     {
         $eventScraper = new IFSCEventsScraper(
             $this->mockClientReturningFile($fileName),
@@ -220,7 +220,7 @@ final class IFSCEventsScraperTest extends TestCase
         );
     }
 
-    public function formatDate(DateTimeInterface $dateTime): string
+    private function formatDate(DateTimeInterface $dateTime): string
     {
         return $dateTime->format(DateTimeInterface::RFC3339);
     }
