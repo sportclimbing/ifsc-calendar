@@ -77,16 +77,16 @@ $ ./build/ifsc-calendar.phar \
  - [ ] Validate newly generated calendar before publishing site
  - [ ] Finish writing calendar setup guides
  - [ ] Change favicon when an event started streaming
- - [ ] Show past and future events
  - [ ] Cleanup PHP code
  - [ ] Add more tests
  - [ ] Make scraping more robust and fail on errors or missing data
  - [ ] Show exact streaming date/time in addition to "in X hours" (maybe via tooltip?)
  - [ ] Add Google Analytics (and cookie notice)
  - [ ] Check if there's an API to fetch events from instead of relying on scraping
- - [ ] Add default poster if none exists
  - [ ] Add warning about qualification streams likely not being available
  - [ ] Add an option to override events (sometimes they're cancelled but the site is not updated)
+ - [x] Show past and future events
+ - [x] Add default poster if none exists
  - [x] Add SSL support to http://calendar.ifsc.stream
  - [x] Create user-friendly calendar URL (http://calendar.ifsc.stream)
  - [x] Fetch stream links from YouTube API if none can be scraped
