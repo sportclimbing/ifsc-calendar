@@ -1,7 +1,8 @@
+/.idea/
 /vendor/
 /build/*.phar
-.DS_Store
-/.idea/
-*.ics
 /.composer
 /pages/events/events.json
+/.phpunit.result.cache
+.DS_Store
+*.ics
