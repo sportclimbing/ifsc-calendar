@@ -5,7 +5,7 @@
 ### TL;DR
 This automatically generates a calendar you can subscribe to, to never miss an IFSC climbing event ever again.
 
-Simply copy and paste `.ics` file URL from the **[IFSC Calendar 2023](https://ifsc.stream/)** page into your
+Simply copy and paste calendar URL from the **[IFSC Calendar 2023](https://github.com/nicoSWD/ifsc-calendar/wiki)** page into your
 calendar subscriptions, and it will automatically update. This works for Apple devices, Google Calendar,
 Proton Calendar, etc...
 
