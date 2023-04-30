@@ -26,6 +26,20 @@
     max-width: 40rem;
 }
 
+li.ifsc-event {
+    border: none;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.33);
+    width: 100%
+}
+
+li.ifsc-event:last-child { border-bottom: none; }
+
+#ifsc-league-name {
+    font-weight: bold;
+    color: #333131;
+    text-decoration: none;
+}
+
 footer {
     padding-top: 3rem;
     padding-bottom: 3rem;

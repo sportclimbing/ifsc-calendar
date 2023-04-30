@@ -35,49 +35,79 @@ function pretty_finished_ago(event) {
     return `Streamed ${dayjs(event.start_time).fromNow()}`;
 }
 
+function get_upcoming_events(jsonData) {
+    const now = new Date();
+    const upcomingEvents = jsonData.events.filter((event) => new Date(event.start_time) >= now);
+
+    upcomingEvents.sort(sort_by_date);
+
+    return upcomingEvents;
+}
+
+function sort_leagues_by_id(jsonData) {
+    let leagues = [];
+
+    jsonData.events.forEach((event) => {
+        if (typeof leagues[event.id] === 'undefined') {
+            leagues[event.id] = [];
+        }
+
+        leagues[event.id].push(event);
+    });
+
+    return leagues;
+}
+
 const refresh = (async () => {
     const response = await fetch("events/events.json");
     const jsonData = await response.json();
+    const upcomingEvents = get_upcoming_events(jsonData);
+    const leagues = sort_leagues_by_id(jsonData);
+    const now = new Date();
+    const leagueTemplate = document.getElementById('ifsc-league');
+    const accordion = document.getElementById('accordion');
 
-    let pastEvents = [];
-    let upcomingEvents = [];
+    leagues.forEach((league) => {
+        const clone = leagueTemplate.content.cloneNode(true);
 
-    jsonData.events.forEach((event) => {
-        let date = new Date(event.start_time)
-        // var d = date.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+        clone.getElementById('ifsc-league-name').innerHTML = '🥇 ' + league[0].description.replace(/^IFSC -/, '');
+        clone.getElementById('ifsc-league-name').setAttribute('data-target', `#collapse_${league[0].id}`);
 
-        if (new Date() > date) {
-            pastEvents.push(event);
-        } else {
-            upcomingEvents.push(event);
-        }
+        clone.getElementById('heading_id').id = `heading_${league[0].id}`;
+
+        clone.getElementById('collapse_n').setAttribute('aria-labelledby', `collapse_${league[0].id}`);
+        clone.getElementById('collapse_n').id = `collapse_${league[0].id}`;
+
+        accordion.appendChild(clone);
     });
-
-    upcomingEvents.sort(sort_by_date);
-    pastEvents.sort(sort_by_date);
 
     let nextEvent = upcomingEvents.at(0);
-    let nextLeague = [...pastEvents, ...upcomingEvents].filter((event) => {
-        return event.description === nextEvent.description;
-    });
 
-    const container = document.getElementById("upcoming-events");
+    if (nextEvent) {
+        document.getElementById(`collapse_${nextEvent.id}`).classList.add('show');
+    }
+
     const template = document.getElementById("ifsc-event");
-    let now = new Date();
     let liveEvent = null;
 
+    /*
     while (container.lastElementChild) {
         container.removeChild(container.lastElementChild);
     }
+     */
 
     let lastEventFinished = false;
 
-    nextLeague.forEach((event) => {
+    jsonData.events.forEach((event) => {
         try {
             const clone = template.content.cloneNode(true);
 
-            clone.getElementById('ifsc-poster').src = 'img/posters/230329_Poster_SEOUL23_thumb.jpg';
-            // clone.getElementById('ifsc-poster').src = event.poster;
+            if (event.poster) {
+                clone.getElementById('ifsc-poster').src = event.poster;
+            } else {
+                clone.getElementById('ifsc-poster').src = 'img/posters/230329_Poster_SEOUL23_thumb.jpg';
+            }
+
             clone.getElementById('ifsc-description').innerText = event.description;
             clone.getElementById('ifsc-name').innerText = `👉 ${event.name}`;
 
@@ -86,8 +116,6 @@ const refresh = (async () => {
             } else {
                 clone.getElementById('button-stream').href = 'https://www.youtube.com/@sportclimbing/streams';
             }
-
-            clone.getElementById('button-results').href = `https://ifsc.results.info/#/event/${event.id}`;
 
             let status = clone.getElementById('ifsc-status');
 
@@ -99,6 +127,8 @@ const refresh = (async () => {
                 liveEvent = event;
 
                 clone.getRootNode().firstChild.nextSibling.style.opacity = '100%'
+                clone.getElementById('button-results').href = `https://ifsc.results.info/#/event/${event.id}`;
+                document.getElementById(`collapse_${event.id}`).getElementsByTagName('ul')[0].appendChild(clone);
             } else if (new Date(event.start_time) > now) {
                 clone.getElementById('ifsc-starts-in').innerText = `⏰ Starts ${pretty_starts_in(event)}`;
 
@@ -107,36 +137,34 @@ const refresh = (async () => {
                     status.innerHTML = `🟢 &nbsp; <strong>Next Event</strong>`;
                     status.classList.add('text-success');
 
-                    clone.getRootNode().firstChild.nextSibling.style.backgroundColor = '#f7f7f7';
+                    clone.getRootNode().firstChild.nextSibling.style.backgroundColor = 'rgba(246,245,245,0.4)';
                     clone.getRootNode().firstChild.nextSibling.style.opacity = '100%'
                 } else {
-                    clone.getRootNode().firstChild.nextSibling.style.opacity = '50%'
-                    status.innerHTML = `⌛️ &nbsp; Very Soon`;
+                    clone.getRootNode().firstChild.nextSibling.style.opacity = '70%'
+                    status.innerHTML = `⌛️ &nbsp; Upcoming`;
                     status.classList.add('text-warning');
                 }
+
+                clone.getElementById('button-results').style.display = 'none';
+                document.getElementById(`collapse_${event.id}`).getElementsByTagName('ul')[0].appendChild(clone);
             } else {
                 clone.getElementById('ifsc-starts-in').innerText = `⏰ ${pretty_finished_ago(event)}`;
                 status.innerHTML = `🏁 &nbsp; Finished`;
                 status.classList.add('text-danger');
 
-                clone.getRootNode().firstChild.nextSibling.style.opacity = '50%'
-                lastEventFinished = true;
-            }
+                clone.getRootNode().firstChild.nextSibling.style.opacity = '70%'
+                clone.getElementById('button-results').href = `https://ifsc.results.info/#/event/${event.id}`;
 
-            container.appendChild(clone);
+                lastEventFinished = true;
+                document.getElementById(`collapse_${event.id}`).getElementsByTagName('ul')[0].appendChild(clone);
+            }
         } catch (e) {
             console.log(e)
         }
     });
-
-    if (liveEvent) {
-        document.getElementById('next-event').innerHTML = `<p><strong>${nextEvent.description}</strong></p><div class="alert alert-danger" role="alert">🔴 Live Now: <strong>${liveEvent.name}</strong></div>`;
-    } else {
-        document.getElementById('next-event').innerHTML = `<p><strong>👉 ${nextEvent.description}</strong></p><div class="alert alert-success" role="alert"><a class="btn btn-secondary float-lg-end" href="https://www.ifsc-climbing.org/component/ifsc/?view=event&amp;WetId=${nextEvent.id}" role="button" id="button-event" target="_blank">📆️ Official Event Page</a>Next event ${pretty_starts_in(nextEvent)}: <strong>${nextEvent.name}</strong></div>`;
-    }
 });
 
 (async () => {
     await refresh();
-    window.setInterval(refresh, 1000 * 60);
+  //  window.setInterval(refresh, 1000 * 60);
 })();
