@@ -79,7 +79,7 @@ final readonly class GuzzleYouTubeClient implements YouTubeApiClient
         ], arg_separator: '&');
     }
 
-    public function getApiKey(): string
+    private function getApiKey(): string
     {
         $youtubeApiKey = getenv('YOUTUBE_API_KEY');
 
