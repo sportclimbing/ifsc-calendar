@@ -58,17 +58,10 @@ final readonly class IFSCEventsScraper
 
     public function fetchEventsForLeague(int $season, int $eventId, string $timezone, string $eventName): array
     {
-        $response = $this->client->get($this->buildLeagueUri($eventId));
-        $xpath = $this->getXPath($response);
+        $xpath = $this->getXPathForEventsWithId($eventId);
         $paragraphs = $this->getParagraphs($xpath);
-        $poster = $this->getPoster($xpath);
-
-        $weekDays = implode('|', self::WEEK_DAYS);
-        $months = implode('|', array_keys(self::MONTHS));
+        $dateRegex = $this->buildDateRegex();
         $schedules = [];
-        $events = [];
-
-        $dateRegex = "~^(?:$weekDays),\s+(?<day>\d{1,2})\s+(?<month>$months)~";
 
         foreach ($paragraphs as $paragraph) {
             if (preg_match($dateRegex, trim($paragraph->nodeValue), matches: $date)) {
@@ -87,6 +80,9 @@ final readonly class IFSCEventsScraper
                 }
             }
         }
+
+        $poster = $this->getPoster($xpath);
+        $events = [];
 
         foreach ($schedules as $schedule) {
             $startDateTime = $this->getStartDateTime($schedule, $timezone);
@@ -119,12 +115,13 @@ final readonly class IFSCEventsScraper
         return $url;
     }
 
-    private function getXPath(string $response): DOMXPath
+    private function getXPathForEventsWithId(int $eventId): DOMXPath
     {
+        $htmlResponse = $this->client->get($this->buildLeagueUri($eventId));
         $lastValue = libxml_use_internal_errors(true);
 
         $dom = new DOMDocument();
-        $dom->loadHTML($response);
+        $dom->loadHTML($htmlResponse);
 
         libxml_use_internal_errors($lastValue);
 
@@ -139,6 +136,11 @@ final readonly class IFSCEventsScraper
     private function getPoster(DOMXPath $xpath): string
     {
         $sideBar = $xpath->query(self::XPATH_SIDEBAR)->item(0);
+
+        if (!$sideBar) {
+            return '';
+        }
+
         $images = $sideBar->getElementsByTagName('img');
 
         if (!is_iterable($images)) {
@@ -160,7 +162,7 @@ final readonly class IFSCEventsScraper
     {
         if (!preg_match('~^\d{1,2}:\d{2}$~', $schedule['time'])) {
             // set arbitrary time for now. It will eventually update automatically
-            // once IFSC sets the correct time
+            // once IFSC sets the correct time. Sometimes it's set to `TBC` or `TBD`
             $schedule['time'] = '8:00';
         }
 
@@ -200,5 +202,13 @@ final readonly class IFSCEventsScraper
     private function trim(string $string): string
     {
         return preg_replace(['~^\W+~', '~\W+$~'], '', trim($string));
+    }
+
+    private function buildDateRegex(): string
+    {
+        $weekDays = implode('|', self::WEEK_DAYS);
+        $months = implode('|', array_keys(self::MONTHS));
+
+        return "~^(?:$weekDays),\s+(?<day>\d{1,2})\s+(?<month>$months)~";
     }
 }
