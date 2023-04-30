@@ -73,7 +73,7 @@ final readonly class IFSCEventsScraper
         foreach ($paragraphs as $paragraph) {
             if (preg_match($dateRegex, trim($paragraph->nodeValue), matches: $date)) {
                 foreach ($paragraph->getElementsByTagName('em') as $span) {
-                    $event = $this->trim($span->nextSibling->nodeValue);
+                    $currentEventName = $this->trim($span->nextSibling->nodeValue);
                     $time = $this->trim($span->nodeValue);
 
                     $schedules[] = [
@@ -81,7 +81,7 @@ final readonly class IFSCEventsScraper
                         'month'  => $date['month'],
                         'time'   => $time,
                         'season' => $season,
-                        'league' => $this->leagueName($event),
+                        'league' => $this->leagueName($currentEventName),
                         'url'    => $this->getEventUrl($span->parentNode),
                     ];
                 }
@@ -158,10 +158,10 @@ final readonly class IFSCEventsScraper
 
     private function getStartDateTime(array $schedule, string $timezone): DateTimeImmutable
     {
-        if (in_array($schedule['time'], ['TBC', 'TBD'], strict: true)) {
+        if (!preg_match('~^\d{1,2}:\d{2}$~', $schedule['time'])) {
             // set arbitrary time for now. It will eventually update automatically
             // once IFSC sets the correct time
-            $schedule['time'] = '08:00';
+            $schedule['time'] = '8:00';
         }
 
         [$hour, $minute] = explode(':', $schedule['time']);
