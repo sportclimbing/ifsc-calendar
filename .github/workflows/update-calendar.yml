@@ -37,7 +37,7 @@ jobs:
         id: generate_diff
         run: |
           wget "https://github.com/nicoSWD/ifsc-calendar/releases/download/latest/IFSC-World-Cups-and-World-Championships.json" -O latest-calendar.json 
-          diff latest-calendar.json IFSC-World-Cups-and-World-Championships.json > calendar.diff
+          diff latest-calendar.json IFSC-World-Cups-and-World-Championships.json > calendar.diff || true
           
           if [ -s calendar.diff ]; then
             echo "has_changes=true" >> $GITHUB_OUTPUT
