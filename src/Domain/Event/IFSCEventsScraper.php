@@ -11,6 +11,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use DOMDocument;
+use DOMElement;
 use DOMNode;
 use DOMNodeList;
 use DOMXPath;
@@ -26,36 +27,12 @@ final readonly class IFSCEventsScraper
 
     private const POSTER_IMAGE_PREFIX = 'https://cdn.ifsc-climbing.org/images/Events/';
 
-    private const WEEK_DAYS = [
-        'MONDAY',
-        'TUESDAY',
-        'WEDNESDAY',
-        'THURSDAY',
-        'FRIDAY',
-        'SATURDAY',
-        'SUNDAY',
-    ];
-
-    private const MONTHS = [
-        'JANUARY' => 1,
-        'FEBRUARY' => 2,
-        'MARCH' => 3,
-        'APRIL' => 4,
-        'MAY' => 5,
-        'JUNE' => 6,
-        'JULY' => 7,
-        'AUGUST' => 8,
-        'SEPTEMBER' => 9,
-        'OCTOBER' => 10,
-        'NOVEMBER' => 11,
-        'DECEMBER' => 12,
-    ];
-
     public function __construct(
         private HttpClientInterface $client,
     ) {
     }
 
+    /** @throws IFSCEventsScraperException */
     public function fetchEventsForLeague(int $season, int $eventId, string $timezone, string $eventName): array
     {
         $xpath = $this->getXPathForEventsWithId($eventId);
@@ -67,16 +44,16 @@ final readonly class IFSCEventsScraper
             if (preg_match($dateRegex, trim($paragraph->nodeValue), matches: $date)) {
                 foreach ($paragraph->getElementsByTagName('em') as $span) {
                     $currentEventName = $this->trim($span->nextSibling->nodeValue);
-                    $time = $this->trim($span->nodeValue);
+                    $time = $this->parseTimeFromSpan($span, $eventId);
 
-                    $schedules[] = [
-                        'day'    => $date['day'],
-                        'month'  => $date['month'],
-                        'time'   => $time,
-                        'season' => $season,
-                        'league' => $this->leagueName($currentEventName),
-                        'url'    => $this->getEventUrl($span->parentNode),
-                    ];
+                    $schedules[] = IFSCSchedule::create(
+                        day: (int) $date['day'],
+                        month: Month::fromName($date['month']),
+                        time: $time,
+                        season: $season,
+                        league: $this->leagueName($currentEventName),
+                        url: $this->getEventUrl($span->parentNode),
+                    );
                 }
             }
         }
@@ -89,10 +66,10 @@ final readonly class IFSCEventsScraper
             $endDateTime = $this->getEndDateTime($startDateTime);
 
             $events[] = new IFSCEvent(
-                name: $schedule['league'],
+                name: $schedule->league,
                 id: $eventId,
                 description: $eventName,
-                streamUrl: $schedule['url'],
+                streamUrl: $schedule->url,
                 poster: $poster,
                 startTime: $startDateTime,
                 endTime: $endDateTime,
@@ -158,19 +135,13 @@ final readonly class IFSCEventsScraper
         return '';
     }
 
-    private function getStartDateTime(array $schedule, string $timezone): DateTimeImmutable
+    private function getStartDateTime(IFSCSchedule $schedule, string $timezone): DateTimeImmutable
     {
-        if (!preg_match('~^\d{1,2}:\d{2}$~', $schedule['time'])) {
-            // set arbitrary time for now. It will eventually update automatically
-            // once IFSC sets the correct time. Sometimes it's set to `TBC` or `TBD`
-            $schedule['time'] = '8:00';
-        }
-
-        [$hour, $minute] = explode(':', $schedule['time']);
+        [$hour, $minute] = explode(':', $schedule->time);
 
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone($timezone));
-        $date->setDate($schedule['season'], $this->monthNameToNumber($schedule['month']), (int) $schedule['day']);
+        $date->setDate($schedule->season, $schedule->month->value, $schedule->day);
         $date->setTime((int) $hour, (int) $minute);
 
         return DateTimeImmutable::createFromMutable($date);
@@ -184,9 +155,31 @@ final readonly class IFSCEventsScraper
         return DateTimeImmutable::createFromMutable($endDate);
     }
 
-    private function monthNameToNumber(string $month): int
+    private function buildDateRegex(): string
     {
-        return self::MONTHS[$month];
+        $months = implode('|', Month::monthNames());
+
+        return "~
+            ^(?:MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY),
+            \s+(?<day>\d{1,2})
+            \s+(?<month>$months)
+            ~x";
+    }
+
+    /** @throws IFSCEventsScraperException */
+    public function parseTimeFromSpan(DOMElement $span, int $eventId): string
+    {
+        $time = $this->trim($span->nodeValue);
+
+        if (in_array($time, ['TBC', 'TBD'], strict: true)) {
+            // set arbitrary time for now. It will eventually update automatically
+            // once IFSC sets the correct time. Sometimes it's set to `TBC` or `TBD`
+            $time = '8:00';
+        } elseif (!preg_match('~^\d{1,2}:\d{2}$~', $time)) {
+            throw IFSCEventsScraperException::timeParseExceptionForEventWithId($time, $eventId);
+        }
+
+        return $time;
     }
 
     private function buildLeagueUri(int $id): string
@@ -202,13 +195,5 @@ final readonly class IFSCEventsScraper
     private function trim(string $string): string
     {
         return preg_replace(['~^\W+~', '~\W+$~'], '', trim($string));
-    }
-
-    private function buildDateRegex(): string
-    {
-        $weekDays = implode('|', self::WEEK_DAYS);
-        $months = implode('|', array_keys(self::MONTHS));
-
-        return "~^(?:$weekDays),\s+(?<day>\d{1,2})\s+(?<month>$months)~";
     }
 }

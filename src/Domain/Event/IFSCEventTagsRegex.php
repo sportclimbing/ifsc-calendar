@@ -18,4 +18,5 @@ enum IFSCEventTagsRegex: string
     case SEMI_FINALS = 'semi[-\s]+finals?';
     case FINALS = '(?<!semi[-\s])finals?';
     case HIGHLIGHTS = 'highlights';
+    case REVIEW = 'review';
 }

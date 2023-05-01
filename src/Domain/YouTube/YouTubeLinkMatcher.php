@@ -65,7 +65,7 @@ final readonly class YouTubeLinkMatcher
         return $tags;
     }
 
-    private function getLocationAndSeason(IFSCEvent $event): array
+    private function getLocationAndSeason(IFSCEvent $event): ?array
     {
         if (preg_match(self::REGEX_LOCATION_AND_SEASON, strtolower($event->description), $eventDetails)) {
             return [
@@ -74,7 +74,7 @@ final readonly class YouTubeLinkMatcher
             ];
         }
 
-        return [];
+        return null;
     }
 
     private function videoTitleContainsSameLocationAndSeason(string $videoTitle, IFSCEvent $event): bool
@@ -94,7 +94,9 @@ final readonly class YouTubeLinkMatcher
 
     private function videoIsHighlights(array $videoTags): bool
     {
-        return $this->hasTag($videoTags, IFSCEventTagsRegex::HIGHLIGHTS);
+        return
+            $this->hasTag($videoTags, IFSCEventTagsRegex::HIGHLIGHTS) ||
+            $this->hasTag($videoTags, IFSCEventTagsRegex::REVIEW);
     }
 
     private function videoIsMensAndWomensCombined(array $videoTags, array $eventTags): bool

@@ -28,6 +28,7 @@ final readonly class IFSCCalendarBuilder
      * @param int $season
      * @param IFSCLeague[] $leagues
      * @param string $format
+     * @param bool $skipYouTubeFetch
      * @return string
      * @throws Exception
      */
@@ -37,6 +38,10 @@ final readonly class IFSCCalendarBuilder
 
         foreach ($leagues as $league) {
             $events += $this->eventFetcher->fetchEventsForLeague($season, $league);
+        }
+
+        if (empty($events)) {
+            throw new Exception("No events found for season '{$season}'");
         }
 
         if (!$skipYouTubeFetch) {
@@ -52,6 +57,10 @@ final readonly class IFSCCalendarBuilder
         $videoCollection = $this->linkFetcher->fetchRecentVideos();
 
         foreach ($events as &$event) {
+            if ($event->streamUrl) {
+                continue;
+            }
+
             $streamUrl = $this->linkMatcher->findStreamUrlForEvent($event, $videoCollection);
 
             if ($streamUrl) {

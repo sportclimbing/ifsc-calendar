@@ -7,7 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Calendar;
 
-use Exception;
+use InvalidArgumentException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 
 final readonly class IFSCCalendarBuilderFactory
@@ -21,20 +21,21 @@ final readonly class IFSCCalendarBuilderFactory
     /**
      * @param string $format
      * @param IFSCEvent[] $events
-     * @throws Exception
+     * @return string
+     * @throws InvalidArgumentException
      */
     public function generateForFormat(string $format, array $events): string
     {
         return $this->getGeneratorForFormat($format)->generateForEvents($events);
     }
 
-    /** @throws Exception */
+    /** @throws InvalidArgumentException */
     private function getGeneratorForFormat(string $format): IFSCCalendarGeneratorInterface
     {
         return match ($format) {
             'ics' => $this->icsCalendarGenerator,
             'json' => $this->jsonCalendarGenerator,
-            default => throw new Exception("Unsupported format '{$format}"),
+            default => throw new InvalidArgumentException("Unsupported format '{$format}"),
         };
     }
 }
