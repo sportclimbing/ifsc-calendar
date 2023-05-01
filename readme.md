@@ -17,6 +17,12 @@ then you're at the right place.
 This command line tool uses IFSC's API, plus some scraping (because some endpoints require 
 authentication) to generate an up-to-date calendar with all necessary info.
 
+### Website
+Additionally, the calendar data is also exported as `JSON` and can be viewed on this automatically updated
+website.
+
+### [https://ifsc.stream](https://ifsc.stream/)
+
 ### Usage
 By default, it'll look for an environment variable called `YOUTUBE_API_KEY` to fetch stream URLs from the YouTube
 API. If you don't have one, or don't need it, use the flag `--skip-youtube-fetch`.
