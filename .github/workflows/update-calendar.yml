@@ -40,7 +40,7 @@ jobs:
           diff latest-calendar.json IFSC-World-Cups-and-World-Championships.json > calendar.diff || true
           
           if [ $(wc -w < calendar.diff) -gt 0 ]; then
-            echo "Changes: ```diff\n$(cat calendar.diff)\n```" > calendar.diff
+            echo -e "Changes:\n\`\`\`diff\n$(cat calendar.diff)\n\`\`\`" > calendar.diff
             echo "has_changes=true" >> $GITHUB_OUTPUT
           else
             echo "has_changes=false" >> $GITHUB_OUTPUT
