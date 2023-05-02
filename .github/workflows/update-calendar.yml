@@ -65,6 +65,6 @@ jobs:
 
       - name: "Run latest-tag"
         if: steps.generate_diff.outputs.has_changes == 'true'
-        uses: EndBug/latest-tag@latest
+        uses: Actions-R-Us/actions-tagger@latest
         with:
-          ref: latest
+          publish_latest_tag: true
