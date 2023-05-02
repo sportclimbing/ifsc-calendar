@@ -10,18 +10,17 @@ automatically sync with your device. This works for Apple devices, Google Calend
 
 Take a look at the **[setup guides](https://github.com/nicoSWD/ifsc-calendar/wiki)** for help.
 
+Additionally, the calendar data is also exported as `JSON` and can be viewed on this automatically updated
+website.
+
+### 👉 [https://ifsc.stream](https://ifsc.stream/)
+
 ### Intro
 If you're constantly missing IFSC events because of a lacking calendar, or timezone confusions,
 then you're at the right place.
 
 This command line tool uses IFSC's API, plus some scraping (because some endpoints require 
 authentication) to generate an up-to-date calendar with all necessary info.
-
-### Website
-Additionally, the calendar data is also exported as `JSON` and can be viewed on this automatically updated
-website.
-
-### [https://ifsc.stream](https://ifsc.stream/)
 
 ### Usage
 By default, it'll look for an environment variable called `YOUTUBE_API_KEY` to fetch stream URLs from the YouTube
@@ -91,10 +90,12 @@ $ ./build/ifsc-calendar.phar \
  - [ ] Check if there's an API to fetch events from instead of relying on scraping
  - [ ] Add warning about qualification streams likely not being available
  - [ ] Add an option to override events (sometimes they're cancelled but the site is not updated)
+ - [x] Add `latest` tag to latest release
+ - [x] Always serve asset from latest release on calendar URL
  - [x] Show past and future events
  - [x] Add default poster if none exists
- - [x] Add SSL support to http://calendar.ifsc.stream
- - [x] Create user-friendly calendar URL (http://calendar.ifsc.stream)
+ - [x] Add SSL support to https://calendar.ifsc.stream
+ - [x] Create user-friendly calendar URL (https://calendar.ifsc.stream)
  - [x] Fetch stream links from YouTube API if none can be scraped
  - [x] Change `opacity` to 100 for next event in line (if not currently streaming)
  - [x] Automatically regenerate calendar and update release
