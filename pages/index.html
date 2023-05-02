@@ -5,7 +5,7 @@
 
     <meta charset="utf-8">
     <meta name="description" content="IFSC 2023 Climbing Streams and Calendar for all upcoming events">
-    <meta name="viewport" content="width=600, initial-scale=1" />
+    <meta name="viewport" content="initial-scale=1" />
 
     <link rel="icon" type="image/png" sizes="32x32" href="img/favicon.png">
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -32,8 +32,8 @@
         <div class="d-flex align-items-center">
             <img id="ifsc-poster" src="" alt="" style="width: 100px; height: 135px" class="rounded-2" />
             <div class="ms-3">
-                <p class="fw-bold mb-1" id="ifsc-description"></p>
-                <p class="fw-bold mb-1" id="ifsc-name"></p>
+                <h6 class="fw-bold mb-1" id="ifsc-description" style="font-size: 15px;"></h6>
+                <h6 class="fw-bold mb-1" id="ifsc-name" style="font-size: 15px;"></h6>
                 <p class="text-muted" id="ifsc-starts-in"></p>
                 <a class="btn btn-primary" href="" role="button" id="button-stream" target="_blank">👀 Watch Stream</a>
                 <a class="btn btn-success" href="" role="button" id="button-results" target="_blank">🏆️ Results</a>
@@ -47,7 +47,7 @@
     <div class="card container-xl" style="padding: 0; margin-bottom: 4px;">
         <div class="card-header" id="heading_id">
             <h5 class="mb-0">
-                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" id="ifsc-league-name"></button>
+                <button style="font-size: 15px;" class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" id="ifsc-league-name"></button>
             </h5>
         </div>
         <div id="collapse_n" class="collapse" aria-labelledby="heading_id" data-parent="#accordion">
@@ -82,7 +82,7 @@
                 <a class="btn btn-primary" style="background-color: #e6007e;" href="https://github.com/nicoSWD/ifsc-calendar/wiki" role="button" target="_blank">Add to your Calendar</a>
             </div>
             <a href="/" class="navbar-brand d-flex align-items-center">
-                <strong>IFSC Climbing Calendar for 2023</strong>
+
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -91,11 +91,9 @@
     </div>
 </header>
 
-<main role="main">
+<main role="main" style="max-width: 700px; margin: auto; padding: 3px;">
     <section class="jumbotron">
         <h1 class="jumbotron-heading" style="color: #1b2839; font-weight: bold; text-align: center; margin: 15px;">IFSC Climbing Competition Streams</h1>
-        <div id="next-event" class="container-xl align-items-center font-monospace" style="color: #e6007e; font-size: large; padding: 0;"></div>
-
         <div id="accordion"></div>
     </section>
 

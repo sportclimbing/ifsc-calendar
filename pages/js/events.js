@@ -70,7 +70,7 @@ const refresh = (async () => {
     leagues.forEach((league) => {
         const clone = leagueTemplate.content.cloneNode(true);
 
-        clone.getElementById('ifsc-league-name').innerHTML = '🥇 ' + league[0].description.replace(/^IFSC -/, '');
+        clone.getElementById('ifsc-league-name').innerHTML = '🥇 ' + league[0].description.replace(/^IFSC - Climbing/, '');
         clone.getElementById('ifsc-league-name').setAttribute('data-target', `#collapse_${league[0].id}`);
 
         clone.getElementById('heading_id').id = `heading_${league[0].id}`;
@@ -108,7 +108,9 @@ const refresh = (async () => {
                 clone.getElementById('ifsc-poster').src = 'img/posters/230329_Poster_SEOUL23_thumb.jpg';
             }
 
-            clone.getElementById('ifsc-description').innerText = event.description;
+            let description = event.description.replace(/^IFSC - Climbing/, '').split(' - ')[1];
+
+            clone.getElementById('ifsc-description').innerText = `🏠 ${description}`;
             clone.getElementById('ifsc-name').innerText = `👉 ${event.name}`;
 
             if (event.stream_url) {
@@ -134,14 +136,14 @@ const refresh = (async () => {
 
                 if (!liveEvent && lastEventFinished) {
                     lastEventFinished = false;
-                    status.innerHTML = `🟢 &nbsp; <strong>Next Event</strong>`;
+                    status.innerHTML = `🟢`;
                     status.classList.add('text-success');
 
                     clone.getRootNode().firstChild.nextSibling.style.backgroundColor = 'rgba(246,245,245,0.4)';
                     clone.getRootNode().firstChild.nextSibling.style.opacity = '100%'
                 } else {
                     clone.getRootNode().firstChild.nextSibling.style.opacity = '70%'
-                    status.innerHTML = `⌛️ &nbsp; Upcoming`;
+                    status.innerHTML = `⌛️`;
                     status.classList.add('text-warning');
                 }
 
@@ -149,8 +151,8 @@ const refresh = (async () => {
                 document.getElementById(`collapse_${event.id}`).getElementsByTagName('ul')[0].appendChild(clone);
             } else {
                 clone.getElementById('ifsc-starts-in').innerText = `⏰ ${pretty_finished_ago(event)}`;
-                status.innerHTML = `🏁 &nbsp; Finished`;
                 status.classList.add('text-danger');
+                status.innerHTML = `🏁`;
 
                 clone.getRootNode().firstChild.nextSibling.style.opacity = '70%'
                 clone.getElementById('button-results').href = `https://ifsc.results.info/#/event/${event.id}`;
