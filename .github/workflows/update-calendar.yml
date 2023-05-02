@@ -39,7 +39,7 @@ jobs:
           wget "https://github.com/nicoSWD/ifsc-calendar/releases/download/latest/IFSC-World-Cups-and-World-Championships.json" -O latest-calendar.json 
           diff -C 3 latest-calendar.json IFSC-World-Cups-and-World-Championships.json > calendar.diff || true
           
-          echo "test" >> calendar.diff
+          echo "test2" >> calendar.diff
           
           if [ $(wc -w < calendar.diff) -gt 0 ]; then
             echo -e "Changes:\n\`\`\`diff\n$(cat calendar.diff)\n\`\`\`" > calendar.diff
