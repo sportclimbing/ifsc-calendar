@@ -36,7 +36,9 @@ jobs:
       - name: "Check diff"
         id: generate_diff
         run: |
-          wget "https://calendar.ifsc.stream/" -O latest-calendar.json 
+          calendar_url=$(php bin/fetch_latest_calendar_url);
+          echo $calendar_url;
+          wget $calendar_url -O latest-calendar.json 
           diff -C 3 latest-calendar.json IFSC-World-Cups-and-World-Championships.json > calendar.diff || true
           
           echo "test4" >> calendar.diff

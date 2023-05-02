@@ -1,0 +1,16 @@
+#!/usr/bin/php
+<?php declare(strict_types=1);
+
+$opts = stream_context_create([
+    'http' => [
+        'method' => "GET",
+        'header' =>
+            "Accept-language: en\r\n" .
+            "Accept: */*\r\n" .
+            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/111.0\r\n"
+    ]
+]);
+
+$json = json_decode(file_get_contents('https://api.github.com/repos/nicoSWD/ifsc-calendar/releases/latest', false, $opts));
+
+echo $json->assets[0]->browser_download_url;
