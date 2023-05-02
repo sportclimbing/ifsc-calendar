@@ -53,7 +53,9 @@ jobs:
       - name: "Generate tag name"
         id: date
         if: steps.generate_diff.outputs.has_changes == 'true'
-        run: echo "date=$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
+        run: |
+          echo "tag_name=$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
+          echo "name=$(date +'%Y-%m-%d- %H:%M') Release" >> $GITHUB_OUTPUT
 
       - name: "Add release"
         uses: softprops/action-gh-release@v1
@@ -62,7 +64,8 @@ jobs:
           files: |
             IFSC-World-Cups-and-World-Championships.ics
             IFSC-World-Cups-and-World-Championships.json
-          tag_name: ${{ steps.date.outputs.date }}
+          tag_name: ${{ steps.date.outputs.tag_name }}
+          name: ${{ steps.date.outputs.name }}
           body_path: calendar.diff
 
       - name: "Run latest-tag"
