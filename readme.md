@@ -10,8 +10,8 @@ automatically sync with your device. This works for Apple devices, Google Calend
 
 Take a look at the **[setup guides](https://github.com/nicoSWD/ifsc-calendar/wiki)** for help.
 
-Additionally, the calendar data is also exported as `JSON` and can be viewed on this automatically updated
-website.
+Additionally, the calendar data is exported as `JSON` and can be viewed on this automatically updated
+website:
 
 ### 👉 [https://ifsc.stream](https://ifsc.stream/)
 
