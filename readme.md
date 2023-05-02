@@ -2,7 +2,7 @@
 
 ![ifsc-logo](resources/images/ifsc-logo.png)
 
-### TL;DR
+### 📖 TL;DR
 This automatically generates a calendar you can subscribe to, to never miss an IFSC climbing event ever again.
 
 Simply copy and paste calendar URL (**https://calendar.ifsc.stream**) into your calendar subscriptions, and it will
@@ -15,14 +15,14 @@ website:
 
 ### 👉 [https://ifsc.stream](https://ifsc.stream/)
 
-### Intro
+### 👀 Intro
 If you're constantly missing IFSC events because of a lacking calendar, or timezone confusions,
 then you're at the right place.
 
 This command line tool uses IFSC's API, plus some scraping (because some endpoints require 
 authentication) to generate an up-to-date calendar with all necessary info.
 
-### Usage
+### 🛠 Usage
 By default, it'll look for an environment variable called `YOUTUBE_API_KEY` to fetch stream URLs from the YouTube
 API. If you don't have one, or don't need it, use the flag `--skip-youtube-fetch`.
 
@@ -74,7 +74,7 @@ $ ./build/ifsc-calendar.phar \
   --output "ifsc-calendar.ics"
 ```
 
-### Todo
+### 🔧 Todo
  - [ ] Make landing site prettier and responsive
  - [ ] Calculate average event duration and add it to `events.json` and to the calendar
  - [ ] Download posters and save them locally (preferably downsized versions too)
