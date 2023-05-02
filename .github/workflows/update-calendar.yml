@@ -66,3 +66,5 @@ jobs:
       - name: "Run latest-tag"
         if: steps.generate_diff.outputs.has_changes == 'true'
         uses: EndBug/latest-tag@latest
+        with:
+          force-branch: true
