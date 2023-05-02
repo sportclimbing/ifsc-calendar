@@ -40,9 +40,7 @@ jobs:
           echo $calendar_url;
           wget $calendar_url -O latest-calendar.json 
           diff -C 3 latest-calendar.json IFSC-World-Cups-and-World-Championships.json > calendar.diff || true
-          
-          echo "test4" >> calendar.diff
-          
+                    
           if [ $(wc -w < calendar.diff) -gt 0 ]; then
             echo -e "Changes:\n\`\`\`diff\n$(cat calendar.diff)\n\`\`\`" > calendar.diff
             echo "has_changes=true" >> $GITHUB_OUTPUT
@@ -55,7 +53,7 @@ jobs:
         if: steps.generate_diff.outputs.has_changes == 'true'
         run: |
           echo "tag_name=$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
-          echo "name=$(date +'%Y-%m-%d- %H:%M') Release" >> $GITHUB_OUTPUT
+          echo "name=$(date +'%Y/%m/%d, %H:%M') Release" >> $GITHUB_OUTPUT
 
       - name: "Add release"
         uses: softprops/action-gh-release@v1
