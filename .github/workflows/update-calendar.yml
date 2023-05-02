@@ -37,7 +37,7 @@ jobs:
         id: generate_diff
         run: |
           wget "https://github.com/nicoSWD/ifsc-calendar/releases/download/latest/IFSC-World-Cups-and-World-Championships.json" -O latest-calendar.json 
-          diff latest-calendar.json IFSC-World-Cups-and-World-Championships.json > calendar.diff || true
+          diff -C 3 latest-calendar.json IFSC-World-Cups-and-World-Championships.json > calendar.diff || true
           
           if [ $(wc -w < calendar.diff) -gt 0 ]; then
             echo -e "Changes:\n\`\`\`diff\n$(cat calendar.diff)\n\`\`\`" > calendar.diff
@@ -46,6 +46,11 @@ jobs:
             echo "has_changes=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: "Generate tag name"
+        id: date
+        if: steps.generate_diff.outputs.has_changes == 'true'
+        run: echo "::set-output name=date::$(date +'%Y%m%d/%H%M')"
+
       - name: "Add release"
         uses: softprops/action-gh-release@v1
         if: steps.generate_diff.outputs.has_changes == 'true'
@@ -53,6 +58,9 @@ jobs:
           files: |
             IFSC-World-Cups-and-World-Championships.ics
             IFSC-World-Cups-and-World-Championships.json
-          tag_name: latest
+          tag_name: ${{ steps.date.outputs.date }}
           body_path: calendar.diff
-          append_body: "Latest *IFSC World Cups* and *World Championships* calendar"
+
+      - name: "Run latest-tag"
+        if: steps.generate_diff.outputs.has_changes == 'true'
+        uses: EndBug/latest-tag@latest
