@@ -39,7 +39,7 @@ jobs:
           wget "https://github.com/nicoSWD/ifsc-calendar/releases/download/latest/IFSC-World-Cups-and-World-Championships.json" -O latest-calendar.json 
           diff -C 3 latest-calendar.json IFSC-World-Cups-and-World-Championships.json > calendar.diff || true
           
-          echo "test2" >> calendar.diff
+          echo "test3" >> calendar.diff
           
           if [ $(wc -w < calendar.diff) -gt 0 ]; then
             echo -e "Changes:\n\`\`\`diff\n$(cat calendar.diff)\n\`\`\`" > calendar.diff
@@ -53,6 +53,13 @@ jobs:
         if: steps.generate_diff.outputs.has_changes == 'true'
         run: echo "::set-output name=date::$(date +'%Y%m%d%H%M')"
 
+      - name: Rename new-tag
+        uses: localazy/tag@v1
+        if: steps.generate_diff.outputs.has_changes == 'true'
+        with:
+          rename_from: 'latest'
+          rename_to: ${{ steps.date.outputs.date }}
+
       - name: "Add release"
         uses: softprops/action-gh-release@v1
         if: steps.generate_diff.outputs.has_changes == 'true'
@@ -60,6 +67,6 @@ jobs:
           files: |
             IFSC-World-Cups-and-World-Championships.ics
             IFSC-World-Cups-and-World-Championships.json
-          tag_name: ${{ steps.date.outputs.date }}
+          tag_name: latest
           body_path: calendar.diff
 
