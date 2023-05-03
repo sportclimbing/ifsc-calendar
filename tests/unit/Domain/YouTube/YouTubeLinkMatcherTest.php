@@ -88,7 +88,7 @@ final class YouTubeLinkMatcherTest extends TestCase
     }
 
     #[Test]
-    public function hachioji_boulder_semi_finals_is_not_found(): void
+    public function hachioji_boulder_semi_finals_is_found(): void
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Women\'s Boulder Semi-final',
@@ -148,7 +148,7 @@ final class YouTubeLinkMatcherTest extends TestCase
         );
     }
 
-    public function findStreamUrlForEvent(IFSCEvent $event): ?string
+    private function findStreamUrlForEvent(IFSCEvent $event): ?string
     {
         return $this->linkMatcher->findStreamUrlForEvent($event, $this->createVideoCollection());
     }
