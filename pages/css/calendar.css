@@ -2,6 +2,10 @@
     --jumbotron-padding-y: 3rem;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 .jumbotron {
     padding-bottom: var(--jumbotron-padding-y);
     margin-bottom: 0;
