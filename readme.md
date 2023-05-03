@@ -1,12 +1,14 @@
 # IFSC Climbing Calendar and Streams
+![downloads](https://img.shields.io/github/downloads/nicoswd/ifsc-calendar/total?color=yellow&label=Downloads)
+![update ralendar](https://github.com/nicoSWD/ifsc-calendar/actions/workflows/update-calendar.yml/badge.svg)
 
 ![ifsc-logo](resources/images/ifsc-logo.png)
 
 ### 📖 TL;DR
 This automatically generates a calendar you can subscribe to, to never miss an IFSC climbing event ever again.
 
-Simply copy and paste calendar URL (**https://calendar.ifsc.stream**) into your calendar subscriptions, and it will
-automatically sync with your device. This works for Apple devices, Google Calendar, Proton Calendar, etc...
+Simply copy and paste this calendar URL (**https://calendar.ifsc.stream**) into your calendar subscriptions, and it will
+automatically sync with your device. This works on iPhone, Google Calendar, Proton Calendar, etc...
 
 Take a look at the **[setup guides](https://github.com/nicoSWD/ifsc-calendar/wiki)** for help.
 
