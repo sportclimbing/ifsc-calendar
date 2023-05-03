@@ -1,6 +1,7 @@
 # IFSC Climbing Calendar and Streams
-![downloads](https://img.shields.io/github/downloads/nicoswd/ifsc-calendar/total?color=yellow&label=Downloads)
+![downloads](https://img.shields.io/github/downloads/nicoswd/ifsc-calendar/total?color=green&label=Downloads)
 ![update ralendar](https://github.com/nicoSWD/ifsc-calendar/actions/workflows/update-calendar.yml/badge.svg)
+![Deploy static content to Pages](https://github.com/nicoSWD/ifsc-calendar/actions/workflows/static.yml/badge.svg)
 
 ![ifsc-logo](resources/images/ifsc-logo.png)
 
