@@ -1,5 +1,7 @@
 parameters:
   ifsc_youtube_channel_id: 'UC2MGuhIaOP6YLpUx106kTQw'
+  event_info_base_url: 'https://ifsc.stream/'
+  calendar_product_identifier: '-//ifsc/ical//2.0/EN'
 
 services:
   nicoSWD\IfscCalendar\Application\Command\:
@@ -35,6 +37,8 @@ services:
     class: nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar
     arguments:
       - '@Eluceo\iCal\Presentation\Factory\CalendarFactory'
+      - '%calendar_product_identifier%'
+      - '%event_info_base_url%'
 
   Eluceo\iCal\Presentation\Factory\CalendarFactory:
     class: Eluceo\iCal\Presentation\Factory\CalendarFactory
@@ -71,14 +75,13 @@ services:
     arguments:
       - '@GuzzleHttp\Client'
 
-  # League
+  # Events
   nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher:
     class: nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper'
       - '@GuzzleHttp\Client'
 
-  # Events
   nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper:
     class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper
     arguments:

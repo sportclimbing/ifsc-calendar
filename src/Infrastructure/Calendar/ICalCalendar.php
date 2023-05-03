@@ -19,10 +19,10 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 
 final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 {
-    private const IFSC_EVENT_INFO_URL = 'https://ifsc.stream/';
-
     public function __construct(
         private CalendarFactory $calendarFactory,
+        private string $productIdentifier,
+        private string $eventBaseUrl,
     ) {
     }
 
@@ -36,12 +36,15 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
     public function createCalenderFromEvents(array $events): Calendar
     {
-        return new Calendar(
-            array_map(
-                $this->eventConvert(),
-                $events
-            )
+        $calendarEvents = array_map(
+            $this->eventConvert(),
+            $events
         );
+
+        $calendar = new Calendar($calendarEvents);
+        $calendar->setProductIdentifier($this->productIdentifier);
+
+        return $calendar;
     }
 
     public function createEvent(IFSCEvent $event): Event
@@ -49,7 +52,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         return (new Event())
             ->setSummary("IFSC: {$event->name}")
             ->setDescription($event->description)
-            ->setUrl($this->buildUrl())
+            ->setUrl($this->buildUrl($event))
             ->setOccurrence($this->buildTimeSpan($event));
     }
 
@@ -58,9 +61,9 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         return fn (IFSCEvent $event): Event => $this->createEvent($event);
     }
 
-    public function buildUrl(): Uri
+    public function buildUrl(IFSCEvent $event): Uri
     {
-        return new Uri(self::IFSC_EVENT_INFO_URL);
+        return new Uri(sprintf('%s#event-%d', $this->eventBaseUrl, $event->id));
     }
 
     public function buildTimeSpan(IFSCEvent $event): TimeSpan
