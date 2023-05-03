@@ -10,20 +10,26 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Events;
 use GuzzleHttp\Client;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
 
 final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterface
 {
+    private const IFSC_LEAGUE_API_ENDPOINT = 'https://components.ifsc-climbing.org/results-api.php?api=season_leagues_calendar&league=%d';
+
     public function __construct(
         private IFSCEventsScraper $eventsScraper,
         private Client $client,
     ) {
     }
 
-    /** @inheritdoc */
+    /**
+     * @inheritdoc
+     * @throws IFSCEventsScraperException
+     */
     public function fetchEventsForLeague(int $season, IFSCLeague $league): array
     {
-        $response = $this->client->request('GET', $this->buildLeagueUri($league->id))->getBody()->getContents();
+        $response = $this->client->get($this->buildLeagueUri($league->id))->getBody()->getContents();
         $response = @json_decode($response);
 
         if (json_last_error()) {
@@ -40,6 +46,10 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
                 eventName: $event->event,
             );
 
+            if (empty($scrapedEvents)) {
+                // throw IFSCEventsScraperException::noEventsScrapedForEventWithName($event->event);
+            }
+
             foreach ($scrapedEvents as $eventDetails) {
                 $events[] = $eventDetails;
             }
@@ -48,8 +58,8 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
         return $events;
     }
 
-    public function buildLeagueUri(int $id): string
+    public function buildLeagueUri(int $leagueId): string
     {
-        return sprintf('https://components.ifsc-climbing.org/results-api.php?api=season_leagues_calendar&league=%d', $id);
+        return sprintf(self::IFSC_LEAGUE_API_ENDPOINT, $leagueId);
     }
 }

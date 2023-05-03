@@ -36,12 +36,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
     public function createCalenderFromEvents(array $events): Calendar
     {
-        $calendarEvents = array_map(
-            $this->eventConvert(),
-            $events
-        );
-
-        $calendar = new Calendar($calendarEvents);
+        $calendar = new Calendar(array_map($this->eventConvert(), $events));
         $calendar->setProductIdentifier($this->productIdentifier);
 
         return $calendar;

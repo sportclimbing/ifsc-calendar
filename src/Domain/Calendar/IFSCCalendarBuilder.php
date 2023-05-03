@@ -37,11 +37,13 @@ final readonly class IFSCCalendarBuilder
         $events = [];
 
         foreach ($leagues as $league) {
-            $events += $this->eventFetcher->fetchEventsForLeague($season, $league);
-        }
+            $leagueEvents = $this->eventFetcher->fetchEventsForLeague($season, $league);
 
-        if (empty($events)) {
-            throw new Exception("No events found for season '{$season}'");
+            if (empty($leagueEvents)) {
+                throw new Exception("No events found for league '{$league->name}'");
+            }
+
+            $events += $leagueEvents;
         }
 
         if (!$skipYouTubeFetch) {
