@@ -90,6 +90,8 @@ $ ./build/ifsc-calendar.phar \
  - [ ] Check if there's an API to fetch events from instead of relying on scraping
  - [ ] Add warning about qualification streams likely not being available
  - [ ] Add an option to override events (sometimes they're cancelled but the site is not updated)
+ - [x] Add tutorial modal to `Add to your Calendar` button
+ - [x] Add links to specific events to calendar
  - [x] Add `latest` tag to latest release
  - [x] Always serve asset from latest release on calendar URL
  - [x] Show past and future events
