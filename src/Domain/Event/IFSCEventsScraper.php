@@ -10,25 +10,19 @@ namespace nicoSWD\IfscCalendar\Domain\Event;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
-use DOMDocument;
-use DOMElement;
-use DOMNode;
-use DOMNodeList;
 use DOMXPath;
+use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
+use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 
 final readonly class IFSCEventsScraper
 {
-    private const XPATH_PARAGRAPHS = "//*[@id='ifsc_event']/div/div/div[@class='text']/p";
-
-    private const XPATH_SIDEBAR = "//div[@class='text2']";
-
     private const IFSC_EVENT_PAGE_URL = 'https://www.ifsc-climbing.org/component/ifsc/?view=event&WetId=%d';
-
-    private const POSTER_IMAGE_PREFIX = 'https://cdn.ifsc-climbing.org/images/Events/';
 
     public function __construct(
         private HttpClientInterface $client,
+        private DOMHelper $domHelper,
+        private Normalizer $normalizer,
     ) {
     }
 
@@ -36,29 +30,31 @@ final readonly class IFSCEventsScraper
     public function fetchEventsForLeague(int $season, int $eventId, string $timezone, string $eventName): array
     {
         $xpath = $this->getXPathForEventsWithId($eventId);
-        $paragraphs = $this->getParagraphs($xpath);
         $dateRegex = $this->buildDateRegex();
         $schedules = [];
 
-        foreach ($paragraphs as $paragraph) {
-            if (preg_match($dateRegex, trim($paragraph->nodeValue), matches: $date)) {
-                foreach ($paragraph->getElementsByTagName('em') as $span) {
-                    $currentEventName = $this->trim($span->nextSibling->nodeValue);
-                    $time = $this->parseTimeFromSpan($span, $eventId);
+        foreach ($this->domHelper->getParagraphs($xpath) as $paragraph) {
+            if (!preg_match_all($dateRegex, $this->normalizer->removeNonAsciiCharacters($paragraph->textContent), $matches)) {
+                continue;
+            }
+
+            foreach ($matches['day'] as $key => $match) {
+                foreach ($this->normalizer->nonEmptyLines($matches['times'][$key]) as $line) {
+                    [$eventTime, $eventName2, $link] = $this->parseTimeAndName($line);
 
                     $schedules[] = IFSCSchedule::create(
-                        day: (int) $date['day'],
-                        month: Month::fromName($date['month']),
-                        time: $time,
+                        day: (int) $matches['day'][$key],
+                        month: Month::fromName($matches['month'][$key]),
+                        time: $this->normalizer->normalizeTime($eventTime),
                         season: $season,
-                        league: $this->leagueName($currentEventName),
-                        url: $this->getEventUrl($span->parentNode),
+                        league: $this->normalizer->leagueName($eventName2),
+                        url: $link,
                     );
                 }
             }
         }
 
-        $poster = $this->getPoster($xpath);
+        $poster = $this->domHelper->getPoster($xpath);
         $events = [];
 
         foreach ($schedules as $schedule) {
@@ -79,60 +75,11 @@ final readonly class IFSCEventsScraper
         return $events;
     }
 
-    private function getEventUrl(DOMNode $span): string
-    {
-        $links = $span->getElementsByTagName('a');
-
-        if ($links->length > 0) {
-            $url = (string) $links->item(0)->getAttribute('href');
-        } else {
-            $url = '';
-        }
-
-        return $url;
-    }
-
     private function getXPathForEventsWithId(int $eventId): DOMXPath
     {
-        $htmlResponse = $this->client->get($this->buildLeagueUri($eventId));
-        $lastValue = libxml_use_internal_errors(true);
-
-        $dom = new DOMDocument();
-        $dom->loadHTML($htmlResponse);
-
-        libxml_use_internal_errors($lastValue);
-
-        return new DOMXPath($dom);
-    }
-
-    private function getParagraphs(DOMXPath $xpath): DOMNodeList
-    {
-        return $xpath->query(self::XPATH_PARAGRAPHS);
-    }
-
-    private function getPoster(DOMXPath $xpath): string
-    {
-        $sideBar = $xpath->query(self::XPATH_SIDEBAR)->item(0);
-
-        if (!$sideBar) {
-            return '';
-        }
-
-        $images = $sideBar->getElementsByTagName('img');
-
-        if (!is_iterable($images)) {
-            return '';
-        }
-
-        foreach ($images as $image) {
-            foreach ($image->attributes as $name => $attribute) {
-                if ($name === 'data-src' && str_starts_with($attribute->textContent, self::POSTER_IMAGE_PREFIX)) {
-                    return (string) $attribute->textContent;
-                }
-            }
-        }
-
-        return '';
+        return $this->domHelper->htmlToDom(
+            $this->client->get($this->buildLeagueUri($eventId))
+        );
     }
 
     private function getStartDateTime(IFSCSchedule $schedule, string $timezone): DateTimeImmutable
@@ -160,26 +107,11 @@ final readonly class IFSCEventsScraper
         $months = implode('|', Month::monthNames());
 
         return "~
-            ^(?:MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY),
-            \s+(?<day>\d{1,2})
-            \s+(?<month>$months)
-            ~x";
-    }
-
-    /** @throws IFSCEventsScraperException */
-    public function parseTimeFromSpan(DOMElement $span, int $eventId): string
-    {
-        $time = $this->trim($span->nodeValue);
-
-        if (in_array($time, ['TBC', 'TBD'], strict: true)) {
-            // set arbitrary time for now. It will eventually update automatically
-            // once IFSC sets the correct time. Sometimes it's set to `TBC` or `TBD`
-            $time = '8:00';
-        } elseif (!preg_match('~^\d{1,2}:\d{2}$~', $time)) {
-            throw IFSCEventsScraperException::timeParseExceptionForEventWithId($time, $eventId);
-        }
-
-        return $time;
+            (?:MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY),\s+
+            (?<day>\d{1,2})\s+
+            (?<month>$months):[\r\n]*
+            (?<times>((\d{1,2}:\d{2}|TBD|TBC)\s+[^\r\n]+[\r\n]*)+)
+            ~xsi";
     }
 
     private function buildLeagueUri(int $id): string
@@ -187,13 +119,20 @@ final readonly class IFSCEventsScraper
         return sprintf(self::IFSC_EVENT_PAGE_URL, $id);
     }
 
-    private function leagueName(string $league): string
+    private function parseTimeAndName(string $line): array
     {
-        return ucwords(strtolower(trim($league)));
-    }
+        $parts = preg_split('~(\s{2,}|\s\W+\s)~', $line, flags: PREG_SPLIT_NO_EMPTY);
 
-    private function trim(string $string): string
-    {
-        return preg_replace(['~^\W+~', '~\W+$~'], '', trim($string));
+        if (count($parts) >= 3) {
+            [$time, $eventName, $streamUrl] = $parts;
+        } else {
+            [$time, $eventName] = $parts;
+        }
+
+        return [
+            $time,
+            $eventName,
+            $streamUrl ?? '',
+        ];
     }
 }

@@ -86,6 +86,14 @@ services:
     class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
+      - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper'
+      - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer'
+
+  nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper:
+    class: nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper
+
+  nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer:
+    class: nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer
 
   # HTTP Client
   nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient:

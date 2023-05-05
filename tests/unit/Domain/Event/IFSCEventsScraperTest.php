@@ -5,6 +5,9 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
+
+use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
+use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
@@ -96,7 +99,7 @@ final class IFSCEventsScraperTest extends TestCase
         $this->assertSame('Boulder Semi-finals', $event5->name);
         $this->assertSame('2023-04-30T18:00:00+09:00', $this->formatDate($event5->startTime));
         $this->assertSame('2023-04-30T21:00:00+09:00', $this->formatDate($event5->endTime));
-        $this->assertSame('https://youtu.be/emrHdLsJTk4', $event5->streamUrl);
+        $this->assertSame('https://youtube.com/live/4ZfaojD52K4', $event5->streamUrl);
     }
 
     #[Test]
@@ -119,6 +122,34 @@ final class IFSCEventsScraperTest extends TestCase
         $this->assertSame('Speed Qualifications', $event1->name);
         $this->assertSame('2023-05-06T08:00:00+07:00', $this->formatDate($event1->startTime));
         $this->assertSame('2023-05-06T11:00:00+07:00', $this->formatDate($event1->endTime));
+        $this->assertSame('', $event1->streamUrl);
+
+        $this->assertSame('Speed Finals', $event2->name);
+        $this->assertSame('2023-05-07T20:00:00+07:00', $this->formatDate($event2->startTime));
+        $this->assertSame('2023-05-07T23:00:00+07:00', $this->formatDate($event2->endTime));
+        $this->assertSame('', $event2->streamUrl);
+    }
+
+    #[Test]
+    public function malformed_jakata_events_are_found(): void
+    {
+        $events = $this->fetchEventsFromFile(
+            fileName: 'jakata_2023_malformed.html',
+            timeZone: 'Asia/Jakarta',
+            eventName: 'IFSC - Climbing World Cup (S) - Jakarta (INA) 2023',
+        );
+
+        $this->assertCount(2, $events);
+
+        [$event1, $event2] = $events;
+
+        $this->assertSame(1249, $event1->id);
+        $this->assertSame('https://cdn.ifsc-climbing.org/images/Events/2023/230506_Jakarta_WC/230415_Poster_JAK23v2.jpg', $event1->poster);
+        $this->assertSame('IFSC - Climbing World Cup (S) - Jakarta (INA) 2023', $event1->description);
+
+        $this->assertSame('Speed Qualifications', $event1->name);
+        $this->assertSame('2023-05-06T18:15:00+07:00', $this->formatDate($event1->startTime));
+        $this->assertSame('2023-05-06T21:15:00+07:00', $this->formatDate($event1->endTime));
         $this->assertSame('', $event1->streamUrl);
 
         $this->assertSame('Speed Finals', $event2->name);
@@ -215,6 +246,8 @@ final class IFSCEventsScraperTest extends TestCase
     {
         $eventScraper = new IFSCEventsScraper(
             $this->mockClientReturningFile($fileName),
+            new DOMHelper(),
+            new Normalizer(),
         );
 
         return $eventScraper->fetchEventsForLeague(
