@@ -6,17 +6,19 @@
 ![ifsc-logo](resources/images/ifsc-logo.png)
 
 ### 📖 TL;DR
-This automatically generates a calendar you can subscribe to, to never miss an IFSC climbing event ever again.
+This automatically generates an up-to-date calendar you can subscribe to, to never miss an IFSC climbing event ever again.
 
-Simply copy and paste this calendar URL (**https://calendar.ifsc.stream**) into your calendar subscriptions, and it will
-automatically sync with your device. This works on iPhone, Google Calendar, Proton Calendar, etc...
+#### How
+Copy and paste this calendar URL (**https://calendar.ifsc.stream**) into your calendar subscriptions, and it will
+automatically sync with your device. This works on iPhone, Google Calendar, Proton Calendar, etc... This should keep
+you updated on future seasons as well.
 
 Take a look at the **[setup guides](https://github.com/nicoSWD/ifsc-calendar/wiki)** for help.
 
 Additionally, the calendar data is exported as `JSON` and can be viewed on this automatically updated
 website:
 
-### 👉 [https://ifsc.stream](https://ifsc.stream/)
+## 👉 [https://ifsc.stream](https://ifsc.stream/)
 
 ### 👀 Intro
 If you're constantly missing IFSC events because of a lacking calendar, or timezone confusions,
@@ -79,6 +81,7 @@ $ ./build/ifsc-calendar.phar \
 
 ### 🔧 Todo
  - [ ] Make landing site prettier and responsive
+ - [ ] Refresh events every minute
  - [ ] Calculate average event duration and add it to `events.json` and to the calendar
  - [ ] Download posters and save them locally (preferably downsized versions too)
  - [ ] Add VPN note and link (to ProtonVPN?)
@@ -92,7 +95,8 @@ $ ./build/ifsc-calendar.phar \
  - [ ] Add Google Analytics (and cookie notice)
  - [ ] Check if there's an API to fetch events from instead of relying on scraping
  - [ ] Add warning about qualification streams likely not being available
- - [ ] Add an option to override events (sometimes they're cancelled but the site is not updated)
+ - [ ] Add an option to override events (sometimes they're cancelled but the site is not updated
+ - [ ] Disable youtube-fetch by default
  - [x] Add tutorial modal to `Add to your Calendar` button
  - [x] Add links to specific events to calendar
  - [x] Add `latest` tag to latest release
