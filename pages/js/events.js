@@ -199,8 +199,9 @@ const refresh = (async () => {
 
     if (!element_is_in_viewport(leagueElement)) {
         leagueElement.scrollIntoView();
-        remove_hash();
     }
+
+    remove_hash();
 });
 
 (async () => {
