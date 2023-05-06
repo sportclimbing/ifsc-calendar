@@ -95,6 +95,10 @@ const refresh = (async () => {
     const leagueTemplate = document.getElementById('ifsc-league');
     const accordion = document.getElementById('accordion');
 
+    while (accordion.lastElementChild) {
+        accordion.removeChild(accordion.lastElementChild);
+    }
+
     leagues.forEach((league) => {
         const clone = leagueTemplate.content.cloneNode(true);
 
@@ -121,12 +125,6 @@ const refresh = (async () => {
 
     const template = document.getElementById("ifsc-event");
     let liveEvent = null;
-
-    /*
-    while (container.lastElementChild) {
-        container.removeChild(container.lastElementChild);
-    }
-     */
 
     let lastEventFinished = false;
 
@@ -204,5 +202,5 @@ const refresh = (async () => {
 
 (async () => {
     await refresh();
-  //  window.setInterval(refresh, 1000 * 60);
+    window.setInterval(refresh, 1000 * 60);
 })();
