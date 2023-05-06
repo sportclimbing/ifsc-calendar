@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php declare(strict_types=1);
 
-$opts = stream_context_create([
+$context = stream_context_create([
     'http' => [
         'method' => "GET",
         'header' =>
@@ -11,6 +11,6 @@ $opts = stream_context_create([
     ]
 ]);
 
-$json = json_decode(file_get_contents('https://api.github.com/repos/nicoSWD/ifsc-calendar/releases/latest', false, $opts));
+$json = json_decode(file_get_contents('https://api.github.com/repos/sportclimbing/ifsc-calendar/releases/latest', context: $context));
 
 echo $json->assets[1]->browser_download_url;

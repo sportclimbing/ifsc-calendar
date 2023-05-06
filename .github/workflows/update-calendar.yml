@@ -24,9 +24,9 @@ jobs:
           php-version: '8.2'
           tools: composer
 
-      - name: "Generate calendar file"
+      - name: "Generate calendar files"
         run: |
-          composer install --no-dev --optimize-autoloader 
+          composer install --no-dev --optimize-autoloader
           php app/run.php \
               --season current \
               --league "World Cups and World Championships" \
@@ -35,10 +35,9 @@ jobs:
               --fetch-youtube-urls
 
       - name: "Check diff"
-        id: generate_diff
+        id: check_diff
         run: |
-          calendar_url=$(php bin/fetch_latest_calendar_url);
-          wget $calendar_url -O current-calendar.json 
+          curl -sS "$(php bin/latest-calendar-url)" --output current-calendar.json 
           diff -C 3 current-calendar.json IFSC-World-Cups-and-World-Championships.json > calendar.diff || true
                     
           if [ $(wc -w < calendar.diff) -gt 0 ]; then
@@ -50,14 +49,14 @@ jobs:
 
       - name: "Generate tag name"
         id: date
-        if: steps.generate_diff.outputs.has_changes == 'true'
+        if: steps.check_diff.outputs.has_changes == 'true'
         run: |
           echo "tag_name=$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
           echo "name=$(date +'%Y/%m/%d, %H:%M') Release" >> $GITHUB_OUTPUT
 
       - name: "Add release"
         uses: softprops/action-gh-release@v1
-        if: steps.generate_diff.outputs.has_changes == 'true'
+        if: steps.check_diff.outputs.has_changes == 'true'
         with:
           files: |
             IFSC-World-Cups-and-World-Championships.ics
@@ -67,7 +66,7 @@ jobs:
           body_path: calendar.diff
 
       - name: "Run latest-tag"
-        if: steps.generate_diff.outputs.has_changes == 'true'
+        if: steps.check_diff.outputs.has_changes == 'true'
         uses: Actions-R-Us/actions-tagger@latest
         with:
           publish_latest_tag: true
