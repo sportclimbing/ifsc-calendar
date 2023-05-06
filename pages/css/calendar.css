@@ -6,6 +6,14 @@ html {
     scroll-behavior: smooth;
 }
 
+.news-title {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* number of lines to show */
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
 .jumbotron {
     padding-bottom: var(--jumbotron-padding-y);
     margin-bottom: 0;
