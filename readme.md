@@ -1,7 +1,6 @@
 # IFSC Climbing Calendar and Streams
-![downloads](https://img.shields.io/github/downloads/nicoswd/ifsc-calendar/total?color=green&label=Downloads)
-![update ralendar](https://github.com/nicoSWD/ifsc-calendar/actions/workflows/update-calendar.yml/badge.svg)
-![Deploy static content to Pages](https://github.com/nicoSWD/ifsc-calendar/actions/workflows/static.yml/badge.svg)
+![downloads](https://img.shields.io/github/downloads/sportclimbing/ifsc-calendar/total?color=green&label=Downloads)
+![update ralendar](https://github.com/sportclimbing/ifsc-calendar/actions/workflows/update-calendar.yml/badge.svg)
 
 ![ifsc-logo](resources/images/ifsc-logo.png)
 
@@ -13,7 +12,7 @@ Copy and paste this calendar URL (**https://calendar.ifsc.stream**) into your ca
 automatically sync with your device. This works on iPhone, Google Calendar, Proton Calendar, etc... This should keep
 you updated on future seasons as well.
 
-Take a look at the **[setup guides](https://github.com/nicoSWD/ifsc-calendar/wiki)** for help.
+Take a look at the **[setup guides](https://github.com/sportclimbing/ifsc-calendar/wiki)** for help.
 
 Additionally, the calendar data is exported as `JSON` and can be viewed on this automatically updated
 website:
@@ -80,33 +79,20 @@ $ ./build/ifsc-calendar.phar \
 ```
 
 ### 🔧 Todo
- - [ ] Make landing site prettier and responsive
  - [ ] Calculate average event duration and add it to `events.json` and to the calendar
- - [ ] Download posters and save them locally (preferably downsized versions too)
- - [ ] Add VPN note and link (to ProtonVPN?)
  - [ ] Validate newly generated calendar before publishing site
  - [ ] Finish writing calendar setup guides
- - [ ] Change favicon when an event started streaming
  - [ ] Cleanup PHP code
  - [ ] Add more tests
  - [ ] Make scraping more robust and fail on errors or missing data
- - [ ] Show exact streaming date/time in addition to "in X hours" (maybe via tooltip?)
  - [ ] Add Google Analytics (and cookie notice)
  - [ ] Check if there's an API to fetch events from instead of relying on scraping
- - [ ] Add warning about qualification streams likely not being available
  - [ ] Add an option to override events (sometimes they're cancelled but the site is not updated
  - [ ] Disable youtube-fetch by default
- - [x] Refresh events every minute
- - [x] Add tutorial modal to `Add to your Calendar` button
  - [x] Add links to specific events to calendar
  - [x] Add `latest` tag to latest release
  - [x] Always serve asset from latest release on calendar URL
- - [x] Show past and future events
- - [x] Add default poster if none exists
- - [x] Add SSL support to https://calendar.ifsc.stream
- - [x] Create user-friendly calendar URL (https://calendar.ifsc.stream)
  - [x] Fetch stream links from YouTube API if none can be scraped
- - [x] Change `opacity` to 100 for next event in line (if not currently streaming)
  - [x] Automatically regenerate calendar and update release
 
 ### IFSC API Endpoints
