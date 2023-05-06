@@ -9,7 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\Event\Helpers;
 
 final readonly class Normalizer
 {
-    public function leagueName(string $league): string
+    public function cupName(string $league): string
     {
         return ucwords(strtolower($league));
     }
@@ -32,6 +32,6 @@ final readonly class Normalizer
 
     public function removeNonAsciiCharacters(string $text): string
     {
-        return preg_replace('~[^\w\s\'\r\n:,-\./\?=]+~', ' ', $text);
+        return preg_replace('~[^\w\s\'\r\n:,-./?=]+~', ' ', $text);
     }
 }

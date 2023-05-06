@@ -19,7 +19,7 @@ final readonly class DOMHelper
 
     private const XPATH_SIDEBAR = "//div[@class='text2']";
 
-    public function htmlToDom(string $html): DOMXPath
+    public function htmlToXPath(string $html): DOMXPath
     {
         $lastValue = libxml_use_internal_errors(true);
 
@@ -63,9 +63,18 @@ final readonly class DOMHelper
 
     public function normalizeHtml(string $html): string
     {
-        // This makes `textContent` to display each event in a new line, and thereby easier to parse
-        $html = preg_replace('~<br\s*/?>~i', "<br/>\n", $html);
-        // This replaces named links with just their blank URL
-        return preg_replace('~<a[\s\r\n]+href=\s*(")?([\w:\-./\?=]+)\s*[^>]*>(.*?)</a>~s', '$2', $html);
+        $find = [
+            // This makes `textContent` display each event in a new line, and thereby easier to parse
+            '~<br\s*/?>~i',
+            // This replaces named links with just their blank URL
+            '~<a[\s\r\n]+href=\s*(")?([\w:\-./?=]+)\s*[^>]*>(.*?)</a>~si',
+        ];
+
+        $replace = [
+            "<br/>\n",
+            '$2',
+        ];
+
+        return preg_replace($find, $replace, $html);
     }
 }

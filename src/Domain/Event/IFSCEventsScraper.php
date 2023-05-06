@@ -10,6 +10,7 @@ namespace nicoSWD\IfscCalendar\Domain\Event;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
+use DOMElement;
 use DOMXPath;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
@@ -31,24 +32,25 @@ final readonly class IFSCEventsScraper
     {
         $xpath = $this->getXPathForEventsWithId($eventId);
         $dateRegex = $this->buildDateRegex();
+        /** @var IFSCSchedule[] $schedules */
         $schedules = [];
 
         foreach ($this->domHelper->getParagraphs($xpath) as $paragraph) {
-            if (!preg_match_all($dateRegex, $this->normalizer->removeNonAsciiCharacters($paragraph->textContent), $matches)) {
+            if (!preg_match_all($dateRegex, $this->normalize($paragraph), $matches)) {
                 continue;
             }
 
             foreach ($matches['day'] as $key => $match) {
                 foreach ($this->normalizer->nonEmptyLines($matches['times'][$key]) as $line) {
-                    [$eventTime, $eventName2, $link] = $this->parseTimeAndName($line);
+                    [$eventTime, $cupName, $streamUrl] = $this->parseEventDetails($line);
 
                     $schedules[] = IFSCSchedule::create(
                         day: (int) $matches['day'][$key],
                         month: Month::fromName($matches['month'][$key]),
                         time: $this->normalizer->normalizeTime($eventTime),
                         season: $season,
-                        league: $this->normalizer->leagueName($eventName2),
-                        url: $link,
+                        cupName: $this->normalizer->cupName($cupName),
+                        streamUrl: $streamUrl,
                     );
                 }
             }
@@ -62,10 +64,10 @@ final readonly class IFSCEventsScraper
             $endDateTime = $this->getEndDateTime($startDateTime);
 
             $events[] = new IFSCEvent(
-                name: $schedule->league,
+                name: $schedule->cupName,
                 id: $eventId,
                 description: $eventName,
-                streamUrl: $schedule->url,
+                streamUrl: $schedule->streamUrl,
                 poster: $poster,
                 startTime: $startDateTime,
                 endTime: $endDateTime,
@@ -77,19 +79,19 @@ final readonly class IFSCEventsScraper
 
     private function getXPathForEventsWithId(int $eventId): DOMXPath
     {
-        return $this->domHelper->htmlToDom(
+        return $this->domHelper->htmlToXPath(
             $this->client->get($this->buildLeagueUri($eventId))
         );
     }
 
     private function getStartDateTime(IFSCSchedule $schedule, string $timezone): DateTimeImmutable
     {
-        [$hour, $minute] = explode(':', $schedule->time);
+        [$hour, $minute] = sscanf($schedule->time, '%d:%d');
 
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone($timezone));
         $date->setDate($schedule->season, $schedule->month->value, $schedule->day);
-        $date->setTime((int) $hour, (int) $minute);
+        $date->setTime($hour, $minute);
 
         return DateTimeImmutable::createFromMutable($date);
     }
@@ -114,12 +116,7 @@ final readonly class IFSCEventsScraper
             ~xsi";
     }
 
-    private function buildLeagueUri(int $id): string
-    {
-        return sprintf(self::IFSC_EVENT_PAGE_URL, $id);
-    }
-
-    private function parseTimeAndName(string $line): array
+    private function parseEventDetails(string $line): array
     {
         $parts = preg_split('~(\s{2,}|\s\W+\s)~', $line, flags: PREG_SPLIT_NO_EMPTY);
 
@@ -134,5 +131,15 @@ final readonly class IFSCEventsScraper
             $eventName,
             $streamUrl ?? '',
         ];
+    }
+
+    private function buildLeagueUri(int $id): string
+    {
+        return sprintf(self::IFSC_EVENT_PAGE_URL, $id);
+    }
+
+    public function normalize(DOMElement $paragraph): string
+    {
+        return $this->normalizer->removeNonAsciiCharacters($paragraph->textContent);
     }
 }

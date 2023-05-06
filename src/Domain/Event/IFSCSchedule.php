@@ -14,8 +14,8 @@ final readonly class IFSCSchedule
         public Month $month,
         public string $time,
         public int $season,
-        public string $league,
-        public string $url,
+        public string $cupName,
+        public string $streamUrl,
     ) {
     }
 
@@ -24,16 +24,16 @@ final readonly class IFSCSchedule
         Month $month,
         string $time,
         int $season,
-        string $league,
-        string $url,
+        string $cupName,
+        string $streamUrl,
     ): self  {
         return new self(
             $day,
             $month,
             $time,
             $season,
-            $league,
-            $url,
+            $cupName,
+            $streamUrl,
         );
     }
 }
