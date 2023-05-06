@@ -140,10 +140,8 @@ const refresh = (async () => {
                 clone.getElementById('ifsc-poster').src = 'img/posters/230329_Poster_SEOUL23_thumb.jpg';
             }
 
-            let description = event.description.replace(/^IFSC - Climbing/, '').split(' - ')[1];
-
-            clone.getElementById('ifsc-description').innerText = `🏠 ${description}`;
-            clone.getElementById('ifsc-name').innerText = `👉 ${event.name}`;
+            clone.getElementById('ifsc-name').innerText = `🏆 ${event.name}`;
+            clone.getElementById('ifsc-description').innerText = '📆 ' + dayjs(event.start_time).format('MMMM D, YYYY [at] hh:mm A');
 
             if (event.stream_url) {
                 clone.getElementById('button-stream').href = event.stream_url;
@@ -154,9 +152,9 @@ const refresh = (async () => {
             let status = clone.getElementById('ifsc-status');
 
             if (event_is_streaming(event)) {
-                clone.getElementById('ifsc-starts-in').innerText = `⏰ ${pretty_started_ago(event)}`;
+                clone.getElementById('ifsc-starts-in').innerText = `🔴 Live Now`;
                 clone.getRootNode().firstChild.nextSibling.style.backgroundColor = '#f7f7f7';
-                status.innerHTML = `🔴 &nbsp; <strong>Live Now</strong>`;
+                status.innerHTML = `🔴`;
                 status.classList.add('text-danger');
                 liveEvent = event;
 
