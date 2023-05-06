@@ -37,7 +37,7 @@ final class BuildCommand extends Command
             ->addOption('league', mode: InputOption::VALUE_OPTIONAL, description: 'IFSC League')
             ->addOption('format', mode: InputOption::VALUE_OPTIONAL, description: 'Output format', default: 'ics')
             ->addOption('output', mode: InputOption::VALUE_OPTIONAL, description: '.ics output file name', default: 'ifsc-calendar.ics')
-            ->addOption('skip-youtube-fetch', mode: InputOption::VALUE_OPTIONAL, description: 'Do not fetch stream URLs from YouTube API (requires API key)', default: false)
+            ->addOption('fetch-youtube-urls', mode: InputOption::VALUE_OPTIONAL, description: 'Fetch missing stream URLs from YouTube API (requires API key)', default: false)
         ;
     }
 
@@ -50,7 +50,7 @@ final class BuildCommand extends Command
         $selectedLeague = $input->getOption('league');
         $fileName = $input->getOption('output');
         $format = $input->getOption('format');
-        $skipYouTubeFetch = $input->getOption('skip-youtube-fetch') !== false;
+        $fetchYouTubeUrls = $input->getOption('fetch-youtube-urls') !== false;
 
         if (!$selectedSeason) {
             $selectedSeason = $this->getSelectedSeason($seasons, $helper, $input, $output);
@@ -75,7 +75,7 @@ final class BuildCommand extends Command
             $pathInfo = pathinfo($fileName);
             $fileName = "{$pathInfo['dirname']}/{$pathInfo['filename']}.{$calFormat}";
 
-            $response = $this->buildCalendar($selectedSeason, [$league], $calFormat, $output, $skipYouTubeFetch);
+            $response = $this->buildCalendar($selectedSeason, [$league], $calFormat, $output, $fetchYouTubeUrls);
             $this->saveCalendar($fileName, $response->calendarContents, $output);
         }
 
@@ -89,7 +89,7 @@ final class BuildCommand extends Command
         array $leagues,
         string $format,
         OutputInterface $output,
-        bool $skipYouTubeFetch
+        bool $fetchYouTubeUrls
     ): BuildCalendarResponse {
         $output->writeln("[+] Fetching event info...");
 
@@ -98,7 +98,7 @@ final class BuildCommand extends Command
                 season: $selectedSeason,
                 leagues: $leagues,
                 format: $format,
-                skipYouTubeFetch: $skipYouTubeFetch,
+                fetchYouTubeUrls: $fetchYouTubeUrls,
             )
         );
     }

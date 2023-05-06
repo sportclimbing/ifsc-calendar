@@ -84,7 +84,7 @@ final readonly class GuzzleYouTubeClient implements YouTubeApiClient
         $youtubeApiKey = getenv('YOUTUBE_API_KEY');
 
         if (!$youtubeApiKey) {
-            throw new Exception("Missing YOUTUBE_API_KEY env var. Run with `--skip-youtube-fetch` if you don't have one");
+            throw new Exception('Missing YOUTUBE_API_KEY env var');
         }
 
         return (string) $youtubeApiKey;

@@ -15,13 +15,13 @@ final readonly class BuildCalendarRequest
     public array $leagues;
     public int $season;
     public string $format;
-    public bool $skipYouTubeFetch;
+    public bool $fetchYouTubeUrls;
 
-    public function __construct(int $season, array $leagues, string $format, bool $skipYouTubeFetch)
+    public function __construct(int $season, array $leagues, string $format, bool $fetchYouTubeUrls)
     {
         $this->season = $season;
         $this->leagues = $leagues;
         $this->format = $format;
-        $this->skipYouTubeFetch = $skipYouTubeFetch;
+        $this->fetchYouTubeUrls = $fetchYouTubeUrls;
     }
 }

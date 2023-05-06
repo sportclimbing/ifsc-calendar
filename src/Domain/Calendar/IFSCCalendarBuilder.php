@@ -28,11 +28,11 @@ final readonly class IFSCCalendarBuilder
      * @param int $season
      * @param IFSCLeague[] $leagues
      * @param string $format
-     * @param bool $skipYouTubeFetch
+     * @param bool $fetchYouTubeUrls
      * @return string
      * @throws Exception
      */
-    public function generateForLeagues(int $season, array $leagues, string $format, bool $skipYouTubeFetch): string
+    public function generateForLeagues(int $season, array $leagues, string $format, bool $fetchYouTubeUrls): string
     {
         $events = [];
 
@@ -46,7 +46,7 @@ final readonly class IFSCCalendarBuilder
             $events += $leagueEvents;
         }
 
-        if (!$skipYouTubeFetch) {
+        if ($fetchYouTubeUrls) {
             $this->fetchEventStreamUrls($events);
         }
 

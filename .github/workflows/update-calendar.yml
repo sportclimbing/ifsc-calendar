@@ -31,7 +31,8 @@ jobs:
               --season current \
               --league "World Cups and World Championships" \
               --output "IFSC-World-Cups-and-World-Championships.ics" \
-              --format "ics,json"
+              --format "ics,json" \
+              --fetch-youtube-urls
 
       - name: "Check diff"
         id: generate_diff

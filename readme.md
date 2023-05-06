@@ -27,11 +27,6 @@ This command line tool uses IFSC's API, plus some scraping (because some endpoin
 authentication) to generate an up-to-date calendar with all necessary info.
 
 ### 🛠 Usage
-By default, it'll look for an environment variable called `YOUTUBE_API_KEY` to fetch stream URLs from the YouTube
-API. If you don't have one, or don't need it, use the flag `--skip-youtube-fetch`.
-
-To generate an API key, enable the API in your [Google Cloud Console](https://console.cloud.google.com/apis/api/youtube.googleapis.com/)
-and [create credentials](https://console.cloud.google.com/apis/credentials).
 
 #### Docker
 Build Docker image
@@ -40,10 +35,7 @@ $ docker build --tag ifsc-calendar .
 ```
 Generate `.ics` calendar file
 ```shell
-$ docker run -it \
-    --volume "$PWD:/calendar" \
-    --env YOUTUBE_API_KEY=xxxxxxxxxxxx \
-    ifsc-calendar \
+$ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
     --season 2023 \
     --league "World Cups and World Championships" \
     --output "/calendar/ifsc-calendar.ics"
@@ -51,10 +43,7 @@ $ docker run -it \
 
 Generate `.json` calendar file
 ```shell
-$ docker run -it \
-    --volume "$PWD:/calendar" \
-    --env YOUTUBE_API_KEY=xxxxxxxxxxxx \
-    ifsc-calendar \
+$ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
     --season 2023 \
     --league "World Cups and World Championships" \
     --output "/calendar/ifsc-calendar.json" \
@@ -66,16 +55,33 @@ Build executable
 ```shell
 $ make
 ```
-Set the API key
-```shell
-$ export YOUTUBE_API_KEY=xxxxxxxxxxxx
-```
+
 Generate `.ics` calendar file
 ```
 $ ./build/ifsc-calendar.phar \
   --season 2023 \
   --league "World Cups and World Championships" \
   --output "ifsc-calendar.ics"
+```
+
+#### YouTube
+If the optional flag `--fetch-youtube-urls` is passed, it'll attempt to find missing stream URLs from YouTube's
+API. This requires an environment variable with the name `YOUTUBE_API_KEY` to be set, containing your API key.
+
+To generate an API key, enable the API in your [Google Cloud Console](https://console.cloud.google.com/apis/api/youtube.googleapis.com/)
+and [create credentials](https://console.cloud.google.com/apis/credentials).
+
+```shell
+$ export YOUTUBE_API_KEY=xxxxxxxxxxxx
+```
+
+Generate `.ics` calendar file
+```shell
+$ ./build/ifsc-calendar.phar \
+  --season 2023 \
+  --league "World Cups and World Championships" \
+  --output "ifsc-calendar.ics" \
+  --fetch-youtube-urls
 ```
 
 ### 🔧 Todo
@@ -87,8 +93,7 @@ $ ./build/ifsc-calendar.phar \
  - [ ] Make scraping more robust and fail on errors or missing data
  - [ ] Add Google Analytics (and cookie notice)
  - [ ] Check if there's an API to fetch events from instead of relying on scraping
- - [ ] Add an option to override events (sometimes they're cancelled but the site is not updated
- - [ ] Disable youtube-fetch by default
+ - [x] Disable youtube-fetch by default
  - [x] Add links to specific events to calendar
  - [x] Add `latest` tag to latest release
  - [x] Always serve asset from latest release on calendar URL
