@@ -86,6 +86,8 @@ function remove_hash() {
     }
 }
 
+let hasScrolled = false;
+
 const refresh = (async () => {
     const response = await fetch("events/events.json");
     const jsonData = await response.json();
@@ -193,8 +195,9 @@ const refresh = (async () => {
         }
     });
 
-    if (!element_is_in_viewport(leagueElement)) {
+    if (!hasScrolled && !element_is_in_viewport(leagueElement)) {
         leagueElement.scrollIntoView();
+        hasScrolled = true;
     }
 
     remove_hash();
