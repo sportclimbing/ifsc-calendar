@@ -37,7 +37,7 @@ jobs:
       - name: "Check diff"
         id: check_diff
         run: |
-          curl -sS "$(php bin/latest-calendar-url)" --output current-calendar.json 
+          curl -sSL "$(php bin/latest-calendar-url)" --output current-calendar.json
           diff -C 3 current-calendar.json IFSC-World-Cups-and-World-Championships.json > calendar.diff || true
                     
           if [ $(wc -w < calendar.diff) -gt 0 ]; then
