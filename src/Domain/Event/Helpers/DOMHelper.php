@@ -39,16 +39,7 @@ final readonly class DOMHelper
     public function getPoster(DOMXPath $xpath): string
     {
         $sideBar = $xpath->query(self::XPATH_SIDEBAR)->item(0);
-
-        if (!$sideBar) {
-            return '';
-        }
-
-        $images = $sideBar->getElementsByTagName('img');
-
-        if (!is_iterable($images)) {
-            return '';
-        }
+        $images = $sideBar?->getElementsByTagName('img') ?? [];
 
         foreach ($images as $image) {
             foreach ($image->attributes as $name => $attribute) {
