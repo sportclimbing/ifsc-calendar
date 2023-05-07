@@ -1,5 +1,8 @@
 #!/usr/bin/php
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
+
+const LATEST_RELEASE_URL = 'https://api.github.com/repos/sportclimbing/ifsc-calendar/releases/latest';
 
 $context = stream_context_create([
     'http' => [
@@ -11,6 +14,23 @@ $context = stream_context_create([
     ]
 ]);
 
-$json = json_decode(file_get_contents('https://api.github.com/repos/sportclimbing/ifsc-calendar/releases/latest', context: $context));
+$response = @file_get_contents(LATEST_RELEASE_URL, context: $context);
+
+if (!$response) {
+    echo "Unable to get response from API", PHP_EOL;
+    exit(1);
+}
+
+try {
+    $json = json_decode($response, flags: JSON_THROW_ON_ERROR);
+} catch (JsonException $e) {
+    echo "Unable to parse JSON: {$e->getMessage()}", PHP_EOL;
+    exit(1);
+}
+
+if (!isset($json->assets[1]->browser_download_url)) {
+    echo "Could not find asset", PHP_EOL;
+    exit(1);
+}
 
 echo $json->assets[1]->browser_download_url;
