@@ -30,6 +30,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
                 'poster' => $event->poster,
                 'stream_url' => $event->streamUrl,
                 'event_url' => $this->buildUrl($event),
+                'site_url' => $event->siteUrl,
                 'start_time' => $this->formatDate($event->startTime),
             ];
         }

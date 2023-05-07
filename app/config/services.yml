@@ -1,6 +1,5 @@
 parameters:
   ifsc_youtube_channel_id: 'UC2MGuhIaOP6YLpUx106kTQw'
-  event_info_base_url: 'https://ifsc.stream/'
   calendar_product_identifier: '-//ifsc/ical//2.0/EN'
 
 services:
@@ -38,7 +37,6 @@ services:
     arguments:
       - '@Eluceo\iCal\Presentation\Factory\CalendarFactory'
       - '%calendar_product_identifier%'
-      - '%event_info_base_url%'
 
   Eluceo\iCal\Presentation\Factory\CalendarFactory:
     class: Eluceo\iCal\Presentation\Factory\CalendarFactory

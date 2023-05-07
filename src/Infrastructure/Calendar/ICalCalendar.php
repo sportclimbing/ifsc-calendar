@@ -22,7 +22,6 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     public function __construct(
         private CalendarFactory $calendarFactory,
         private string $productIdentifier,
-        private string $eventBaseUrl,
     ) {
     }
 
@@ -47,18 +46,13 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         return (new Event())
             ->setSummary("IFSC: {$event->name}")
             ->setDescription($this->buildDescription($event))
-            ->setUrl($this->buildUrl($event))
+            ->setUrl(new Uri($event->siteUrl))
             ->setOccurrence($this->buildTimeSpan($event));
     }
 
     public function eventConvert(): Closure
     {
         return fn (IFSCEvent $event): Event => $this->createEvent($event);
-    }
-
-    public function buildUrl(IFSCEvent $event): Uri
-    {
-        return new Uri(sprintf('%s#/event/%d', $this->eventBaseUrl, $event->id));
     }
 
     public function buildTimeSpan(IFSCEvent $event): TimeSpan
@@ -71,6 +65,6 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
     public function buildDescription(IFSCEvent $event): string
     {
-        return "{$event->description}\n\n{$this->buildUrl($event)->getUri()}";
+        return "{$event->description}\n\n{$event->siteUrl}";
     }
 }
