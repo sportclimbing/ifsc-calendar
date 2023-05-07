@@ -58,7 +58,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
     public function buildUrl(IFSCEvent $event): Uri
     {
-        return new Uri(sprintf('%s#event-%d', $this->eventBaseUrl, $event->id));
+        return new Uri(sprintf('%s#/event/%d', $this->eventBaseUrl, $event->id));
     }
 
     public function buildTimeSpan(IFSCEvent $event): TimeSpan
