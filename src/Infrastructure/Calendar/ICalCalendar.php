@@ -46,7 +46,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     {
         return (new Event())
             ->setSummary("IFSC: {$event->name}")
-            ->setDescription($event->description)
+            ->setDescription($this->buildDescription($event))
             ->setUrl($this->buildUrl($event))
             ->setOccurrence($this->buildTimeSpan($event));
     }
@@ -67,5 +67,10 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
             new DateTime($event->startTime, applyTimeZone: true),
             new DateTime($event->endTime, applyTimeZone: true),
         );
+    }
+
+    public function buildDescription(IFSCEvent $event): string
+    {
+        return "{$event->description}\n\n{$this->buildUrl($event)->getUri()}";
     }
 }
