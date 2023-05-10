@@ -142,6 +142,7 @@ final class YouTubeLinkMatcherTest extends TestCase
             id: 1292,
             description: $description,
             streamUrl: '',
+            siteUrl: '',
             poster: 'https://cdn.ifsc-climbing.org/images/Events/2023/230506_Jakarta_WC/230415_Poster_JAK23.jpg',
             startTime: new DateTimeImmutable('2023-09-23T19:30:00+08:00'),
             endTime: new DateTimeImmutable('2023-09-23T21:30:00+08:00'),

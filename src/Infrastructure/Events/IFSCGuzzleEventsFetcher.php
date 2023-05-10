@@ -8,9 +8,11 @@
 namespace nicoSWD\IfscCalendar\Infrastructure\Events;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use JsonException;
+use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
 
 final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterface
@@ -29,13 +31,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
      */
     public function fetchEventsForLeague(int $season, IFSCLeague $league): array
     {
-        $response = $this->client->get($this->buildLeagueUri($league->id))->getBody()->getContents();
-        $response = @json_decode($response);
-
-        if (json_last_error()) {
-            throw new \Exception(json_last_error_msg());
-        }
-
+        $response = $this->fetchHtmlForLeague($league);
         $events = [];
 
         foreach ($response->events as $event) {
@@ -61,5 +57,19 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     public function buildLeagueUri(int $leagueId): string
     {
         return sprintf(self::IFSC_LEAGUE_API_ENDPOINT, $leagueId);
+    }
+
+    /** @throws IFSCEventsScraperException */
+    public function fetchHtmlForLeague(IFSCLeague $league): object
+    {
+        try {
+            $response = $this->client->get($this->buildLeagueUri($league->id))->getBody()->getContents();
+
+            return @json_decode($response, flags: JSON_THROW_ON_ERROR);
+        } catch (GuzzleException $e) {
+            throw new IFSCEventsScraperException("Unable to retrieve HTML: {$e->getMessage()}");
+        } catch (JsonException $e) {
+            throw new IFSCEventsScraperException("Unable to parse JSON: {$e->getMessage()}");
+        }
     }
 }

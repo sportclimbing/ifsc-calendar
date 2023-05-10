@@ -11,7 +11,7 @@ final readonly class Normalizer
 {
     public function cupName(string $league): string
     {
-        return ucwords(strtolower($league));
+        return ucwords(strtolower(trim($league)));
     }
 
     public function normalizeTime(string $time): string
@@ -20,6 +20,9 @@ final readonly class Normalizer
             // We don't know the exact time yet. We'll set it to 8:00 for now
             // as it will automatically update once IFSC sets it
             $time = '8:00';
+        } else {
+            // Convert 12-hour format to 24-hour
+            $time = date('H:i', strtotime($time));
         }
 
         return $time;
@@ -32,6 +35,15 @@ final readonly class Normalizer
 
     public function removeNonAsciiCharacters(string $text): string
     {
-        return preg_replace('~[^\w\s\'\r\n:,-./?=]+~', ' ', $text);
+        // This fixes a parsing issue for season 2022
+        // This is fun
+        $text = preg_replace('~\n\s{10,}~', ' ', $text);
+
+        return preg_replace('~[^\w\s\r\n\':,-./?=&]+~', ' ', $text);
+    }
+
+    public function firstUrl(string $urls): string
+    {
+        return preg_split('~\s+~', $urls, flags: PREG_SPLIT_NO_EMPTY)[0] ?? '';
     }
 }

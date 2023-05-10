@@ -11,20 +11,16 @@ use DateTimeImmutable;
 
 final readonly class IFSCEvent
 {
-    private const EVENT_INFO_URL = 'https://ifsc.stream/#/event/%d';
-
-    public string $siteUrl;
-
     public function __construct(
         public string $name,
         public int $id,
         public string $description,
         public string $streamUrl,
+        public string $siteUrl,
         public string $poster,
         public DateTimeImmutable $startTime,
         public DateTimeImmutable $endTime,
     ) {
-        $this->siteUrl = sprintf(self::EVENT_INFO_URL, $id);
     }
 
     public function updateStreamUrl(string $streamUrl): self
@@ -34,6 +30,7 @@ final readonly class IFSCEvent
             id: $this->id,
             description: $this->description,
             streamUrl: $streamUrl,
+            siteUrl: $this->siteUrl,
             poster: $this->poster,
             startTime: $this->startTime,
             endTime: $this->endTime,

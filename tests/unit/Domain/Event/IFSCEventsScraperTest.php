@@ -9,6 +9,7 @@
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use PHPUnit\Framework\Attributes\Test;
@@ -226,6 +227,53 @@ final class IFSCEventsScraperTest extends TestCase
         $this->assertSame('', $event10->streamUrl);
     }
 
+    #[Test]
+    public function well_formatted_meiringen_2022_events_are_found(): void
+    {
+        $events = $this->fetchEventsFromFile(
+            fileName: 'meiringen_2022.html',
+            timeZone: 'Europe/Zurich',
+            eventName: 'IFSC - Climbing World Cup (B) - Meiringen (SUI) 2022',
+        );
+
+        $this->assertCount(6, $events);
+
+        [$event1, $event2, $event3, $event4, $event5, $event6] = $events;
+
+        $this->assertSame('https://cdn.ifsc-climbing.org/images/Events/2022/220408_Meiringen_WC/IFSC_WC_MEIRINGEN22_poster.jpg', $event1->poster);
+        $this->assertSame('IFSC - Climbing World Cup (B) - Meiringen (SUI) 2022', $event1->description);
+
+        $this->assertSame('Women\'s Boulder Qualification', $event1->name);
+        $this->assertSame('2023-04-08T09:00:00+02:00', $this->formatDate($event1->startTime));
+        $this->assertSame('2023-04-08T12:00:00+02:00', $this->formatDate($event1->endTime));
+        $this->assertSame('', $event1->streamUrl);
+
+        $this->assertSame('Men\'s Boulder Qualification', $event2->name);
+        $this->assertSame('2023-04-08T16:30:00+02:00', $this->formatDate($event2->startTime));
+        $this->assertSame('2023-04-08T19:30:00+02:00', $this->formatDate($event2->endTime));
+        $this->assertSame('', $event2->streamUrl);
+
+        $this->assertSame('Women\'s Boulder Semi-final', $event3->name);
+        $this->assertSame('2023-04-09T11:00:00+02:00', $this->formatDate($event3->startTime));
+        $this->assertSame('2023-04-09T14:00:00+02:00', $this->formatDate($event3->endTime));
+        $this->assertSame('https://youtu.be/RMAN27jXQ2k', $event3->streamUrl);
+
+        $this->assertSame('Women\'s Boulder Final', $event4->name);
+        $this->assertSame('2023-04-09T18:00:00+02:00', $this->formatDate($event4->startTime));
+        $this->assertSame('2023-04-09T21:00:00+02:00', $this->formatDate($event4->endTime));
+        $this->assertSame('https://youtu.be/44WuwVhkg70', $event4->streamUrl);
+
+        $this->assertSame('Men\'s Boulder Semi-final', $event5->name);
+        $this->assertSame('2023-04-10T11:00:00+02:00', $this->formatDate($event5->startTime));
+        $this->assertSame('2023-04-10T14:00:00+02:00', $this->formatDate($event5->endTime));
+        $this->assertSame('https://youtu.be/glsqr3jWTjU', $event5->streamUrl);
+
+        $this->assertSame('Men\'s Boulder Final', $event6->name);
+        $this->assertSame('2023-04-10T16:00:00+02:00', $this->formatDate($event6->startTime));
+        $this->assertSame('2023-04-10T19:00:00+02:00', $this->formatDate($event6->endTime));
+        $this->assertSame('https://youtu.be/HPNpg-pLZOg', $event6->streamUrl);
+    }
+
     private function mockClientReturningFile(string $fileName): HttpClientInterface
     {
         return new class ($this->htmlFile($fileName)) implements HttpClientInterface {
@@ -246,6 +294,7 @@ final class IFSCEventsScraperTest extends TestCase
     {
         $eventScraper = new IFSCEventsScraper(
             $this->mockClientReturningFile($fileName),
+            new IFSCEventFactory('https://ifsc.stream/#/event/%d'),
             new DOMHelper(),
             new Normalizer(),
         );
