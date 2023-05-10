@@ -65,7 +65,7 @@ final readonly class SeasonFix2023
                 id: 1301,
                 description: 'IFSC - Climbing World Championships (B,L,S,B&L) - Bern (SUI) 2023',
                 streamUrl: '',
-                poster: '',
+                poster: 'https://ifsc.stream/img/posters/bern2023.jpg',
                 startTime: $startDateTime,
                 endTime: $endDateTime,
             );
