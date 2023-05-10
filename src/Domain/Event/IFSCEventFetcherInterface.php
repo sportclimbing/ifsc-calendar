@@ -7,10 +7,8 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
-use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
-
 interface IFSCEventFetcherInterface
 {
     /** @return IFSCEvent[] */
-    public function fetchEventsForLeague(int $season, IFSCLeague $league): array;
+    public function fetchEventsForLeague(int $season, int $league): array;
 }

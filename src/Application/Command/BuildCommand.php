@@ -62,7 +62,7 @@ final class BuildCommand extends Command
         $leaguesByName = [];
 
         foreach ($seasons[$selectedSeason]->leagues as $league) {
-            $leaguesByName[$league->name] = $league;
+            $leaguesByName[$league->name] = $league->id;
         }
 
         if (!$selectedLeague) {
@@ -75,7 +75,7 @@ final class BuildCommand extends Command
             $pathInfo = pathinfo($fileName);
             $fileName = "{$pathInfo['dirname']}/{$pathInfo['filename']}.{$calFormat}";
 
-            $response = $this->buildCalendar($selectedSeason, [$league], $calFormat, $output, $fetchYouTubeUrls);
+            $response = $this->buildCalendar($selectedSeason, $league, $calFormat, $output, $fetchYouTubeUrls);
             $this->saveCalendar($fileName, $response->calendarContents, $output);
         }
 
@@ -86,7 +86,7 @@ final class BuildCommand extends Command
 
     public function buildCalendar(
         int $selectedSeason,
-        array $leagues,
+        int $league,
         string $format,
         OutputInterface $output,
         bool $fetchYouTubeUrls
@@ -96,7 +96,7 @@ final class BuildCommand extends Command
         return $this->buildCalendarUseCase->execute(
             new BuildCalendarRequest(
                 season: $selectedSeason,
-                leagues: $leagues,
+                league: $league,
                 format: $format,
                 fetchYouTubeUrls: $fetchYouTubeUrls,
             )
@@ -133,7 +133,7 @@ final class BuildCommand extends Command
     public function getSelectedLeague(array $leaguesByName, Helper $helper, InputInterface $input, OutputInterface $output): string
     {
         $question = new ChoiceQuestion(
-            'Please select a or multiple leagues (defaults to "' . key($leaguesByName) . '")',
+            'Please select a league (defaults to "' . key($leaguesByName) . '")',
             array_keys($leaguesByName),
             0
         );

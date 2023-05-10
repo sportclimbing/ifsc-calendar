@@ -29,7 +29,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
      * @inheritdoc
      * @throws IFSCEventsScraperException
      */
-    public function fetchEventsForLeague(int $season, IFSCLeague $league): array
+    public function fetchEventsForLeague(int $season, int $league): array
     {
         $response = $this->fetchHtmlForLeague($league);
         $events = [];
@@ -60,10 +60,10 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     }
 
     /** @throws IFSCEventsScraperException */
-    public function fetchHtmlForLeague(IFSCLeague $league): object
+    public function fetchHtmlForLeague(int $league): object
     {
         try {
-            $response = $this->client->get($this->buildLeagueUri($league->id))->getBody()->getContents();
+            $response = $this->client->get($this->buildLeagueUri($league))->getBody()->getContents();
 
             return @json_decode($response, flags: JSON_THROW_ON_ERROR);
         } catch (GuzzleException $e) {

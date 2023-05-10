@@ -29,6 +29,7 @@ services:
       - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher'
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher'
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher'
+      - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostFix'
 
   nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar:
     class: nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar
@@ -73,6 +74,18 @@ services:
     class: nicoSWD\IfscCalendar\Infrastructure\Season\GuzzleSeasonFetcher
     arguments:
       - '@GuzzleHttp\Client'
+
+  nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostFix:
+    class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostFix
+    arguments:
+      - '@nicoSWD\IfscCalendar\Domain\Calendar\Fixes\SeasonFix2023'
+
+  nicoSWD\IfscCalendar\Domain\Calendar\Fixes\SeasonFix2023:
+    class: nicoSWD\IfscCalendar\Domain\Calendar\Fixes\SeasonFix2023
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
+      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory'
+      - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer'
 
   # Events
   nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher:

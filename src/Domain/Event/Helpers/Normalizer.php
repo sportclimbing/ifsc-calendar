@@ -9,9 +9,14 @@ namespace nicoSWD\IfscCalendar\Domain\Event\Helpers;
 
 final readonly class Normalizer
 {
-    public function cupName(string $league): string
+    public function cupName(string $cupName): string
     {
-        return ucwords(strtolower(trim($league)));
+        $cupName = trim($cupName);
+        $cupName = strtolower($cupName);
+        $cupName = $this->removeNewLines($cupName);
+        $cupName = preg_replace('~\s+-\s+(lead|boulder)\s+round$~', '', $cupName);
+
+        return ucwords($cupName);
     }
 
     public function normalizeTime(string $time): string
@@ -45,5 +50,10 @@ final readonly class Normalizer
     public function firstUrl(string $urls): string
     {
         return preg_split('~\s+~', $urls, flags: PREG_SPLIT_NO_EMPTY)[0] ?? '';
+    }
+
+    private function removeNewLines(string $string): string
+    {
+        return preg_replace('~[\r\n]+~', ' ', $string);
     }
 }

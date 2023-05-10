@@ -25,9 +25,9 @@ final readonly class BuildCalendarUseCase
 
     public function buildCalendar(BuildCalendarRequest $buildCalendarRequest): string
     {
-        return $this->calendarBuilder->generateForLeagues(
+        return $this->calendarBuilder->generateForLeague(
             season: $buildCalendarRequest->season,
-            leagues: $buildCalendarRequest->leagues,
+            league: $buildCalendarRequest->league,
             format: $buildCalendarRequest->format,
             fetchYouTubeUrls: $buildCalendarRequest->fetchYouTubeUrls,
         );
