@@ -52,8 +52,13 @@ final readonly class Normalizer
         return preg_split('~\s+~', $urls, flags: PREG_SPLIT_NO_EMPTY)[0] ?? '';
     }
 
-    private function removeNewLines(string $string): string
+    public function removeNewLines(string $string): string
     {
         return preg_replace('~[\r\n]+~', ' ', $string);
+    }
+
+    public function removeMultipleSpaces(string $string): string
+    {
+        return preg_replace('~\s{2,}~', ' ', trim($string));
     }
 }

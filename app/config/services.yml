@@ -86,6 +86,7 @@ services:
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
       - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory'
       - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer'
+      - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper'
 
   # Events
   nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher:

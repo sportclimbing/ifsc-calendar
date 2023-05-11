@@ -11,6 +11,9 @@ use Closure;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
+use DOMElement;
+use DOMNodeList;
+use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory;
@@ -20,11 +23,15 @@ use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 final readonly class SeasonFix2023
 {
     private const BERN_SCHEDULE_URL = 'https://www.ifsc-climbing.org/bern-2023/schedule';
+    private const BERN_IFSC_EVENT_ID = 1301;
+    private const BERN_IFSC_EVENT_DESCRIPTION = 'IFSC - Climbing World Championships (B,L,S,B&L) - Bern (SUI) 2023';
+    private const BERN_2023_POSTER = 'https://ifsc.stream/img/posters/bern2023.jpg';
 
     public function __construct(
         private HttpClientInterface $httpClient,
         private IFSCEventFactory $eventFactory,
         private Normalizer $normalizer,
+        private DOMHelper $DOMHelper,
     ) {
     }
 
@@ -45,27 +52,25 @@ final readonly class SeasonFix2023
         return $events;
     }
 
+    /** @return IFSCEvent[] */
     private function fetchBernEvents(): array
     {
-        // Use DOM/XPath
-        $regex = '~<div data-tag=[^>]+>\s*(?:<div[^>]+>\s*){2}\s*(?<date>\d{1,2}\sAUGUST\s\|\|\s\d{1,2}:\d{2})\s*</div>\s*<h3[^>]+>(?<name>[^<]+)~s';
-        $html = $this->httpClient->get(self::BERN_SCHEDULE_URL);
         $events = [];
 
-        if (!preg_match_all($regex, $html, $matches)) {
-            return [];
-        }
+        foreach ($this->fetchEventsFromHTML() as $event) {
+            $eventLine = sscanf($this->normalizeEventLine($event), '%d %s || %d:%d %[^$]s');
 
-        foreach ($matches['date'] as $key => $date) {
-            $startDateTime = $this->createStartDate($date);
+            [$day, $month, $hour, $minute, $name] = $eventLine;
+
+            $startDateTime = $this->createStartDate($day, $month, $hour, $minute);
             $endDateTime = $this->getEndDateTime($startDateTime);
 
             $events[] = $this->eventFactory->create(
-                name: $this->normalizer->cupName($matches['name'][$key]),
-                id: 1301,
-                description: 'IFSC - Climbing World Championships (B,L,S,B&L) - Bern (SUI) 2023',
+                name: $this->normalizer->cupName($name),
+                id: self::BERN_IFSC_EVENT_ID,
+                description: self::BERN_IFSC_EVENT_DESCRIPTION,
                 streamUrl: '',
-                poster: 'https://ifsc.stream/img/posters/bern2023.jpg',
+                poster: self::BERN_2023_POSTER,
                 startTime: $startDateTime,
                 endTime: $endDateTime,
             );
@@ -74,10 +79,8 @@ final readonly class SeasonFix2023
         return $events;
     }
 
-    private function createStartDate(string $date): DateTimeImmutable
+    private function createStartDate(int $day, string $month, int $hour, int $minute): DateTimeImmutable
     {
-        [$day, $month, $hour, $minute] = sscanf(trim($date), '%d %s || %d:%d');
-
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone('Europe/Zurich'));
         $date->setDate(2023, Month::fromName($month)->value, $day);
@@ -97,5 +100,19 @@ final readonly class SeasonFix2023
     private function isBernEvent(): Closure
     {
         return static fn(IFSCEvent $event): bool => str_contains($event->name, 'Bern (SUI)');
+    }
+
+    private function fetchEventsFromHTML(): DOMNodeList
+    {
+        $xpath = $this->DOMHelper->htmlToXPath(
+            $this->httpClient->get(self::BERN_SCHEDULE_URL)
+        );
+
+        return $xpath->query("//div[contains(@class, 'js-filter')]/div[@data-tag]");
+    }
+
+    private function normalizeEventLine(DOMElement $event): string
+    {
+        return $this->normalizer->removeMultipleSpaces($event->textContent);
     }
 }
