@@ -5,6 +5,9 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
+namespace nicoSWD\IfscCalendar\tests\Domain\YouTube;
+
+use DateTimeImmutable;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideo;
@@ -15,11 +18,6 @@ use PHPUnit\Framework\TestCase;
 final class YouTubeLinkMatcherTest extends TestCase
 {
     private readonly YouTubeLinkMatcher $linkMatcher;
-
-    protected function setUp(): void
-    {
-        $this->linkMatcher = new YouTubeLinkMatcher();
-    }
 
     #[Test]
     public function seoul_speed_qualifications_url_is_found(): void
@@ -152,5 +150,10 @@ final class YouTubeLinkMatcherTest extends TestCase
     private function findStreamUrlForEvent(IFSCEvent $event): ?string
     {
         return $this->linkMatcher->findStreamUrlForEvent($event, $this->createVideoCollection());
+    }
+
+    protected function setUp(): void
+    {
+        $this->linkMatcher = new YouTubeLinkMatcher();
     }
 }

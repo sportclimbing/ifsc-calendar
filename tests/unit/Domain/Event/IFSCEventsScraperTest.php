@@ -5,18 +5,21 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
+namespace nicoSWD\IfscCalendar\tests\Domain\Event;
 
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper;
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
+use nicoSWD\IfscCalendar\tests\Helpers\MockHttpClient;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 final class IFSCEventsScraperTest extends TestCase
 {
+    use MockHttpClient;
+
     #[Test]
     public function well_formatted_hachioji_events_are_found(): void
     {
@@ -274,21 +277,6 @@ final class IFSCEventsScraperTest extends TestCase
         $this->assertSame('https://youtu.be/HPNpg-pLZOg', $event6->streamUrl);
     }
 
-    private function mockClientReturningFile(string $fileName): HttpClientInterface
-    {
-        return new class ($this->htmlFile($fileName)) implements HttpClientInterface {
-            public function __construct(
-                private readonly string $fileName,
-            ) {
-            }
-
-            public function get(string $url): string
-            {
-                return file_get_contents($this->fileName);
-            }
-        };
-    }
-
     /** @return IFSCEvent[] */
     private function fetchEventsFromFile(string $fileName, string $timeZone, string $eventName): array
     {
@@ -305,15 +293,5 @@ final class IFSCEventsScraperTest extends TestCase
             timezone: $timeZone,
             eventName: $eventName,
         );
-    }
-
-    private function formatDate(DateTimeInterface $dateTime): string
-    {
-        return $dateTime->format(DateTimeInterface::RFC3339);
-    }
-
-    private function htmlFile(string $fileName): string
-    {
-        return __DIR__ . "/../../../html/{$fileName}";
     }
 }

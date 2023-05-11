@@ -1,26 +1,25 @@
 <?php declare(strict_types=1);
 
+/**
+ * @license  http://opensource.org/licenses/mit-license.php MIT
+ * @link     https://github.com/nicoSWD
+ * @author   Nicolas Oelgart <nico@oelgart.com>
+ */
+namespace nicoSWD\IfscCalendar\tests\Domain\Calendar\Fixes;
+
 use nicoSWD\IfscCalendar\Domain\Calendar\Fixes\SeasonFix2023;
+use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory;
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
+use nicoSWD\IfscCalendar\tests\Helpers\MockHttpClient;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class SeasonFix2023Test extends TestCase
 {
-    private SeasonFix2023 $season2023Fix;
+    use MockHttpClient;
 
-    public function setUp(): void
-    {
-        $this->season2023Fix = new SeasonFix2023(
-            $this->mockClientReturningFile("bern_2023.html"),
-            new IFSCEventFactory('https://ifsc.stream/#/season/%d/event/%d'),
-            new Normalizer(),
-        );
-
-        parent::setUp();
-    }
+    private readonly SeasonFix2023 $season2023Fix;
 
     #[Test]
     public function bern_2023_events_are_found(): void
@@ -30,37 +29,95 @@ final class SeasonFix2023Test extends TestCase
 
         $this->assertCount(19, $newEvents);
 
-        [$event1, $event2] = $newEvents;
+        [
+            $event1,
+            $event2,
+            $event3,
+            $event4,
+            $event5,
+            $event6,
+            $event7,
+            $event8,
+            $event9,
+            $event10,
+            $event11,
+            $event12,
+            $event13,
+            $event14,
+            $event15,
+            $event16,
+            $event17,
+            $event18,
+            $event19,
+        ] = $newEvents;
 
         $this->assertSame('Men\'s Boulder Qualification', $event1->name);
         $this->assertSame('2023-08-01T09:00:00+02:00', $this->formatDate($event1->startTime));
 
         $this->assertSame('Women\'s Lead Qualification', $event2->name);
         $this->assertSame('2023-08-02T11:00:00+02:00', $this->formatDate($event2->startTime));
+
+        $this->assertSame('Men\'s Lead Qualification', $event3->name);
+        $this->assertSame('2023-08-03T08:30:00+02:00', $this->formatDate($event3->startTime));
+
+        $this->assertSame('Women\'s Boulder Qualification', $event4->name);
+        $this->assertSame('2023-08-03T15:30:00+02:00', $this->formatDate($event4->startTime));
+
+        $this->assertSame('Men\'s Boulder Semi-final', $event5->name);
+        $this->assertSame('2023-08-04T10:00:00+02:00', $this->formatDate($event5->startTime));
+
+        $this->assertSame('Men\'s Boulder Final', $event6->name);
+        $this->assertSame('2023-08-04T18:30:00+02:00', $this->formatDate($event6->startTime));
+
+        $this->assertSame('Women\'s Boulder Semi-final', $event7->name);
+        $this->assertSame('2023-08-05T10:00:00+02:00', $this->formatDate($event7->startTime));
+
+        $this->assertSame('Women\'s Boulder Final', $event8->name);
+        $this->assertSame('2023-08-05T18:30:00+02:00', $this->formatDate($event8->startTime));
+
+        $this->assertSame('Lead Semi-finals', $event9->name);
+        $this->assertSame('2023-08-06T10:00:00+02:00', $this->formatDate($event9->startTime));
+
+        $this->assertSame('Lead Finals', $event10->name);
+        $this->assertSame('2023-08-06T18:30:00+02:00', $this->formatDate($event10->startTime));
+
+        $this->assertSame('Paraclimbing Qualifications', $event11->name);
+        $this->assertSame('2023-08-08T09:00:00+02:00', $this->formatDate($event11->startTime));
+
+        $this->assertSame('Women\'s Boulder & Lead Semi-final', $event12->name);
+        $this->assertSame('2023-08-09T09:00:00+02:00', $this->formatDate($event12->startTime));
+
+        $this->assertSame('Men\'s Boulder & Lead Semi-final', $event13->name);
+        $this->assertSame('2023-08-09T13:00:00+02:00', $this->formatDate($event13->startTime));
+
+        $this->assertSame('Boulder & Lead Semi-finals', $event14->name);
+        $this->assertSame('2023-08-09T20:30:00+02:00', $this->formatDate($event14->startTime));
+
+        $this->assertSame('Speed Qualifications', $event15->name);
+        $this->assertSame('2023-08-10T09:00:00+02:00', $this->formatDate($event15->startTime));
+
+        $this->assertSame('Paraclimbing Finals', $event16->name);
+        $this->assertSame('2023-08-10T14:00:00+02:00', $this->formatDate($event16->startTime));
+
+        $this->assertSame('Speed Finals', $event17->name);
+        $this->assertSame('2023-08-10T20:00:00+02:00', $this->formatDate($event17->startTime));
+
+        $this->assertSame('Women\'s Boulder & Lead Final', $event18->name);
+        $this->assertSame('2023-08-11T19:00:00+02:00', $this->formatDate($event18->startTime));
+
+        $this->assertSame('Men\'s Boulder & Lead Final', $event19->name);
+        $this->assertSame('2023-08-12T16:00:00+02:00', $this->formatDate($event19->startTime));
     }
 
-    private function mockClientReturningFile(string $fileName): HttpClientInterface
+    protected function setUp(): void
     {
-        return new class ($this->htmlFile($fileName)) implements HttpClientInterface {
-            public function __construct(
-                private readonly string $fileName,
-            ) {
-            }
+        $this->season2023Fix = new SeasonFix2023(
+            $this->mockClientReturningFile('bern_2023.html'),
+            new IFSCEventFactory('https://ifsc.stream/#/season/%d/event/%d'),
+            new Normalizer(),
+            new DOMHelper(),
+        );
 
-            public function get(string $url): string
-            {
-                return file_get_contents($this->fileName);
-            }
-        };
-    }
-
-    private function htmlFile(string $fileName): string
-    {
-        return __DIR__ . "/../../../../html/{$fileName}";
-    }
-
-    private function formatDate(DateTimeInterface $dateTime): string
-    {
-        return $dateTime->format(DateTimeInterface::RFC3339);
+        parent::setUp();
     }
 }

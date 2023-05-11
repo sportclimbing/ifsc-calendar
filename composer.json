@@ -28,5 +28,10 @@
         "psr-4": {
             "nicoSWD\\IfscCalendar\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "nicoSWD\\IfscCalendar\\tests\\": "tests/unit"
+        }
     }
 }
