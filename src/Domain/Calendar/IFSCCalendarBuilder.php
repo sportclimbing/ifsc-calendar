@@ -7,7 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Calendar;
 
-use Exception;
+use nicoSWD\IfscCalendar\Domain\Calendar\Exceptions\NoEventsFoundException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher;
@@ -20,24 +20,25 @@ final readonly class IFSCCalendarBuilder
         private IFSCEventFetcherInterface $eventFetcher,
         private YouTubeLinkFetcher $linkFetcher,
         private YouTubeLinkMatcher $linkMatcher,
-        private IFSCCalendarPostFix $calendarPostFix,
+        private IFSCCalendarPostProcess $calendarPostProcess,
     ) {
     }
 
-    /** @throws Exception */
+    /** @throws NoEventsFoundException */
     public function generateForLeague(int $season, int $league, string $format, bool $fetchYouTubeUrls): string
     {
-        $events = $this->eventFetcher->fetchEventsForLeague($season, $league);
+        $events = $this->calendarPostProcess->process(
+            season: $season,
+            events: $this->fetchEvents($season, $league),
+        );
 
         if (empty($events)) {
-            throw new Exception("No events found for league '{$league}'");
+            throw NoEventsFoundException::forLeague($league);
         }
 
         if ($fetchYouTubeUrls) {
             $this->fetchEventStreamUrls($events);
         }
-
-        $events = $this->calendarPostFix->fix($season, $events);
 
         return $this->calendarBuilderFactory->generateForFormat($format, $events);
     }
@@ -58,5 +59,11 @@ final readonly class IFSCCalendarBuilder
                 $event = $event->updateStreamUrl($streamUrl);
             }
         }
+    }
+
+    /** @return IFSCEvent[] */
+    public function fetchEvents(int $season, int $league): array
+    {
+        return $this->eventFetcher->fetchEventsForLeague($season, $league);
     }
 }

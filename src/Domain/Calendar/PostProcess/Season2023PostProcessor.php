@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Domain\Calendar\Fixes;
+namespace nicoSWD\IfscCalendar\Domain\Calendar\PostProcess;
 
 use Closure;
 use DateTime;
@@ -20,7 +20,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory;
 use nicoSWD\IfscCalendar\Domain\Event\Month;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 
-final readonly class SeasonFix2023
+final readonly class Season2023PostProcessor
 {
     private const BERN_SCHEDULE_URL = 'https://www.ifsc-climbing.org/bern-2023/schedule';
     private const BERN_IFSC_EVENT_ID = 1301;
@@ -39,7 +39,7 @@ final readonly class SeasonFix2023
      * @param IFSCEvent[] $events
      * @return IFSCEvent[]
      */
-    public function fix(array $events): array
+    public function process(array $events): array
     {
         // Add missing Bern events, which are listed on a separate page in an
         // entirely different format. Thanks, y'all.

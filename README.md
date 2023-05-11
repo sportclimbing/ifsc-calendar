@@ -91,11 +91,10 @@ $ ./build/ifsc-calendar.phar \
  - [ ] Cleanup PHP code
  - [ ] Add more tests
  - [ ] Make scraping more robust and fail on errors or missing data
- - [ ] Add Google Analytics (and cookie notice)
- - [ ] Check if there's an API to fetch events from instead of relying on scraping
  - [ ] Show activity and warnings in console (domain events)
  - [ ] Fix scraper for older seasons (formatting changes drastically)
  - [ ] Search all YouTube API results (not only the first 50 results)
+ - [x] Check if there's an API to fetch events from instead of relying on scraping
  - [x] Find a way to integrate events not posted on the official event page (e.g. Bern)
  - [x] Disable youtube-fetch by default
  - [x] Add links to specific events to calendar

@@ -7,7 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\tests\Domain\Calendar\Fixes;
 
-use nicoSWD\IfscCalendar\Domain\Calendar\Fixes\SeasonFix2023;
+use nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
@@ -19,13 +19,13 @@ final class SeasonFix2023Test extends TestCase
 {
     use MockHttpClient;
 
-    private readonly SeasonFix2023 $season2023Fix;
+    private readonly Season2023PostProcessor $season2023Fix;
 
     #[Test]
     public function bern_2023_events_are_found(): void
     {
         $events = [];
-        $newEvents = $this->season2023Fix->fix($events);
+        $newEvents = $this->season2023Fix->process($events);
 
         $this->assertCount(19, $newEvents);
 
@@ -111,7 +111,7 @@ final class SeasonFix2023Test extends TestCase
 
     protected function setUp(): void
     {
-        $this->season2023Fix = new SeasonFix2023(
+        $this->season2023Fix = new Season2023PostProcessor(
             $this->mockClientReturningFile('bern_2023.html'),
             new IFSCEventFactory('https://ifsc.stream/#/season/%d/event/%d'),
             new Normalizer(),

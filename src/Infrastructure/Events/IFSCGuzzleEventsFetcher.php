@@ -7,13 +7,12 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\Events;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use JsonException;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper;
-use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
+use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient;
 
 final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterface
 {
@@ -21,7 +20,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
 
     public function __construct(
         private IFSCEventsScraper $eventsScraper,
-        private Client $client,
+        private HttpGuzzleClient $client,
     ) {
     }
 
@@ -63,7 +62,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     public function fetchHtmlForLeague(int $league): object
     {
         try {
-            $response = $this->client->get($this->buildLeagueUri($league))->getBody()->getContents();
+            $response = $this->client->get($this->buildLeagueUri($league));
 
             return @json_decode($response, flags: JSON_THROW_ON_ERROR);
         } catch (GuzzleException $e) {

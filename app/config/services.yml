@@ -29,7 +29,7 @@ services:
       - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher'
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher'
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher'
-      - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostFix'
+      - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess'
 
   nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar:
     class: nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar
@@ -75,13 +75,13 @@ services:
     arguments:
       - '@GuzzleHttp\Client'
 
-  nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostFix:
-    class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostFix
+  nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess:
+    class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess
     arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Calendar\Fixes\SeasonFix2023'
+      - '@nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor'
 
-  nicoSWD\IfscCalendar\Domain\Calendar\Fixes\SeasonFix2023:
-    class: nicoSWD\IfscCalendar\Domain\Calendar\Fixes\SeasonFix2023
+  nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor:
+    class: nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
       - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory'
@@ -93,7 +93,7 @@ services:
     class: nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper'
-      - '@GuzzleHttp\Client'
+      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
 
   nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper:
     class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper
