@@ -9,16 +9,16 @@ namespace nicoSWD\IfscCalendar\Infrastructure\YouTube;
 
 use DateTimeImmutable;
 use Exception;
-use GuzzleHttp\Client;
 use JsonException;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeApiClient;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideo;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
+use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient;
 
 final readonly class GuzzleYouTubeClient implements YouTubeApiClient
 {
     public function __construct(
-        private Client $client,
+        private HttpGuzzleClient $client,
         private string $channelId,
     ) {
     }
@@ -41,7 +41,7 @@ final readonly class GuzzleYouTubeClient implements YouTubeApiClient
 
     private function fetchLatestVideos(): array
     {
-        $response = $this->client->request('GET', $this->buildApiUrl())->getBody()->getContents();
+        $response = $this->client->get($this->buildApiUrl());
 
         try {
             $jsonResponse = json_decode($response, flags: JSON_THROW_ON_ERROR);

@@ -53,7 +53,7 @@ services:
   nicoSWD\IfscCalendar\Infrastructure\YouTube\GuzzleYouTubeClient:
     class: nicoSWD\IfscCalendar\Infrastructure\YouTube\GuzzleYouTubeClient
     arguments:
-      - '@GuzzleHttp\Client'
+      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
       - '%ifsc_youtube_channel_id%'
 
   nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher:
