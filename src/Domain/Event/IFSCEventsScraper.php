@@ -7,9 +7,6 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
-use DateTime;
-use DateTimeImmutable;
-use DateTimeZone;
 use DOMElement;
 use DOMXPath;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
@@ -35,7 +32,7 @@ final readonly class IFSCEventsScraper
      * @throws InvalidURLException
      * @return IFSCEvent[]
      */
-    public function fetchEventsForLeague(int $season, int $eventId, string $timezone, string $eventName): array
+    public function fetchEventsForLeague(int $season, int $eventId, string $timeZone, string $eventName): array
     {
         $xpath = $this->getXPathForEventsWithId($eventId);
         $dateRegex = $this->buildDateRegex();
@@ -43,18 +40,21 @@ final readonly class IFSCEventsScraper
         $schedules = [];
 
         foreach ($this->domHelper->getParagraphs($xpath) as $paragraph) {
-            if (!preg_match_all($dateRegex, $this->normalize($paragraph), $matches)) {
+            if (!preg_match_all($dateRegex, $this->normalizeParagraph($paragraph), $matches)) {
                 continue;
             }
 
-            foreach ($matches['day'] as $key => $match) {
+            foreach ($matches['day'] as $key => $day) {
                 foreach ($this->normalizer->nonEmptyLines($matches['times'][$key]) as $line) {
-                    [$eventTime, $cupName, $streamUrl] = $this->parseEventDetails($line);
+                    $month = Month::fromName($matches['month'][$key]);
+
+                    [$cupName, $eventTime, $streamUrl] = $this->parseEventDetails($line);
 
                     $schedules[] = IFSCSchedule::create(
-                        day: (int) $matches['day'][$key],
-                        month: Month::fromName($matches['month'][$key]),
+                        day: (int) $day,
+                        month: $month,
                         time: $eventTime,
+                        timeZone: $timeZone,
                         season: $season,
                         cupName: $cupName,
                         streamUrl: $streamUrl,
@@ -67,17 +67,14 @@ final readonly class IFSCEventsScraper
         $events = [];
 
         foreach ($schedules as $schedule) {
-            $startDateTime = $this->getStartDateTime($schedule, $timezone);
-            $endDateTime = $this->getEndDateTime($startDateTime);
-
             $events[] = $this->eventFactory->create(
                 name: $schedule->cupName,
                 id: $eventId,
                 description: $eventName,
                 streamUrl: $schedule->streamUrl,
                 poster: $poster,
-                startTime: $startDateTime,
-                endTime: $endDateTime,
+                startTime: $schedule->duration->startTime,
+                endTime: $schedule->duration->endTime,
             );
         }
 
@@ -89,26 +86,6 @@ final readonly class IFSCEventsScraper
         return $this->domHelper->htmlToXPath(
             $this->client->get($this->buildLeagueUri($eventId))
         );
-    }
-
-    private function getStartDateTime(IFSCSchedule $schedule, string $timezone): DateTimeImmutable
-    {
-        [$hour, $minute] = sscanf($schedule->time, '%d:%d');
-
-        $date = new DateTime();
-        $date->setTimezone(new DateTimeZone($timezone));
-        $date->setDate($schedule->season, $schedule->month->value, $schedule->day);
-        $date->setTime($hour, $minute);
-
-        return DateTimeImmutable::createFromMutable($date);
-    }
-
-    private function getEndDateTime(DateTimeImmutable $date): DateTimeImmutable
-    {
-        $endDate = DateTime::createFromImmutable($date);
-        $endDate->modify('+3 hours');
-
-        return DateTimeImmutable::createFromMutable($endDate);
     }
 
     private function buildDateRegex(): string
@@ -137,10 +114,10 @@ final readonly class IFSCEventsScraper
         }
 
         $startTime = $this->normalizer->normalizeTime($match['time']);
-        $eventName = $this->normalizer->cupName($match['name']);
+        $cupName = $this->normalizer->cupName($match['name']);
         $streamUrl = $this->normalizer->firstUrl($match['url'] ?? '');
 
-        return [$startTime, $eventName, $streamUrl];
+        return [$cupName, $startTime, $streamUrl];
     }
 
     private function buildLeagueUri(int $id): string
@@ -148,7 +125,7 @@ final readonly class IFSCEventsScraper
         return sprintf(self::IFSC_EVENT_PAGE_URL, $id);
     }
 
-    public function normalize(DOMElement $paragraph): string
+    public function normalizeParagraph(DOMElement $paragraph): string
     {
         return $this->normalizer->removeNonAsciiCharacters($paragraph->textContent);
     }

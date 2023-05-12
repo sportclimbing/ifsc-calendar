@@ -37,7 +37,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
             $scrapedEvents = $this->eventsScraper->fetchEventsForLeague(
                 season: $season,
                 eventId: $event->event_id,
-                timezone: $event->timezone->value,
+                timeZone: $event->timezone->value,
                 eventName: $event->event,
             );
 

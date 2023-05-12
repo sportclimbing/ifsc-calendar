@@ -290,7 +290,7 @@ final class IFSCEventsScraperTest extends TestCase
         return $eventScraper->fetchEventsForLeague(
             season: 2023,
             eventId: 1249,
-            timezone: $timeZone,
+            timeZone: $timeZone,
             eventName: $eventName,
         );
     }

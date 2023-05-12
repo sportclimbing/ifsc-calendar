@@ -18,9 +18,9 @@ final readonly class IFSCCalendarBuilder
     public function __construct(
         private IFSCCalendarBuilderFactory $calendarBuilderFactory,
         private IFSCEventFetcherInterface $eventFetcher,
+        private IFSCCalendarPostProcess $calendarPostProcess,
         private YouTubeLinkFetcher $linkFetcher,
         private YouTubeLinkMatcher $linkMatcher,
-        private IFSCCalendarPostProcess $calendarPostProcess,
     ) {
     }
 

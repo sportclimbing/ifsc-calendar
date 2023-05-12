@@ -30,10 +30,15 @@ final readonly class IFSCEventFactory
             id: $id,
             description: $description,
             streamUrl: $streamUrl,
-            siteUrl: sprintf($this->siteUrl, $startTime->format('Y'), $id),
+            siteUrl: $this->getSiteUrl($startTime, $id),
             poster: $poster,
             startTime: $startTime,
             endTime: $endTime,
         );
+    }
+
+    public function getSiteUrl(DateTimeImmutable $startTime, int $id): string
+    {
+        return sprintf($this->siteUrl, $startTime->format('Y'), $id);
     }
 }

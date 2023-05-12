@@ -27,9 +27,9 @@ services:
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory'
       - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher'
+      - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess'
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher'
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher'
-      - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess'
 
   nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar:
     class: nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar

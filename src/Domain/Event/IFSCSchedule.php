@@ -11,16 +11,11 @@ use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 
 final readonly class IFSCSchedule
 {
-    /** @throws InvalidURLException */
     private function __construct(
-        public int $day,
-        public Month $month,
-        public string $time,
-        public int $season,
         public string $cupName,
         public string $streamUrl,
+        public IFSCEventDuration $duration,
     ) {
-        $this->assertValidUrl($streamUrl);
     }
 
     /** @throws InvalidURLException */
@@ -28,22 +23,28 @@ final readonly class IFSCSchedule
         int $day,
         Month $month,
         string $time,
+        string $timeZone,
         int $season,
         string $cupName,
-        string $streamUrl,
+        string $streamUrl = '',
     ): self  {
+        self::assertValidUrl($streamUrl);
+
         return new self(
-            $day,
-            $month,
-            $time,
-            $season,
             $cupName,
             $streamUrl,
+            IFSCEventDuration::create(
+                day: $day,
+                month: $month,
+                time: $time,
+                timeZone: $timeZone,
+                season: $season,
+            ),
         );
     }
 
     /** @throws InvalidURLException */
-    public function assertValidUrl(string $streamUrl): void
+    private static function assertValidUrl(string $streamUrl): void
     {
         if (!empty($streamUrl) && !filter_var($streamUrl, FILTER_VALIDATE_URL)) {
             throw new InvalidURLException("Invalid URL: {$streamUrl}");
