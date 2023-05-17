@@ -10,6 +10,8 @@ permissions:
 
 env:
   YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+  CALENDAR_FILE_ICS: "IFSC-World-Cups-and-World-Championships.ics"
+  CALENDAR_FILE_JSON: "IFSC-World-Cups-and-World-Championships.json"
 
 jobs:
   update-calendar:
@@ -30,16 +32,25 @@ jobs:
           php app/run.php \
               --season current \
               --league "World Cups and World Championships" \
-              --output "IFSC-World-Cups-and-World-Championships.ics" \
+              --output "${{ env.CALENDAR_FILE_ICS }}" \
               --format "ics,json" \
               --fetch-youtube-urls
+
+      - name: "Validate calendar"
+        run: php bin/validate-calendar "${{ env.CALENDAR_FILE_JSON }}"
 
       - name: "Check diff"
         id: check_diff
         run: |
-          curl -sSL "$(php bin/latest-calendar-url)" --output current-calendar.json
-          diff -C 3 current-calendar.json IFSC-World-Cups-and-World-Championships.json > calendar.diff || true
-                    
+          curl -sSL "https://calendar.ifsc.stream/?format=json&nocache=1" --output current-calendar.json
+          
+          if [ $(jq '.events | length' "${{ env.CALENDAR_FILE_JSON }}") -lt 80 ]; then
+            echo "Too few events found in current calendar"
+            exit 1
+          fi
+          
+          diff -C 3 current-calendar.json "${{ env.CALENDAR_FILE_JSON }}" > calendar.diff || true
+          
           if [ $(wc -w < calendar.diff) -gt 0 ]; then
             echo -e "Changes:\n\`\`\`diff\n$(cat calendar.diff)\n\`\`\`" > calendar.diff
             echo "has_changes=true" >> $GITHUB_OUTPUT
@@ -59,8 +70,8 @@ jobs:
         if: steps.check_diff.outputs.has_changes == 'true'
         with:
           files: |
-            IFSC-World-Cups-and-World-Championships.ics
-            IFSC-World-Cups-and-World-Championships.json
+            ${{ env.CALENDAR_FILE_ICS }}
+            ${{ env.CALENDAR_FILE_JSON }}
           tag_name: ${{ steps.date.outputs.tag_name }}
           name: ${{ steps.date.outputs.name }}
           body_path: calendar.diff

@@ -1,0 +1,30 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+if ($argc < 1) {
+    echo 'Missing calendar file', PHP_EOL;
+    exit(1);
+}
+
+$contents = @file_get_contents($argv[1]);
+
+if (empty($contents)) {
+    echo 'Unable to read file', PHP_EOL;
+    exit(1);
+}
+
+try {
+    $json = json_decode($contents, flags: JSON_THROW_ON_ERROR);
+} catch (JsonException $e) {
+    echo 'Invalid JSON ', $e->getMessage(), PHP_EOL;
+    exit(1);
+}
+
+if (!isset($json->events) || count($json->events) < 80) {
+    echo 'Some events are missing', PHP_EOL;
+    exit(1);
+}
+
+// todo: Validate further...
+
+echo 'Looks good! Got ', count($json->events), ' events', PHP_EOL;

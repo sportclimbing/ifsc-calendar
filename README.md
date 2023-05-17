@@ -86,14 +86,14 @@ $ ./build/ifsc-calendar.phar \
 
 ### 🔧 Todo
  - [ ] Calculate average event duration and add it to `events.json` and to the calendar
- - [ ] Validate newly generated calendar before publishing site
  - [ ] Finish writing calendar setup guides
  - [ ] Cleanup PHP code
  - [ ] Add more tests
  - [ ] Make scraping more robust and fail on errors or missing data
  - [ ] Show activity and warnings in console (domain events)
  - [ ] Fix scraper for older seasons (formatting changes drastically)
- - [ ] Search all YouTube API results (not only the first 50 results)
+ - [x] Validate newly generated calendar before publishing site
+ - [x] Search all YouTube API results (not only the first 50 results)
  - [x] Check if there's an API to fetch events from instead of relying on scraping
  - [x] Find a way to integrate events not posted on the official event page (e.g. Bern)
  - [x] Disable youtube-fetch by default

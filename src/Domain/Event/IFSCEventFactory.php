@@ -7,6 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
+use Closure;
 use DateTimeImmutable;
 
 final readonly class IFSCEventFactory
@@ -37,8 +38,18 @@ final readonly class IFSCEventFactory
         );
     }
 
-    public function getSiteUrl(DateTimeImmutable $startTime, int $id): string
+    private function getSiteUrl(DateTimeImmutable $startTime, int $id): string
     {
-        return sprintf($this->siteUrl, $startTime->format('Y'), $id);
+        $params = [
+            'season' => $startTime->format('Y'),
+            'event_id' => $id,
+        ];
+
+        return preg_replace_callback('~{(?<var_name>season|event_id)}~', $this->replaceVariables($params), $this->siteUrl);
+    }
+
+    private function replaceVariables(array $params): Closure
+    {
+        return static fn (array $match): string => (string) $params[$match['var_name']];
     }
 }

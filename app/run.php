@@ -16,7 +16,7 @@ require __DIR__ . '/../vendor/autoload.php';
 $container = new ContainerBuilder();
 $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/config'));
 $loader->load('services.yml');
-$container->compile();
+$container->compile(true);
 
 /** @var BuildCommand $command */
 $command = $container->get(BuildCommand::class);

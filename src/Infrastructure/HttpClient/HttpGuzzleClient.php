@@ -8,6 +8,7 @@
 namespace nicoSWD\IfscCalendar\Infrastructure\HttpClient;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 
 final readonly class HttpGuzzleClient implements HttpClientInterface
@@ -17,6 +18,7 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
     ) {
     }
 
+    /** @throws GuzzleException */
     public function get(string $url): string
     {
         return $this->client->request('GET', $url)->getBody()->getContents();
