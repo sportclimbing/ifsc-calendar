@@ -1,7 +1,8 @@
 parameters:
   ifsc_youtube_channel_id: 'UC2MGuhIaOP6YLpUx106kTQw'
   calendar_product_identifier: '-//ifsc/ical//2.0/EN'
-  site_event_url: 'https://ifsc.stream/#/season/%%d/event/%%d'
+  site_event_url: 'https://ifsc.stream/#/season/{season}/event/{event_id}'
+  youtube_api_key: '%env(string:YOUTUBE_API_KEY)%'
 
 services:
   nicoSWD\IfscCalendar\Application\Command\:
@@ -48,13 +49,13 @@ services:
     class: nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\YouTube\GuzzleYouTubeClient'
-      - '%ifsc_youtube_channel_id%'
 
   nicoSWD\IfscCalendar\Infrastructure\YouTube\GuzzleYouTubeClient:
     class: nicoSWD\IfscCalendar\Infrastructure\YouTube\GuzzleYouTubeClient
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
       - '%ifsc_youtube_channel_id%'
+      - '%youtube_api_key%'
 
   nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher:
     class: nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher
