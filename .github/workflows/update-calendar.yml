@@ -9,7 +9,6 @@ permissions:
   contents: write
 
 env:
-  YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
   CALENDAR_FILE_ICS: "IFSC-World-Cups-and-World-Championships.ics"
   CALENDAR_FILE_JSON: "IFSC-World-Cups-and-World-Championships.json"
 
@@ -34,7 +33,6 @@ jobs:
               --league "World Cups and World Championships" \
               --output "${{ env.CALENDAR_FILE_ICS }}" \
               --format "ics,json" \
-              --fetch-youtube-urls
 
       - name: "Validate calendar"
         run: php bin/validate-calendar "${{ env.CALENDAR_FILE_JSON }}"
