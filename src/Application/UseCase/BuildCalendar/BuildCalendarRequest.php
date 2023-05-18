@@ -13,7 +13,6 @@ final readonly class BuildCalendarRequest
         public int $season,
         public int $league,
         public string $format,
-        public bool $fetchYouTubeUrls
     ) {
     }
 }

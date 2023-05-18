@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7716297a9a21a06bf38fe5cf55c4d714",
+    "content-hash": "69514ca02d4e2aca860b600ab3b96f19",
     "packages": [
         {
             "name": "eluceo/ical",
@@ -654,6 +654,45 @@
                 "source": "https://github.com/ralouphie/getallheaders/tree/develop"
             },
             "time": "2019-03-08T08:55:37+00:00"
+        },
+        {
+            "name": "sportclimbing/ifsc-youtube-videos",
+            "version": "v1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sportclimbing/ifsc-videos.git",
+                "reference": "9f53fdd42bde69d5ec7304dc500567d4f8c179b0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sportclimbing/ifsc-videos/zipball/9f53fdd42bde69d5ec7304dc500567d4f8c179b0",
+                "reference": "9f53fdd42bde69d5ec7304dc500567d4f8c179b0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "nicoSWD\\IfscVideos\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nico Oelgart",
+                    "email": "nico@oelgart.com"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/sportclimbing/ifsc-videos/issues",
+                "source": "https://github.com/sportclimbing/ifsc-videos/tree/v1.1"
+            },
+            "time": "2023-05-18T22:34:40+00:00"
         },
         {
             "name": "symfony/config",

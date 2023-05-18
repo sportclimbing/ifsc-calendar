@@ -124,7 +124,7 @@ final class YouTubeLinkMatcherTest extends TestCase
         foreach ($titles as $videoId => $title) {
             $videoCollection->add(new YouTubeVideo(
                 title: $title,
-                description: '',
+                duration: 10,
                 videoId: $videoId,
                 publishedAt: new DateTimeImmutable(),
             ));

@@ -25,7 +25,7 @@ final readonly class IFSCCalendarBuilder
     }
 
     /** @throws NoEventsFoundException */
-    public function generateForLeague(int $season, int $league, string $format, bool $fetchYouTubeUrls): string
+    public function generateForLeague(int $season, int $league, string $format): string
     {
         $events = $this->calendarPostProcess->process(
             season: $season,
@@ -36,17 +36,15 @@ final readonly class IFSCCalendarBuilder
             throw NoEventsFoundException::forLeague($league);
         }
 
-        if ($fetchYouTubeUrls) {
-            $this->fetchEventStreamUrls($events);
-        }
+        $this->fetchEventStreamUrls($events, $season);
 
         return $this->calendarBuilderFactory->generateForFormat($format, $events);
     }
 
     /** @param IFSCEvent[] $events */
-    private function fetchEventStreamUrls(array &$events): void
+    private function fetchEventStreamUrls(array &$events, int $season): void
     {
-        $videoCollection = $this->linkFetcher->fetchRecentVideos();
+        $videoCollection = $this->linkFetcher->fetchRecentVideos($season);
 
         foreach ($events as &$event) {
             if ($event->streamUrl) {

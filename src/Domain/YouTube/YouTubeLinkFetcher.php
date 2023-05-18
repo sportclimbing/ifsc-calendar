@@ -14,8 +14,8 @@ final readonly class YouTubeLinkFetcher
     ) {
     }
 
-    public function fetchRecentVideos(): YouTubeVideoCollection
+    public function fetchRecentVideos(int $season): YouTubeVideoCollection
     {
-        return $this->api->fetchRecentVideos();
+        return $this->api->fetchRecentVideos($season);
     }
 }

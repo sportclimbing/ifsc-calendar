@@ -13,7 +13,7 @@ final readonly class YouTubeVideo
 {
     public function __construct(
         public string $title,
-        public string $description,
+        public int $duration,
         public string $videoId,
         public DateTimeImmutable $publishedAt,
     ) {

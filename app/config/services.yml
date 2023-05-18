@@ -2,7 +2,6 @@ parameters:
   ifsc_youtube_channel_id: 'UC2MGuhIaOP6YLpUx106kTQw'
   calendar_product_identifier: '-//ifsc/ical//2.0/EN'
   site_event_url: 'https://ifsc.stream/#/season/{season}/event/{event_id}'
-  youtube_api_key: '%env(string:YOUTUBE_API_KEY)%'
 
 services:
   nicoSWD\IfscCalendar\Application\Command\:
@@ -48,14 +47,12 @@ services:
   nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher:
     class: nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\YouTube\GuzzleYouTubeClient'
+      - '@nicoSWD\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider'
 
-  nicoSWD\IfscCalendar\Infrastructure\YouTube\GuzzleYouTubeClient:
-    class: nicoSWD\IfscCalendar\Infrastructure\YouTube\GuzzleYouTubeClient
+  nicoSWD\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider:
+    class: nicoSWD\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
-      - '%ifsc_youtube_channel_id%'
-      - '%youtube_api_key%'
+      - '@nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideoCollection'
 
   nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher:
     class: nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher
@@ -124,3 +121,11 @@ services:
   # Common
   GuzzleHttp\Client:
     class: GuzzleHttp\Client
+
+  nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideoCollection:
+    class: nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideoCollection
+    arguments:
+      - '@nicoSWD\IfscVideos\Infrastructure\YouTube\YouTubeVideoProvider'
+
+  nicoSWD\IfscVideos\Infrastructure\YouTube\YouTubeVideoProvider:
+    class: nicoSWD\IfscVideos\Infrastructure\YouTube\YouTubeVideoProvider

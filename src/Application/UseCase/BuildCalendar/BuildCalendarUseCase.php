@@ -29,7 +29,6 @@ final readonly class BuildCalendarUseCase
             season: $buildCalendarRequest->season,
             league: $buildCalendarRequest->league,
             format: $buildCalendarRequest->format,
-            fetchYouTubeUrls: $buildCalendarRequest->fetchYouTubeUrls,
         );
     }
 }

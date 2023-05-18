@@ -9,5 +9,5 @@ namespace nicoSWD\IfscCalendar\Domain\YouTube;
 
 interface YouTubeApiClient
 {
-    public function fetchRecentVideos(): YouTubeVideoCollection;
+    public function fetchRecentVideos(int $season): YouTubeVideoCollection;
 }

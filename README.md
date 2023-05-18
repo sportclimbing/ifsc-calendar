@@ -64,26 +64,6 @@ $ ./build/ifsc-calendar.phar \
   --output "ifsc-calendar.ics"
 ```
 
-#### YouTube
-If the optional flag `--fetch-youtube-urls` is passed, it'll attempt to find missing stream URLs from YouTube's
-API. This requires an environment variable with the name `YOUTUBE_API_KEY` to be set, containing your API key.
-
-To generate an API key, enable the API in your [Google Cloud Console](https://console.cloud.google.com/apis/api/youtube.googleapis.com/)
-and [create credentials](https://console.cloud.google.com/apis/credentials).
-
-```shell
-$ export YOUTUBE_API_KEY=xxxxxxxxxxxx
-```
-
-Generate `.ics` calendar file
-```shell
-$ ./build/ifsc-calendar.phar \
-  --season 2023 \
-  --league "World Cups and World Championships" \
-  --output "ifsc-calendar.ics" \
-  --fetch-youtube-urls
-```
-
 ### 🔧 Todo
  - [ ] Calculate average event duration and add it to `events.json` and to the calendar
  - [ ] Finish writing calendar setup guides
