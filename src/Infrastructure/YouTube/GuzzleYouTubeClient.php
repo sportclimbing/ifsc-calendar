@@ -53,7 +53,7 @@ final readonly class GuzzleYouTubeClient implements YouTubeApiClient
 
         do {
             $response = $this->getJsonResponse($nextPageToken);
-            $nextPageToken = $response->nextPageToken ?? null;
+            // $nextPageToken = $response->nextPageToken ?? null;
 
             foreach ($response->items as $item) {
                 $youTubeVideo = $this->createVideo($item);
