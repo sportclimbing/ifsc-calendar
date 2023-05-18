@@ -19,6 +19,8 @@ use SensitiveParameter;
 
 final readonly class GuzzleYouTubeClient implements YouTubeApiClient
 {
+    private const MIN_VIDEO_AGE = '1/1/2023';
+
     private mixed $apiKey;
 
     public function __construct(
@@ -45,7 +47,7 @@ final readonly class GuzzleYouTubeClient implements YouTubeApiClient
     /** @return YouTubeVideo[] */
     private function fetchLatestVideos(): array
     {
-        $minAge = new DateTimeImmutable('1/1/2022');
+        $minAge = new DateTimeImmutable(self::MIN_VIDEO_AGE);
         $nextPageToken = null;
         $items = [];
 
