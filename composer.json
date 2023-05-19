@@ -20,7 +20,7 @@
         "guzzlehttp/guzzle": "^7.5",
         "symfony/filesystem": "^6.0",
         "symfony/finder": "^6.0",
-        "sportclimbing/ifsc-youtube-videos": "^0.0.3"
+        "sportclimbing/ifsc-youtube-videos": "dev-main"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.1"
