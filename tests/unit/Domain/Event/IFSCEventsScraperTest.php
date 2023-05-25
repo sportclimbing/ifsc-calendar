@@ -45,22 +45,22 @@ final class IFSCEventsScraperTest extends TestCase
         $this->assertSame('Women\'s Boulder Semi-final', $event2->name);
         $this->assertSame('2023-04-22T11:00:00+09:00', $this->formatDate($event2->startTime));
         $this->assertSame('2023-04-22T14:00:00+09:00', $this->formatDate($event2->endTime));
-        $this->assertSame('https://youtube.com/live/kuE-qhRq7Fk?feature=share', $event2->streamUrl);
+        $this->assertSame('https://youtu.be/kuE-qhRq7Fk', $event2->streamUrl);
 
         $this->assertSame('Women\'s Boulder Final', $event3->name);
         $this->assertSame('2023-04-22T17:00:00+09:00', $this->formatDate($event3->startTime));
         $this->assertSame('2023-04-22T20:00:00+09:00', $this->formatDate($event3->endTime));
-        $this->assertSame('https://youtube.com/live/eNR77KOXi20?feature=share', $event3->streamUrl);
+        $this->assertSame('https://youtu.be/eNR77KOXi20', $event3->streamUrl);
 
         $this->assertSame('Men\'s Boulder Semi-final', $event4->name);
         $this->assertSame('2023-04-23T11:00:00+09:00', $this->formatDate($event4->startTime));
         $this->assertSame('2023-04-23T14:00:00+09:00', $this->formatDate($event4->endTime));
-        $this->assertSame('https://youtube.com/live/_D1hGBIEdQw?feature=share', $event4->streamUrl);
+        $this->assertSame('https://youtu.be/_D1hGBIEdQw', $event4->streamUrl);
 
         $this->assertSame('Men\'s Boulder Final', $event5->name);
         $this->assertSame('2023-04-23T17:00:00+09:00', $this->formatDate($event5->startTime));
         $this->assertSame('2023-04-23T20:00:00+09:00', $this->formatDate($event5->endTime));
-        $this->assertSame('https://youtube.com/live/JX_-Ab7-IPY?feature=share', $event5->streamUrl);
+        $this->assertSame('https://youtu.be/JX_-Ab7-IPY', $event5->streamUrl);
     }
 
     #[Test]
@@ -88,7 +88,7 @@ final class IFSCEventsScraperTest extends TestCase
         $this->assertSame('Speed Finals', $event2->name);
         $this->assertSame('2023-04-28T20:00:00+09:00', $this->formatDate($event2->startTime));
         $this->assertSame('2023-04-28T23:00:00+09:00', $this->formatDate($event2->endTime));
-        $this->assertSame('https://youtube.com/live/eIa6VYrfqX8', $event2->streamUrl);
+        $this->assertSame('https://youtu.be/eIa6VYrfqX8', $event2->streamUrl);
 
         $this->assertSame('Women\'s Boulder Qualification', $event3->name);
         $this->assertSame('2023-04-29T15:30:00+09:00', $this->formatDate($event3->startTime));
@@ -103,7 +103,7 @@ final class IFSCEventsScraperTest extends TestCase
         $this->assertSame('Boulder Semi-finals', $event5->name);
         $this->assertSame('2023-04-30T18:00:00+09:00', $this->formatDate($event5->startTime));
         $this->assertSame('2023-04-30T21:00:00+09:00', $this->formatDate($event5->endTime));
-        $this->assertSame('https://youtube.com/live/4ZfaojD52K4', $event5->streamUrl);
+        $this->assertSame('https://youtu.be/4ZfaojD52K4', $event5->streamUrl);
     }
 
     #[Test]
@@ -282,7 +282,7 @@ final class IFSCEventsScraperTest extends TestCase
     {
         $eventScraper = new IFSCEventsScraper(
             $this->mockClientReturningFile($fileName),
-            new IFSCEventFactory('https://ifsc.stream/#/event/%d'),
+            new IFSCEventFactory('https://ifsc.stream/#/event/%d', new Normalizer()),
             new DOMHelper(),
             new Normalizer(),
         );

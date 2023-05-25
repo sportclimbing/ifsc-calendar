@@ -96,9 +96,21 @@ final class YouTubeLinkMatcherTest extends TestCase
         $this->assertSame('https://youtu.be/kuE-qhRq7Fk', $this->findStreamUrlForEvent($event));
     }
 
+    #[Test]
+    public function salt_lake_city_speed_qualification_is_found(): void
+    {
+        $event = $this->createEventWithNameAndDescription(
+            name: 'Women\'s Speed Qualification',
+            description: 'IFSC - Climbing World Cup (B,S) - Salt Lake City (USA) 2023',
+        );
+
+        $this->assertSame('https://youtu.be/n6YyV2ddbb4', $this->findStreamUrlForEvent($event));
+    }
+
     private function createVideoCollection(): YouTubeVideoCollection
     {
         $titles = [
+            "n6YyV2ddbb4" => "Women's Speed qualification || Salt Lake City 2023",
             "emrHdLsJTk5" => "Men's Boulder qualification highlights || Seoul 2023",
             "emrHdLsJTk4" => "IFSC World Cup Seoul 2023 || Men's qualification review",
             "dZVTyhrrfao" => "Women's qualifications highlights || Seoul 2023",

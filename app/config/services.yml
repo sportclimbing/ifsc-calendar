@@ -111,6 +111,7 @@ services:
     class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory
     arguments:
       - '%site_event_url%'
+      - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer'
 
   # HTTP Client
   nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient:

@@ -113,7 +113,7 @@ final class SeasonFix2023Test extends TestCase
     {
         $this->season2023Fix = new Season2023PostProcessor(
             $this->mockClientReturningFile('bern_2023.html'),
-            new IFSCEventFactory('https://ifsc.stream/#/season/%d/event/%d'),
+            new IFSCEventFactory('https://ifsc.stream/#/season/%d/event/%d', new Normalizer()),
             new Normalizer(),
             new DOMHelper(),
         );

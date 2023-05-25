@@ -61,4 +61,15 @@ final readonly class Normalizer
     {
         return preg_replace('~\s{2,}~', ' ', trim($string));
     }
+
+    public function normalizeStreamUrl(string $streamUrl): string
+    {
+        $regex = '~youtu(\.be|be\.com)/(live/|watch\?v=)?(?<video_id>[a-zA-Z0-9_-]{10,})~';
+
+        if (preg_match($regex, $streamUrl, $match)) {
+            return sprintf('https://youtu.be/%s', $match['video_id']);
+        }
+
+        return $streamUrl;
+    }
 }

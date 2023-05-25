@@ -8,7 +8,7 @@
 namespace nicoSWD\IfscCalendar\Domain\YouTube;
 
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
 
 final readonly class YouTubeLinkMatcher
 {
@@ -48,15 +48,15 @@ final readonly class YouTubeLinkMatcher
             return true;
         }
 
-        return $videoTags == $eventTags;
+        return $videoTags === $eventTags;
     }
 
-    /** @return IFSCEventTagsRegex[] */
+    /** @return Tag[] */
     private function fetchTagsFromTitle(string $title): array
     {
         $tags = [];
 
-        foreach (IFSCEventTagsRegex::cases() as $eventType) {
+        foreach (Tag::cases() as $eventType) {
             if (preg_match("~\b{$eventType->value}\b~", $title)) {
                 $tags[] = $eventType;
             }
@@ -95,31 +95,31 @@ final readonly class YouTubeLinkMatcher
     private function videoIsHighlights(array $videoTags): bool
     {
         return
-            $this->hasTag($videoTags, IFSCEventTagsRegex::HIGHLIGHTS) ||
-            $this->hasTag($videoTags, IFSCEventTagsRegex::REVIEW);
+            $this->hasTag($videoTags, Tag::HIGHLIGHTS) ||
+            $this->hasTag($videoTags, Tag::REVIEW);
     }
 
     private function videoIsMensAndWomensCombined(array $videoTags, array $eventTags): bool
     {
-        if (!$this->hasTag($videoTags, IFSCEventTagsRegex::MENS) &&
-            !$this->hasTag($videoTags, IFSCEventTagsRegex::WOMENS)
+        if (!$this->hasTag($videoTags, Tag::MENS) &&
+            !$this->hasTag($videoTags, Tag::WOMENS)
         ) {
             $eventTags = $this->removeTags(
                 $eventTags,
-                IFSCEventTagsRegex::MENS,
-                IFSCEventTagsRegex::WOMENS,
+                Tag::MENS,
+                Tag::WOMENS,
             );
         }
 
-        return $videoTags == $eventTags;
+        return $videoTags === $eventTags;
     }
 
-    private function hasTag(array $item, IFSCEventTagsRegex $tag): bool
+    private function hasTag(array $item, Tag $tag): bool
     {
         return in_array($tag, $item, strict: true);
     }
 
-    private function removeTags(array $items, IFSCEventTagsRegex ...$tags): array
+    private function removeTags(array $items, Tag ...$tags): array
     {
         foreach ($tags as $tag) {
             unset($items[array_search($tag, $items)]);

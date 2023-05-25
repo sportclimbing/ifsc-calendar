@@ -9,11 +9,13 @@ namespace nicoSWD\IfscCalendar\Domain\Event;
 
 use Closure;
 use DateTimeImmutable;
+use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
 
 final readonly class IFSCEventFactory
 {
     public function __construct(
         private string $siteUrl,
+        private Normalizer $normalizer,
     ) {
     }
 
@@ -30,7 +32,7 @@ final readonly class IFSCEventFactory
             name: $name,
             id: $id,
             description: $description,
-            streamUrl: $streamUrl,
+            streamUrl: $this->getStreamUrl($streamUrl),
             siteUrl: $this->getSiteUrl($startTime, $id),
             poster: $poster,
             startTime: $startTime,
@@ -51,5 +53,10 @@ final readonly class IFSCEventFactory
     private function replaceVariables(array $params): Closure
     {
         return static fn (array $match): string => (string) $params[$match['var_name']];
+    }
+
+    private function getStreamUrl(string $streamUrl): string
+    {
+        return $this->normalizer->normalizeStreamUrl($streamUrl);
     }
 }
