@@ -27,7 +27,7 @@ final class YouTubeLinkMatcherTest extends TestCase
             description: 'IFSC - Climbing World Cup (B,S) - Seoul (KOR) 2023',
         );
 
-        $this->assertSame('https://youtu.be/mC1RhpB4uuQ', $this->findStreamUrlForEvent($event));
+        $this->assetUrlMatchesEvent('https://youtu.be/mC1RhpB4uuQ', $event);
     }
 
     #[Test]
@@ -38,7 +38,8 @@ final class YouTubeLinkMatcherTest extends TestCase
             description: 'IFSC - Climbing World Cup (B,S) - Seoul (KOR) 2023',
         );
 
-        $this->assertSame('https://youtu.be/eIa6VYrfqX8', $this->findStreamUrlForEvent($event));
+        $this->assetUrlMatchesEvent('https://youtu.be/eIa6VYrfqX8', $event);
+
     }
 
     #[Test]
@@ -93,7 +94,7 @@ final class YouTubeLinkMatcherTest extends TestCase
             description: 'IFSC - Climbing World Cup (B) - Hachioji (JPN) 2023',
         );
 
-        $this->assertSame('https://youtu.be/kuE-qhRq7Fk', $this->findStreamUrlForEvent($event));
+        $this->assetUrlMatchesEvent('https://youtu.be/kuE-qhRq7Fk', $event);
     }
 
     #[Test]
@@ -104,7 +105,7 @@ final class YouTubeLinkMatcherTest extends TestCase
             description: 'IFSC - Climbing World Cup (B,S) - Salt Lake City (USA) 2023',
         );
 
-        $this->assertSame('https://youtu.be/n6YyV2ddbb4', $this->findStreamUrlForEvent($event));
+        $this->assetUrlMatchesEvent('https://youtu.be/n6YyV2ddbb4', $event);
     }
 
     private function createVideoCollection(): YouTubeVideoCollection
@@ -162,6 +163,11 @@ final class YouTubeLinkMatcherTest extends TestCase
     private function findStreamUrlForEvent(IFSCEvent $event): ?string
     {
         return $this->linkMatcher->findStreamUrlForEvent($event, $this->createVideoCollection());
+    }
+
+    private function assetUrlMatchesEvent(string $url, IFSCEvent $event): void
+    {
+        $this->assertSame($url, $this->findStreamUrlForEvent($event));
     }
 
     protected function setUp(): void
