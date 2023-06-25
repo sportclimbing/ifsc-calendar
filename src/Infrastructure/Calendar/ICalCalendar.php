@@ -8,6 +8,7 @@
 namespace nicoSWD\IfscCalendar\Infrastructure\Calendar;
 
 use Closure;
+use DateInterval;
 use Eluceo\iCal\Domain\Entity\Calendar;
 use Eluceo\iCal\Domain\Entity\Event;
 use Eluceo\iCal\Domain\ValueObject\DateTime;
@@ -22,6 +23,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     public function __construct(
         private CalendarFactory $calendarFactory,
         private string $productIdentifier,
+        private string $publishedTtl,
     ) {
     }
 
@@ -35,8 +37,12 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
     public function createCalenderFromEvents(array $events): Calendar
     {
-        $calendar = new Calendar(array_map($this->eventConvert(), $events));
+        // $events = array_filter($events, $this->excludeQualifications());
+        $events = array_map($this->eventConvert(), $events);
+
+        $calendar = new Calendar($events);
         $calendar->setProductIdentifier($this->productIdentifier);
+        $calendar->setPublishedTTL(new DateInterval($this->publishedTtl));
 
         return $calendar;
     }
@@ -55,6 +61,11 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         return fn (IFSCEvent $event): Event => $this->createEvent($event);
     }
 
+    public function excludeQualifications(): Closure
+    {
+        return fn (IFSCEvent $event): bool => !$this->isQualification($event) || $this->hasSteamLink($event);
+    }
+
     public function buildTimeSpan(IFSCEvent $event): TimeSpan
     {
         return new TimeSpan(
@@ -66,5 +77,15 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     public function buildDescription(IFSCEvent $event): string
     {
         return "{$event->description}\n\n{$event->siteUrl}";
+    }
+
+    private function isQualification(IFSCEvent $event): bool
+    {
+        return preg_match('~qualifications?~i', $event->name) === 1;
+    }
+
+    private function hasSteamLink(IFSCEvent $event): bool
+    {
+        return !empty($event->streamUrl);
     }
 }
