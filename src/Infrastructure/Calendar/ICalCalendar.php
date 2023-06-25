@@ -37,7 +37,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
     public function createCalenderFromEvents(array $events): Calendar
     {
-        // $events = array_filter($events, $this->excludeQualifications());
+        $events = array_filter($events, $this->excludeQualifications());
         $events = array_map($this->eventConvert(), $events);
 
         $calendar = new Calendar($events);
@@ -63,7 +63,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
     public function excludeQualifications(): Closure
     {
-        return fn (IFSCEvent $event): bool => !$this->isQualification($event) || $this->hasSteamLink($event);
+        return fn (IFSCEvent $event): bool => !$this->isQualification($event) /* || $this->hasSteamLink($event) */;
     }
 
     public function buildTimeSpan(IFSCEvent $event): TimeSpan
