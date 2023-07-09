@@ -125,6 +125,6 @@ final readonly class YouTubeLinkMatcher
             unset($items[array_search($tag, $items)]);
         }
 
-        return $items;
+        return array_values($items);
     }
 }

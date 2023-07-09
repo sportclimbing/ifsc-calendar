@@ -108,6 +108,17 @@ final class YouTubeLinkMatcherTest extends TestCase
         $this->assetUrlMatchesEvent('https://youtu.be/n6YyV2ddbb4', $event);
     }
 
+    #[Test]
+    public function chamonix_lead_finals(): void
+    {
+        $event = $this->createEventWithNameAndDescription(
+            name: 'Men\'s Lead Final',
+            description: 'World Cup (L,S) - Chamonix (FRA) 2023',
+        );
+
+        $this->assetUrlMatchesEvent('https://youtu.be/ZNgbe8vi2OI', $event);
+    }
+
     private function createVideoCollection(): YouTubeVideoCollection
     {
         $titles = [
@@ -130,6 +141,11 @@ final class YouTubeLinkMatcherTest extends TestCase
             "kuE-qhRq7Fk" => "Women's Boulder semi-final || Hachioji 2023",
             "MQeQs6K_T5g" => "Qualifications highlights || Hachioji 2023",
             "vT8UFPP3I-g" => "IFSC Routesetter Olga Niemiec presents one of the coolest holds you will see on the wall in Hachioji",
+            "ZNgbe8vi2OI" => "Lead finals || Chamonix 2023",
+            "iF_1fI21Z_w" => "Lead semi-finals || Chamonix 2023",
+            "3zfs3s06yPQ" => "Speed finals || Chamonix 2023",
+            "h6EYmiImp5g" => "Speed qualifications || Chamonix 2023",
+
         ];
 
         $videoCollection = new YouTubeVideoCollection();
