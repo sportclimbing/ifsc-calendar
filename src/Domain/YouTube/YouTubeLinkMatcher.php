@@ -96,6 +96,7 @@ final readonly class YouTubeLinkMatcher
     {
         return
             $this->hasTag($videoTags, Tag::HIGHLIGHTS) ||
+            $this->hasTag($videoTags, Tag::PRESS_CONFERENCE) ||
             $this->hasTag($videoTags, Tag::REVIEW);
     }
 
