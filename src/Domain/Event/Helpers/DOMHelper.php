@@ -57,12 +57,14 @@ final readonly class DOMHelper
         $find = [
             // This makes `textContent` display each event in a new line, and thereby easier to parse
             '~<br\s*/?>~i',
+            '~</h3>~',
             // This replaces named links with just their blank URL
             '~<a[\s\r\n]+href=\s*(")?([\w:\-./?=]+)\s*[^>]*>(.*?)</a>~si',
         ];
 
         $replace = [
             "<br/>\n",
+            "</h3>\n",
             '$2',
         ];
 

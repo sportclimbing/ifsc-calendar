@@ -100,7 +100,9 @@ final readonly class Season2023PostProcessor
 
     private function normalizeEventLine(DOMElement $event): string
     {
-        return $this->normalizer->removeMultipleSpaces($event->textContent);
+        return $this->normalizer->removeMultipleSpaces(
+            explode("\n", $event->nodeValue)[0]
+        );
     }
 
     /** @param IFSCEvent[] $events */
