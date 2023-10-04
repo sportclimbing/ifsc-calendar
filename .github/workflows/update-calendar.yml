@@ -29,7 +29,7 @@ jobs:
         run: |
           composer install --no-dev --optimize-autoloader
           php app/run.php \
-              --season current \
+              --season 2023 \
               --league "World Cups and World Championships" \
               --output "${{ env.CALENDAR_FILE_ICS }}" \
               --format "ics,json" \
