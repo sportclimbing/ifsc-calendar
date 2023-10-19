@@ -23,7 +23,7 @@ final readonly class Season2023PostProcessor
     private const BERN_SCHEDULE_URL = 'https://www.ifsc-climbing.org/bern-2023/schedule';
     private const BERN_XPATH_EVENTS = "//div[contains(@class, 'js-filter')]/div[@data-tag]";
     private const BERN_IFSC_EVENT_ID = 1301;
-    private const BERN_IFSC_EVENT_DESCRIPTION = 'IFSC - Climbing World Championships (B,L,S,B&L) - Bern (SUI) 2023';
+    private const BERN_IFSC_EVENT_DESCRIPTION = 'IFSC World Championships Bern 2023';
     private const BERN_IFSC_2023_POSTER = 'https://ifsc.stream/img/posters/bern2023.jpg';
     private const BERN_TIMEZONE = 'Europe/Zurich';
     private const BERN_IDENTIFIER = 'Bern (SUI)';
