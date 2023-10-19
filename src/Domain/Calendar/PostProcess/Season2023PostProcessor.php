@@ -65,7 +65,7 @@ final readonly class Season2023PostProcessor
                 name: $this->normalizer->cupName($schedule->cupName),
                 id: self::BERN_IFSC_EVENT_ID,
                 description: self::BERN_IFSC_EVENT_DESCRIPTION,
-                streamUrl: '',
+                streamUrl: $this->extractStreamUrl($event),
                 poster: self::BERN_IFSC_2023_POSTER,
                 startTime: $schedule->duration->startTime,
                 endTime: $schedule->duration->endTime,
@@ -114,5 +114,12 @@ final readonly class Season2023PostProcessor
     private function isBernEvent(): Closure
     {
         return static fn(IFSCEvent $event): bool => str_contains($event->name, self::BERN_IDENTIFIER);
+    }
+
+    private function extractStreamUrl(DOMElement $event): string
+    {
+        return $this->normalizer->normalizeStreamUrl(
+            explode("\n", $event->textContent)[1]
+        );
     }
 }
