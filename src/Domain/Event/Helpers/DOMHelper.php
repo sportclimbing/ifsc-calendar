@@ -15,7 +15,7 @@ final readonly class DOMHelper
 {
     private const XPATH_PARAGRAPHS = "//*[@id='ifsc_event']/div/div/div[@class='text']/p";
 
-    private const POSTER_IMAGE_PREFIX = 'https://cdn.ifsc-climbing.org/images/Events/';
+    private const POSTER_IMAGE_PREFIX = '/images/Events/';
 
     private const XPATH_SIDEBAR = "//div[@class='text2']";
 
