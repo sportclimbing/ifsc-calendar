@@ -44,7 +44,7 @@ final readonly class DOMHelper
         foreach ($images as $image) {
             foreach ($image->attributes as $name => $attribute) {
                 if ($name === 'data-src' && str_starts_with($attribute->textContent, self::POSTER_IMAGE_PREFIX)) {
-                    return (string) $attribute->textContent;
+                    return "https://www.ifsc-climbing.org{$attribute->textContent}";
                 }
             }
         }
