@@ -9,6 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\Event;
 
 use DOMElement;
 use DOMXPath;
+use Exception;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
@@ -81,10 +82,11 @@ final readonly class IFSCEventsScraper
         return $events;
     }
 
+    /** @throws Exception */
     private function getXPathForEventsWithId(int $eventId): DOMXPath
     {
         return $this->domHelper->htmlToXPath(
-            $this->client->get($this->buildLeagueUri($eventId))
+            $this->client->getRetry($this->buildLeagueUri($eventId))
         );
     }
 

@@ -10,4 +10,6 @@ namespace nicoSWD\IfscCalendar\Domain\HttpClient;
 interface HttpClientInterface
 {
     public function get(string $url): string;
+
+    public function getRetry(string $url): string;
 }
