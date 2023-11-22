@@ -20,12 +20,6 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
     }
 
     /** @throws GuzzleException */
-    public function get(string $url): string
-    {
-        return $this->client->request('GET', $url)->getBody()->getContents();
-    }
-
-    /** @throws GuzzleException */
     public function getRetry(string $url): string
     {
         $retryCount = 0;
@@ -44,5 +38,11 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
         } while (!$html);
 
         return $html;
+    }
+
+    /** @throws GuzzleException */
+    private function get(string $url): string
+    {
+        return $this->client->request('GET', $url)->getBody()->getContents();
     }
 }

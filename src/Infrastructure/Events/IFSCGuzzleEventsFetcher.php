@@ -62,7 +62,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     public function fetchHtmlForLeague(int $league): object
     {
         try {
-            $response = $this->client->get($this->buildLeagueUri($league));
+            $response = $this->client->getRetry($this->buildLeagueUri($league));
 
             return @json_decode($response, flags: JSON_THROW_ON_ERROR);
         } catch (GuzzleException $e) {

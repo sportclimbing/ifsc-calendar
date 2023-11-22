@@ -8,8 +8,8 @@
 namespace nicoSWD\IfscCalendar\Infrastructure\Season;
 
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcherInterface;
@@ -19,7 +19,7 @@ final readonly class GuzzleSeasonFetcher implements IFSCSeasonFetcherInterface
     private const IFSC_SEASONS_API_URL = 'https://components.ifsc-climbing.org/results-api.php?api=index';
 
     public function __construct(
-        private Client $client,
+        private HttpClientInterface $client,
     ) {
     }
 
@@ -29,7 +29,7 @@ final readonly class GuzzleSeasonFetcher implements IFSCSeasonFetcherInterface
      */
     public function fetchSeasons(): array
     {
-        $response = $this->client->request('GET', self::IFSC_SEASONS_API_URL)->getBody()->getContents();
+        $response = $this->client->getRetry(self::IFSC_SEASONS_API_URL);
         $response = @json_decode($response);
 
         if (json_last_error()) {

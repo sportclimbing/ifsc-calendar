@@ -73,7 +73,7 @@ services:
   nicoSWD\IfscCalendar\Infrastructure\Season\GuzzleSeasonFetcher:
     class: nicoSWD\IfscCalendar\Infrastructure\Season\GuzzleSeasonFetcher
     arguments:
-      - '@GuzzleHttp\Client'
+      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
 
   nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess:
     class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess

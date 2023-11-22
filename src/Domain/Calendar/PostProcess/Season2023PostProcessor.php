@@ -92,7 +92,7 @@ final readonly class Season2023PostProcessor
     private function fetchEventsFromHTML(): DOMNodeList
     {
         $xpath = $this->DOMHelper->htmlToXPath(
-            $this->httpClient->get(self::BERN_SCHEDULE_URL)
+            $this->httpClient->getRetry(self::BERN_SCHEDULE_URL)
         );
 
         return $xpath->query(self::BERN_XPATH_EVENTS);
