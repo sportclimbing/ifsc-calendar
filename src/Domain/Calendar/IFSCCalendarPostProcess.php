@@ -7,6 +7,8 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Calendar;
 
+use Closure;
+use Exception;
 use nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 
@@ -21,6 +23,7 @@ final readonly class IFSCCalendarPostProcess
      * @param int $season
      * @param IFSCEvent[] $events
      * @return IFSCEvent[]
+     * @throws Exception
      */
     public function process(int $season, array $events): array
     {
@@ -30,6 +33,19 @@ final readonly class IFSCCalendarPostProcess
                 break;
         }
 
+       $this->orderEvents($events);
+
         return $events;
+    }
+
+    /** @param IFSCEvent[] $events */
+    private function orderEvents(array &$events): void
+    {
+        usort($events, $this->orderByDate());
+    }
+
+    private function orderByDate(): Closure
+    {
+        return static fn (IFSCEvent $event1, IFSCEvent $event2) => $event1->startsAt <=> $event2->startsAt;
     }
 }

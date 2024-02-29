@@ -10,5 +10,5 @@ namespace nicoSWD\IfscCalendar\Domain\Event;
 interface IFSCEventFetcherInterface
 {
     /** @return IFSCEvent[] */
-    public function fetchEventsForLeague(int $season, int $league): array;
+    public function fetchEventsForLeague(int $season, int $leagueId): array;
 }

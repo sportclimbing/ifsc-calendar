@@ -7,52 +7,28 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
-use Closure;
 use DateTimeImmutable;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
 
-final readonly class IFSCEventFactory
+final readonly class IFSCRoundFactory
 {
     public function __construct(
-        private string $siteUrl,
         private Normalizer $normalizer,
     ) {
     }
 
     public function create(
         string $name,
-        int $id,
-        string $description,
         string $streamUrl,
-        string $poster,
         DateTimeImmutable $startTime,
         DateTimeImmutable $endTime,
-    ): IFSCEvent {
-        return new IFSCEvent(
+    ): IFSCRound {
+        return new IFSCRound(
             name: $name,
-            id: $id,
-            description: $description,
             streamUrl: $this->getStreamUrl($streamUrl),
-            siteUrl: $this->getSiteUrl($startTime, $id),
-            poster: $poster,
             startTime: $startTime,
             endTime: $endTime,
         );
-    }
-
-    private function getSiteUrl(DateTimeImmutable $startTime, int $id): string
-    {
-        $params = [
-            'season' => $startTime->format('Y'),
-            'event_id' => $id,
-        ];
-
-        return preg_replace_callback('~{(?<var_name>season|event_id)}~', $this->replaceVariables($params), $this->siteUrl);
-    }
-
-    private function replaceVariables(array $params): Closure
-    {
-        return static fn (array $match): string => (string) $params[$match['var_name']];
     }
 
     private function getStreamUrl(string $streamUrl): string

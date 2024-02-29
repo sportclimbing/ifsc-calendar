@@ -46,21 +46,23 @@ final readonly class IFSCCalendarBuilder
     {
         $videoCollection = $this->linkFetcher->fetchRecentVideos($season);
 
-        foreach ($events as &$event) {
-            if ($event->streamUrl) {
-                continue;
-            }
+        foreach ($events as $event) {
+            foreach ($event->rounds as &$round) {
+                if ($round->streamUrl) {
+                    continue;
+                }
 
-            $streamUrl = $this->linkMatcher->findStreamUrlForEvent($event, $videoCollection);
+                $streamUrl = $this->linkMatcher->findStreamUrlForRound($round, $event, $videoCollection);
 
-            if ($streamUrl) {
-                $event = $event->updateStreamUrl($streamUrl);
+                if ($streamUrl) {
+                    $round = $round->updateStreamUrl($streamUrl);
+                }
             }
         }
     }
 
     /** @return IFSCEvent[] */
-    public function fetchEvents(int $season, int $league): array
+    private function fetchEvents(int $season, int $league): array
     {
         return $this->eventFetcher->fetchEventsForLeague($season, $league);
     }

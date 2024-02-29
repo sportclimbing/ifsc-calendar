@@ -7,7 +7,10 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Calendar;
 
+use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
+
 interface IFSCCalendarGeneratorInterface
 {
+    /** @param IFSCEvent[] $events */
     public function generateForEvents(array $events): string;
 }

@@ -8,37 +8,38 @@
 namespace nicoSWD\IfscCalendar\Domain\YouTube;
 
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
 
 final readonly class YouTubeLinkMatcher
 {
-    private const YOUTUBE_URL = 'https://youtu.be/';
+    private const YOUTUBE_BASE_URL = 'https://youtu.be/';
 
-    // Eg: IFSC - Climbing World Cup (B,S) - Seoul (KOR) 2023
-    private const REGEX_LOCATION_AND_SEASON = '~.+\s-\s+(?<location>.+)\s+\([a-z]{3}\)\s+(?<season>20\d{2})$~';
+    // Eg: "ifsc world cup koper 2023
+    private const REGEX_LOCATION_AND_SEASON = '~^IFSC World (?:Cup|Championships?) (?<location>.+) (?<season>20\d{2})$~i';
 
-    public function findStreamUrlForEvent(IFSCEvent $event, YouTubeVideoCollection $videoCollection): ?string
+    public function findStreamUrlForRound(IFSCRound $round, IFSCEvent $event, YouTubeVideoCollection $videoCollection): ?string
     {
         foreach ($videoCollection->getIterator() as $video) {
-            if ($this->videoTitleMatchesEvent($video, $event)) {
-                return self::YOUTUBE_URL . $video->videoId;
+            if ($this->videoTitleMatchesRoundName($video, $round, $event)) {
+                return self::YOUTUBE_BASE_URL . $video->videoId;
             }
         }
 
         return null;
     }
 
-    private function videoTitleMatchesEvent(YouTubeVideo $video, IFSCEvent $event): bool
+    private function videoTitleMatchesRoundName(YouTubeVideo $video, IFSCRound $round, IFSCEvent $event): bool
     {
         $videoTitle = strtolower($video->title);
-        $eventName = strtolower($event->name);
+        $roundName = strtolower($round->name);
 
         if (!$this->videoTitleContainsSameLocationAndSeason($videoTitle, $event)) {
             return false;
         }
 
         $videoTags = $this->fetchTagsFromTitle($videoTitle);
-        $eventTags = $this->fetchTagsFromTitle($eventName);
+        $eventTags = $this->fetchTagsFromTitle($roundName);
 
         if ($this->videoIsHighlights($videoTags)) {
             return false;
@@ -67,7 +68,7 @@ final readonly class YouTubeLinkMatcher
 
     private function getLocationAndSeason(IFSCEvent $event): ?array
     {
-        if (preg_match(self::REGEX_LOCATION_AND_SEASON, strtolower($event->description), $eventDetails)) {
+        if (preg_match(self::REGEX_LOCATION_AND_SEASON, strtolower($event->eventName), $eventDetails)) {
             return [
                 $eventDetails['location'],
                 $eventDetails['season'],

@@ -8,9 +8,7 @@
 namespace nicoSWD\IfscCalendar\tests\Domain\Calendar\Fixes;
 
 use nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor;
-use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory;
-use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\tests\Helpers\MockHttpClient;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -24,10 +22,25 @@ final class SeasonFix2023Test extends TestCase
     #[Test]
     public function bern_2023_events_are_found(): void
     {
-        $events = [];
+        $events = [
+            new IFSCEvent(
+                season: 2023,
+                eventId: 1301,
+                timeZone: '',
+                eventName: '',
+                location: 'Jakata',
+                country: 'JPN',
+                poster: '',
+                siteUrl: '',
+                startsAt: '',
+                endsAt: '',
+                disciplines: [],
+                rounds: [],
+            ),
+        ];
         $newEvents = $this->season2023Fix->process($events);
 
-        $this->assertCount(19, $newEvents);
+        $this->assertCount(17, $newEvents[0]->rounds);
 
         [
             $event1,
@@ -40,16 +53,14 @@ final class SeasonFix2023Test extends TestCase
             $event8,
             $event9,
             $event10,
-            $event11,
             $event12,
             $event13,
             $event14,
             $event15,
-            $event16,
             $event17,
             $event18,
             $event19,
-        ] = $newEvents;
+        ] = $newEvents[0]->rounds;
 
         $this->assertSame('Men\'s Boulder Qualification', $event1->name);
         $this->assertSame('2023-08-01T09:00:00+02:00', $this->formatDate($event1->startTime));
@@ -81,9 +92,6 @@ final class SeasonFix2023Test extends TestCase
         $this->assertSame('Lead Finals', $event10->name);
         $this->assertSame('2023-08-06T18:30:00+02:00', $this->formatDate($event10->startTime));
 
-        $this->assertSame('Paraclimbing Qualifications', $event11->name);
-        $this->assertSame('2023-08-08T09:00:00+02:00', $this->formatDate($event11->startTime));
-
         $this->assertSame('Women\'s Boulder & Lead Semi-final', $event12->name);
         $this->assertSame('2023-08-09T09:00:00+02:00', $this->formatDate($event12->startTime));
 
@@ -95,9 +103,6 @@ final class SeasonFix2023Test extends TestCase
 
         $this->assertSame('Speed Qualifications', $event15->name);
         $this->assertSame('2023-08-10T09:00:00+02:00', $this->formatDate($event15->startTime));
-
-        $this->assertSame('Paraclimbing Finals', $event16->name);
-        $this->assertSame('2023-08-10T14:00:00+02:00', $this->formatDate($event16->startTime));
 
         $this->assertSame('Speed Finals', $event17->name);
         $this->assertSame('2023-08-10T20:00:00+02:00', $this->formatDate($event17->startTime));
@@ -111,12 +116,7 @@ final class SeasonFix2023Test extends TestCase
 
     protected function setUp(): void
     {
-        $this->season2023Fix = new Season2023PostProcessor(
-            $this->mockClientReturningFile('bern_2023.html'),
-            new IFSCEventFactory('https://ifsc.stream/#/season/%d/event/%d', new Normalizer()),
-            new Normalizer(),
-            new DOMHelper(),
-        );
+        $this->season2023Fix = new Season2023PostProcessor();
 
         parent::setUp();
     }

@@ -15,8 +15,6 @@ final readonly class DOMHelper
 {
     private const XPATH_PARAGRAPHS = "//*[@id='ifsc_event']/div/div/div[@class='text']/p";
 
-    private const POSTER_IMAGE_PREFIX = '/images/Events/';
-
     private const XPATH_SIDEBAR = "//div[@class='text2']";
 
     public function htmlToXPath(string $html): DOMXPath
@@ -36,23 +34,23 @@ final readonly class DOMHelper
         return $xpath->query(self::XPATH_PARAGRAPHS);
     }
 
-    public function getPoster(DOMXPath $xpath): string
+    public function getPoster(DOMXPath $xpath): ?string
     {
         $sideBar = $xpath->query(self::XPATH_SIDEBAR)->item(0);
         $images = $sideBar?->getElementsByTagName('img') ?? [];
 
         foreach ($images as $image) {
             foreach ($image->attributes as $name => $attribute) {
-                if ($name === 'data-src' && str_starts_with($attribute->textContent, self::POSTER_IMAGE_PREFIX)) {
-                    return "https://www.ifsc-climbing.org{$attribute->textContent}";
+                if ($name === 'data-src' && $this->hasPosterPrefix($attribute->textContent, $match)) {
+                    return "https://cdn.ifsc-climbing.org{$match['path']}";
                 }
             }
         }
 
-        return '';
+        return null;
     }
 
-    public function normalizeHtml(string $html): string
+    private function normalizeHtml(string $html): string
     {
         $find = [
             // This makes `textContent` display each event in a new line, and thereby easier to parse
@@ -69,5 +67,10 @@ final readonly class DOMHelper
         ];
 
         return preg_replace($find, $replace, $html);
+    }
+
+    private function hasPosterPrefix(string $textContent, &$match): bool
+    {
+        return preg_match('~^(?:https://(?:cdn|www)\.ifsc-climbing\.org)?(?<path>/images/Events/[^$]+)~', $textContent, $match) === 1;
     }
 }
