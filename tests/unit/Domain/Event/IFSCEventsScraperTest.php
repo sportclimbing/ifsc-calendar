@@ -9,8 +9,8 @@ namespace nicoSWD\IfscCalendar\tests\Domain\Event;
 
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCRoundFactory;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCRoundsScraper;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\tests\Helpers\MockHttpClient;
 use PHPUnit\Framework\Attributes\Test;

@@ -19,14 +19,18 @@ use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCRound;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCRoundsScraper;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient;
 
 final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterface
 {
     private const IFSC_LEAGUE_API_ENDPOINT = 'https://components.ifsc-climbing.org/results-api.php?api=season_leagues_calendar&league=%d';
+
+    private const IFSC_STARTERS_API_ENDPOINT = 'https://components.ifsc-climbing.org/results-api.php?api=starters&event_id=%d';
 
     private const IFSC_EVENT_API_ENDPOINT = 'https://ifsc.results.info/api/v1/events/%d';
 
@@ -47,7 +51,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
      * @throws InvalidURLException
      * @throws Exception
      */
-    public function fetchEventsForLeague(int $season, int $leagueId): array
+    public function fetchEventsForLeague(IFSCSeasonYear $season, int $leagueId): array
     {
         $sessionId = $this->fetchSessionIdCookie();
         $events = [];
@@ -73,8 +77,9 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
                 siteUrl: $this->getSiteUrl($season, $event),
                 startsAt: $eventInfo->starts_at,
                 endsAt: $eventInfo->ends_at,
-                disciplines: $this->fetchDisciplines($eventInfo),
+                disciplines: $this->getDisciplines($eventInfo),
                 rounds: $rounds,
+                starters: $this->fetchAthletes($event->event_id, $sessionId),
             );
         }
 
@@ -84,7 +89,12 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     /** @throws IFSCEventsScraperException */
     private function fetchAdditionalEventInfo(int $eventId, string $sessionId): object
     {
-        return $this->request($this->buildInfoUri($eventId), [
+        return $this->fetchAuth($this->buildInfoUri($eventId), $sessionId);
+    }
+
+    private function fetchAuth(string $url, string $sessionId)
+    {
+        return $this->request($url, [
             RequestOptions::HEADERS => [
                 // Apparently, this is required to pass the authorization check
                 'referer' => self::IFSC_RESULTS_INFO_PAGE,
@@ -103,7 +113,13 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     }
 
     /** @throws IFSCEventsScraperException */
-    private function request(string $url, array $options = []): object
+    private function fetchJsonStartersForEvent(int $eventId): array
+    {
+        return $this->request($this->buildStartersUri($eventId));
+    }
+
+    /** @throws IFSCEventsScraperException */
+    private function request(string $url, array $options = []): object|array
     {
         try {
             $response = $this->httpClient->getRetry($url, $options);
@@ -143,7 +159,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
      * @throws InvalidURLException
      * @throws IFSCEventsScraperException
      */
-    private function fetchScrapedRounds(int $season, object $event): IFSCScrapedEventsResult
+    private function fetchScrapedRounds(IFSCSeasonYear $season, object $event): IFSCScrapedEventsResult
     {
         return $this->roundsScraper->fetchRoundsAndPosterForEvent(
             season: $season,
@@ -152,7 +168,26 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
         );
     }
 
-    private function fetchDisciplines(object $info): array
+    /**
+     * @return IFSCStarter[]
+     * @throws IFSCEventsScraperException
+     */
+    private function fetchStarters(int $eventId): array
+    {
+        $starters = [];
+
+        foreach ($this->fetchJsonStartersForEvent($eventId) as $starter) {
+            $starters[] = [
+                'firstName' => $starter->firstname,
+                'lastName' => $starter->lastname,
+                'country' => $starter->country,
+            ];
+        }
+
+        return $starters;
+    }
+
+    private function getDisciplines(object $info): array
     {
         $disciplines = [];
 
@@ -171,7 +206,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
         foreach ($eventInfo->d_cats as $category) {
             foreach ($category->category_rounds as $round) {
                 $rounds[] = new IFSCRound(
-                    name: sprintf("%s's %s %s", $round->category, ucfirst($round->kind), $round->name),
+                    name: $this->getRoundName($round),
                     streamUrl: null,
                     startTime: $this->getStartTime($eventInfo),
                     endTime: $this->getStartTime($eventInfo)->modify('+3 hours'),
@@ -183,10 +218,10 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
         return $rounds;
     }
 
-    private function getSiteUrl(int $season, object $event): string
+    private function getSiteUrl(IFSCSeasonYear $season, object $event): string
     {
         $params = [
-            'season' => $season,
+            'season' => $season->value,
             'event_id' => $event->event_id,
         ];
 
@@ -203,6 +238,11 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
         return sprintf(self::IFSC_LEAGUE_API_ENDPOINT, $leagueId);
     }
 
+    private function buildStartersUri(int $eventId): string
+    {
+        return sprintf(self::IFSC_STARTERS_API_ENDPOINT, $eventId);
+    }
+
     private function buildInfoUri(int $eventId): string
     {
         return sprintf(self::IFSC_EVENT_API_ENDPOINT, $eventId);
@@ -212,5 +252,76 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     private function getStartTime(object $eventInfo): DateTimeImmutable
     {
         return new DateTimeImmutable($eventInfo->starts_at, new DateTimeZone($eventInfo->timezone->value));
+    }
+
+    private function getRoundName(object $round): string
+    {
+        return sprintf("%s's %s %s", $round->category, ucfirst($round->kind), $round->name);
+    }
+
+    /**
+     * @return IFSCStarter[]
+     * @throws IFSCEventsScraperException
+     */
+    private function fetchAthletes(int $eventId, string $sessionId): array
+    {
+        $curw = $this->fetchAuth('https://ifsc.results.info/api/v1/cuwr', $sessionId);
+        $starters = $this->fetchStarters($eventId);
+
+        $athletes = [];
+        $scores = [];
+
+        foreach ($curw as $value) {
+            $response = $this->fetchAuth("https://ifsc.results.info/api/v1/cuwr/{$value->dcat_id}", $sessionId);
+
+            foreach ($response->ranking as $athlete) {
+                if (!isset($scores[$athlete->athlete_id])) {
+                    $scores[$athlete->athlete_id] = 0;
+                }
+
+                $scores[$athlete->athlete_id] += $athlete->score;
+
+                $athletes[$athlete->athlete_id] = [
+                    'id' => $athlete->athlete_id,
+                    'firstname' => $athlete->firstname,
+                    'lastname' => $athlete->lastname,
+                    'country' => $athlete->country,
+                    'photo_url' => $athlete->photo_url ?? null,
+                ];
+            }
+        }
+
+        foreach ($scores as $athleteId => $score) {
+            $athletes[$athleteId]['score'] = $score;
+        }
+
+        usort($athletes, static fn (array $athlete1, array $athlete2): int => $athlete2['score'] <=> $athlete1['score']);
+        $matches = [];
+
+        foreach ($starters as $starter) {
+            foreach ($athletes as $athlete) {
+                if (
+                    $starter['firstName'] === $athlete['firstname'] &&
+                    $starter['lastName'] === $athlete['lastname'] &&
+                    $starter['country'] === $athlete['country']
+                ) {
+                    $matches[] = new IFSCStarter(
+                        firstName: $starter['firstName'],
+                        lastName: $starter['lastName'],
+                        country: $starter['country'],
+                        score: $athlete['score'],
+                        photoUrl: $athlete['photo_url'],
+                    );
+
+                    if (count($matches) === 20) {
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        usort($matches, static fn (IFSCStarter $athlete1, IFSCStarter $athlete2): int => $athlete2->score <=> $athlete1->score);
+
+        return $matches;
     }
 }

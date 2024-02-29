@@ -13,7 +13,8 @@ use DateTimeZone;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
 
 final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
 {
@@ -30,7 +31,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
         foreach ($events as $event) {
             $jsonEvents['events'][] = [
                 'id' => $event->eventId,
-                'season' => $event->season,
+                'season' => $event->season->value,
                 'name' => $event->eventName,
                 'country' => $event->country,
                 'location' => $event->location,
@@ -42,6 +43,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
                 'ends_at' => $this->formatDate($event->endsAt, $event->timeZone),
                 'timezone' => $event->timeZone,
                 'rounds' => $this->formatRound($event->rounds),
+                'starters' => $this->formatStarters($event->starters),
             ];
         }
 
@@ -63,6 +65,18 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
         ];
 
         return array_map($format, $rounds);
+    }
+
+    private function formatStarters(array $starters): array
+    {
+        $format = static fn (IFSCStarter $starter): array => [
+            'first_name' => $starter->firstName,
+            'last_name' => $starter->lastName,
+            'country' => $starter->country,
+            'photo_url' => $starter->photoUrl,
+        ];
+
+        return array_map($format, $starters);
     }
 
     private function buildUrl(IFSCEvent $event): string

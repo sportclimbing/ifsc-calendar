@@ -7,6 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\YouTube;
 
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeApiClient;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideo;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
@@ -20,7 +21,7 @@ final readonly class YouTubeVideoProvider implements YouTubeApiClient
     ) {
     }
 
-    public function fetchRecentVideos(int $season): YouTubeVideoCollection
+    public function fetchRecentVideos(IFSCSeasonYear $season): YouTubeVideoCollection
     {
         $videoCollection = new YouTubeVideoCollection();
 
@@ -32,9 +33,9 @@ final readonly class YouTubeVideoProvider implements YouTubeApiClient
     }
 
     /** @return IfscYouTubeVideo[] */
-    private function fetchLatestVideos(int $season): array
+    private function fetchLatestVideos(IFSCSeasonYear $season): array
     {
-        return $this->youTubeVideoCollection->getVideosForSeason($season);
+        return $this->youTubeVideoCollection->getVideosForSeason($season->value);
     }
 
     public function createVideo(IfscYouTubeVideo $item): YouTubeVideo

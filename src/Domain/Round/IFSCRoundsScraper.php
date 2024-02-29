@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Domain\Event;
+namespace nicoSWD\IfscCalendar\Domain\Round;
 
 use DOMElement;
 use DOMXPath;
@@ -14,7 +14,11 @@ use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCSchedule;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
+use nicoSWD\IfscCalendar\Domain\Event\Month;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
 final readonly class IFSCRoundsScraper
 {
@@ -33,7 +37,7 @@ final readonly class IFSCRoundsScraper
      * @throws IFSCEventsScraperException
      * @throws Exception
      */
-    public function fetchRoundsAndPosterForEvent(int $season, int $eventId, string $timeZone): IFSCScrapedEventsResult
+    public function fetchRoundsAndPosterForEvent(IFSCSeasonYear $season, int $eventId, string $timeZone): IFSCScrapedEventsResult
     {
         $xpath = $this->getXPathForEventsWithId($eventId);
         $dateRegex = $this->buildDateRegex();
@@ -46,7 +50,7 @@ final readonly class IFSCRoundsScraper
             }
 
             foreach ($matches['day'] as $key => $day) {
-                foreach ($this->normalizer->nonEmptyLines($matches['times'][$key]) as $line) {
+                foreach ($this->getNonEmptyLines($matches, $key) as $line) {
                     $schedules = $this->getSchedule(
                         name: $matches['month'][$key],
                         line: $line,
@@ -125,11 +129,10 @@ final readonly class IFSCRoundsScraper
      * @throws InvalidURLException
      * @throws IFSCEventsScraperException
      */
-    private function getSchedule(string $name, string $line, string $day, string $timeZone, int $season, array $schedules): array
+    private function getSchedule(string $name, string $line, string $day, string $timeZone, IFSCSeasonYear $season, array $schedules): array
     {
-        $month = Month::fromName($name);
-
         [$cupName, $eventTime, $streamUrl] = $this->parseEventDetails($line);
+        $month = Month::fromName($name);
 
         $schedules[] = IFSCSchedule::create(
             day: (int) $day,
@@ -152,5 +155,10 @@ final readonly class IFSCRoundsScraper
     private function normalizeParagraph(DOMElement $paragraph): string
     {
         return $this->normalizer->removeNonAsciiCharacters($paragraph->textContent);
+    }
+
+    private function getNonEmptyLines(array $matches, int $key): array
+    {
+        return $this->normalizer->nonEmptyLines($matches['times'][$key]);
     }
 }

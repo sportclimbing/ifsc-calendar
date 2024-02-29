@@ -5,16 +5,16 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Domain\Event;
+namespace nicoSWD\IfscCalendar\Domain\Starter;
 
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
-
-final readonly class IFSCScrapedEventsResult
+final readonly class IFSCStarter
 {
-    /** @param IFSCRound[] $rounds */
     public function __construct(
-        public ?string $poster,
-        public array $rounds,
+        public string $firstName,
+        public string $lastName,
+        public string $country,
+        public float $score,
+        public ?string $photoUrl,
     ) {
     }
 }

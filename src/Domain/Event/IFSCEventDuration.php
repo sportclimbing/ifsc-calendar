@@ -10,6 +10,7 @@ namespace nicoSWD\IfscCalendar\Domain\Event;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
 final readonly class IFSCEventDuration
 {
@@ -24,13 +25,13 @@ final readonly class IFSCEventDuration
         Month $month,
         string $time,
         string $timeZone,
-        int $season,
+        IFSCSeasonYear $season,
     ): self {
         [$hour, $minute] = sscanf($time, '%d:%d');
 
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone($timeZone));
-        $date->setDate($season, $month->value, $day);
+        $date->setDate($season->value, $month->value, $day);
         $date->setTime($hour, $minute);
 
         $startTime = DateTimeImmutable::createFromMutable($date);

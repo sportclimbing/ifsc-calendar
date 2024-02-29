@@ -18,7 +18,7 @@ use Eluceo\iCal\Presentation\Factory\CalendarFactory;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 
 final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 {

@@ -11,7 +11,7 @@ use DateTime;
 use DateTimeImmutable;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 
 final readonly class Season2023PostProcessor
 {

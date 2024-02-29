@@ -8,7 +8,7 @@
 namespace nicoSWD\IfscCalendar\Domain\YouTube;
 
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
 
 final readonly class YouTubeLinkMatcher

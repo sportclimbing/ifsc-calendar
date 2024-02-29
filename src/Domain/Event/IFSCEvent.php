@@ -7,11 +7,16 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
+
 final class IFSCEvent
 {
     /** @param IFSCRound[] $rounds */
+    /** @param IFSCStarter[] $starters */
     public function __construct(
-        public readonly int $season,
+        public readonly IFSCSeasonYear $season,
         public readonly int $eventId,
         public readonly string $timeZone,
         public readonly string $eventName,
@@ -23,6 +28,7 @@ final class IFSCEvent
         public readonly string $endsAt,
         public readonly array $disciplines,
         public array $rounds,
+        public array $starters = [],
     ) {
     }
 }

@@ -7,6 +7,8 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\YouTube;
 
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+
 final readonly class YouTubeLinkFetcher
 {
     public function __construct(
@@ -14,7 +16,7 @@ final readonly class YouTubeLinkFetcher
     ) {
     }
 
-    public function fetchRecentVideos(int $season): YouTubeVideoCollection
+    public function fetchRecentVideos(IFSCSeasonYear $season): YouTubeVideoCollection
     {
         return $this->api->fetchRecentVideos($season);
     }

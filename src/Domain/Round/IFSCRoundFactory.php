@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Domain\Event;
+namespace nicoSWD\IfscCalendar\Domain\Round;
 
 use DateTimeImmutable;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;

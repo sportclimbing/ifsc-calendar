@@ -7,10 +7,12 @@
  */
 namespace nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar;
 
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+
 final readonly class BuildCalendarRequest
 {
     public function __construct(
-        public int $season,
+        public IFSCSeasonYear $season,
         public int $league,
         public string $format,
     ) {
