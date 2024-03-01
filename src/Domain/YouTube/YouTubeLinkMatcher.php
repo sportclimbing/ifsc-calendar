@@ -15,9 +15,6 @@ final readonly class YouTubeLinkMatcher
 {
     private const YOUTUBE_BASE_URL = 'https://youtu.be/';
 
-    // Eg: "ifsc world cup koper 2023
-    private const REGEX_LOCATION_AND_SEASON = '~^IFSC World (?:Cup|Championships?) (?<location>.+) (?<season>20\d{2})$~i';
-
     public function findStreamUrlForRound(IFSCRound $round, IFSCEvent $event, YouTubeVideoCollection $videoCollection): ?string
     {
         foreach ($videoCollection->getIterator() as $video) {
@@ -31,8 +28,8 @@ final readonly class YouTubeLinkMatcher
 
     private function videoTitleMatchesRoundName(YouTubeVideo $video, IFSCRound $round, IFSCEvent $event): bool
     {
-        $videoTitle = strtolower($video->title);
-        $roundName = strtolower($round->name);
+        $videoTitle = mb_strtolower($video->title);
+        $roundName = mb_strtolower($round->name);
 
         if (!$this->videoTitleContainsSameLocationAndSeason($videoTitle, $event)) {
             return false;
@@ -66,31 +63,11 @@ final readonly class YouTubeLinkMatcher
         return $tags;
     }
 
-    private function getLocationAndSeason(IFSCEvent $event): ?array
-    {
-        if (preg_match(self::REGEX_LOCATION_AND_SEASON, strtolower($event->eventName), $eventDetails)) {
-            return [
-                $eventDetails['location'],
-                $eventDetails['season'],
-            ];
-        }
-
-        return null;
-    }
-
     private function videoTitleContainsSameLocationAndSeason(string $videoTitle, IFSCEvent $event): bool
     {
-        $locationAndSeason = $this->getLocationAndSeason($event);
-
-        if (!$locationAndSeason) {
-            return false;
-        }
-
-        [$location, $season] = $locationAndSeason;
-
         return
-            str_contains($videoTitle, $location) &&
-            str_contains($videoTitle, $season);
+            str_contains($videoTitle, mb_strtolower($event->location)) &&
+            str_contains($videoTitle, (string) $event->season->value);
     }
 
     private function videoIsHighlights(array $videoTags): bool
