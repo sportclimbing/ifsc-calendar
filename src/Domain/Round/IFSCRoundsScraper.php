@@ -39,10 +39,10 @@ final readonly class IFSCRoundsScraper
      */
     public function fetchRoundsAndPosterForEvent(IFSCSeasonYear $season, int $eventId, string $timeZone): IFSCScrapedEventsResult
     {
-        $xpath = $this->getXPathForEventsWithId($eventId);
-        $dateRegex = $this->buildDateRegex();
         /** @var IFSCSchedule[] $schedules */
         $schedules = [];
+        $dateRegex = $this->buildDateRegex();
+        $xpath = $this->getXPathForEventsWithId($eventId);
 
         foreach ($this->domHelper->getParagraphs($xpath) as $paragraph) {
             if (!preg_match_all($dateRegex, $this->normalizeParagraph($paragraph), $matches)) {

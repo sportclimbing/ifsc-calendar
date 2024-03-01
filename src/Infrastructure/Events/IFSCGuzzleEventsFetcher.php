@@ -92,7 +92,8 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
         return $this->fetchAuth($this->buildInfoUri($eventId), $sessionId);
     }
 
-    private function fetchAuth(string $url, string $sessionId)
+    /** @throws IFSCEventsScraperException */
+    private function fetchAuth(string $url, string $sessionId): object|array
     {
         return $this->request($url, [
             RequestOptions::HEADERS => [
@@ -168,10 +169,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
         );
     }
 
-    /**
-     * @return IFSCStarter[]
-     * @throws IFSCEventsScraperException
-     */
+    /** @throws IFSCEventsScraperException */
     private function fetchStarters(int $eventId): array
     {
         $starters = [];
@@ -267,7 +265,6 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     {
         $curw = $this->fetchAuth('https://ifsc.results.info/api/v1/cuwr', $sessionId);
         $starters = $this->fetchStarters($eventId);
-
         $athletes = [];
         $scores = [];
 
@@ -300,11 +297,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
 
         foreach ($starters as $starter) {
             foreach ($athletes as $athlete) {
-                if (
-                    $starter['firstName'] === $athlete['firstname'] &&
-                    $starter['lastName'] === $athlete['lastname'] &&
-                    $starter['country'] === $athlete['country']
-                ) {
+                if ($this->starterMatchesAthlete($starter, $athlete)) {
                     $matches[] = new IFSCStarter(
                         firstName: $starter['firstName'],
                         lastName: $starter['lastName'],
@@ -323,5 +316,13 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
         usort($matches, static fn (IFSCStarter $athlete1, IFSCStarter $athlete2): int => $athlete2->score <=> $athlete1->score);
 
         return $matches;
+    }
+
+    private function starterMatchesAthlete(array $starter, array $athlete): bool
+    {
+        return
+            $starter['firstName'] === $athlete['firstname'] &&
+            $starter['lastName'] === $athlete['lastname'] &&
+            $starter['country'] === $athlete['country'];
     }
 }
