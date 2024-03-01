@@ -71,6 +71,15 @@ final readonly class DOMHelper
 
     private function hasPosterPrefix(string $textContent, &$match): bool
     {
-        return preg_match('~^(?:https://(?:cdn|www)\.ifsc-climbing\.org)?(?<path>/images/Events/[^$]+)~', $textContent, $match) === 1;
+        if (preg_match('~^(?:https://(?:cdn|www)\.ifsc-climbing\.org)?(?<path>/images/Events/[^$]+)~', $textContent, $match)) {
+            return true;
+        }
+
+        if (str_contains($textContent, 'Events')) {
+            $match['path'] = $textContent;
+            return true;
+        }
+
+        return false;
     }
 }
