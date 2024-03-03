@@ -43,7 +43,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
                 'ends_at' => $this->formatDate($event->endsAt, $event->timeZone),
                 'timezone' => $event->timeZone,
                 'rounds' => $this->formatRound($event->rounds),
-                'starters' => $this->formatStarters($event->starters),
+                'start_list' => $this->formatStarters($event->starters),
             ];
         }
 
