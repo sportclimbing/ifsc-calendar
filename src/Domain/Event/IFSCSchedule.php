@@ -8,6 +8,7 @@
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
 final readonly class IFSCSchedule
 {
@@ -24,7 +25,7 @@ final readonly class IFSCSchedule
         Month $month,
         string $time,
         string $timeZone,
-        int $season,
+        IFSCSeasonYear $season,
         string $cupName,
         string $streamUrl = '',
     ): self  {

@@ -15,9 +15,11 @@ final readonly class DOMHelper
 {
     private const XPATH_PARAGRAPHS = "//*[@id='ifsc_event']/div/div/div[@class='text']/p";
 
-    private const POSTER_IMAGE_PREFIX = '/images/Events/';
-
     private const XPATH_SIDEBAR = "//div[@class='text2']";
+
+    private const XPATH_EVENT_DATE_RANGE = "//div[@class='title']/h2[@class='date_span']";
+
+    private const REGEX_EVENT_POSTER = '~^(?:https://(?:cdn|www)\.ifsc-climbing\.org)?(?<path>/images/Events/[^$]+)~';
 
     public function htmlToXPath(string $html): DOMXPath
     {
@@ -36,23 +38,28 @@ final readonly class DOMHelper
         return $xpath->query(self::XPATH_PARAGRAPHS);
     }
 
-    public function getPoster(DOMXPath $xpath): string
+    public function getPoster(DOMXPath $xpath): ?string
     {
         $sideBar = $xpath->query(self::XPATH_SIDEBAR)->item(0);
         $images = $sideBar?->getElementsByTagName('img') ?? [];
 
         foreach ($images as $image) {
             foreach ($image->attributes as $name => $attribute) {
-                if ($name === 'data-src' && str_starts_with($attribute->textContent, self::POSTER_IMAGE_PREFIX)) {
-                    return "https://www.ifsc-climbing.org{$attribute->textContent}";
+                if ($name === 'data-src' && $this->hasPosterPrefix($attribute->textContent, $match)) {
+                    return "https://cdn.ifsc-climbing.org{$match['path']}";
                 }
             }
         }
 
-        return '';
+        return null;
     }
 
-    public function normalizeHtml(string $html): string
+    public function getDateRange(DOMXPath $xpath): string
+    {
+        return trim($xpath->query(self::XPATH_EVENT_DATE_RANGE)->item(0)->textContent);
+    }
+
+    private function normalizeHtml(string $html): string
     {
         $find = [
             // This makes `textContent` display each event in a new line, and thereby easier to parse
@@ -69,5 +76,19 @@ final readonly class DOMHelper
         ];
 
         return preg_replace($find, $replace, $html);
+    }
+
+    private function hasPosterPrefix(string $textContent, ?array &$match): bool
+    {
+        if (preg_match(self::REGEX_EVENT_POSTER, $textContent, $match) === 1) {
+            return true;
+        }
+
+        if (str_contains($textContent, 'Events')) {
+            $match['path'] = $textContent;
+            return true;
+        }
+
+        return false;
     }
 }

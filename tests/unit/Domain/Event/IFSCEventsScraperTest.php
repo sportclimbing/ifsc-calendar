@@ -9,9 +9,10 @@ namespace nicoSWD\IfscCalendar\tests\Domain\Event;
 
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\tests\Helpers\MockHttpClient;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -26,16 +27,13 @@ final class IFSCEventsScraperTest extends TestCase
         $events = $this->fetchEventsFromFile(
             fileName: 'hachioji_2023.html',
             timeZone: 'Asia/Tokyo',
-            eventName: 'IFSC - Climbing World Cup (B,S) - Seoul (KOR) 2023',
         );
 
-        $this->assertCount(5, $events);
+        $this->assertCount(5, $events->rounds);
 
-        [$event1, $event2, $event3, $event4, $event5] = $events;
+        [$event1, $event2, $event3, $event4, $event5] = $events->rounds;
 
-        $this->assertSame(1249, $event1->id);
-        $this->assertSame('https://cdn.ifsc-climbing.org/images/Events/2023/230422_Hachioji_WC/a._Poster_HACH23.jpg', $event1->poster);
-        $this->assertSame('IFSC - Climbing World Cup (B,S) - Seoul (KOR) 2023', $event1->description);
+        $this->assertSame('https://cdn.ifsc-climbing.org/images/Events/2023/230422_Hachioji_WC/a._Poster_HACH23.jpg', $events->poster);
 
         $this->assertSame('Boulder Qualifications', $event1->name);
         $this->assertSame('2023-04-21T09:00:00+09:00', $this->formatDate($event1->startTime));
@@ -69,16 +67,13 @@ final class IFSCEventsScraperTest extends TestCase
         $events = $this->fetchEventsFromFile(
             fileName: 'seoul_2023.html',
             timeZone: 'Asia/Seoul',
-            eventName: 'IFSC - Climbing World Cup (B) - Hachioji (JPN) 2023',
         );
 
-        $this->assertCount(5, $events);
+        $this->assertCount(5, $events->rounds);
 
-        [$event1, $event2, $event3, $event4, $event5] = $events;
+        [$event1, $event2, $event3, $event4, $event5] = $events->rounds;
 
-        $this->assertSame(1249, $event1->id);
-        $this->assertSame('https://cdn.ifsc-climbing.org/images/Events/2023/230428_Seoul_WC/230329_Poster_SEOUL23.jpg', $event1->poster);
-        $this->assertSame('IFSC - Climbing World Cup (B) - Hachioji (JPN) 2023', $event1->description);
+        $this->assertSame('https://cdn.ifsc-climbing.org/images/Events/2023/230428_Seoul_WC/230329_Poster_SEOUL23.jpg', $events->poster);
 
         $this->assertSame('Speed Qualifications', $event1->name);
         $this->assertSame('2023-04-28T12:15:00+09:00', $this->formatDate($event1->startTime));
@@ -112,16 +107,13 @@ final class IFSCEventsScraperTest extends TestCase
         $events = $this->fetchEventsFromFile(
             fileName: 'jakata_2023.html',
             timeZone: 'Asia/Jakarta',
-            eventName: 'IFSC - Climbing World Cup (S) - Jakarta (INA) 2023',
         );
 
-        $this->assertCount(2, $events);
+        $this->assertCount(2, $events->rounds);
 
-        [$event1, $event2] = $events;
+        [$event1, $event2] = $events->rounds;
 
-        $this->assertSame(1249, $event1->id);
-        $this->assertSame('', $event1->poster);
-        $this->assertSame('IFSC - Climbing World Cup (S) - Jakarta (INA) 2023', $event1->description);
+        $this->assertSame(null, $events->poster);
 
         $this->assertSame('Speed Qualifications', $event1->name);
         $this->assertSame('2023-05-06T08:00:00+07:00', $this->formatDate($event1->startTime));
@@ -140,16 +132,13 @@ final class IFSCEventsScraperTest extends TestCase
         $events = $this->fetchEventsFromFile(
             fileName: 'jakata_2023_malformed.html',
             timeZone: 'Asia/Jakarta',
-            eventName: 'IFSC - Climbing World Cup (S) - Jakarta (INA) 2023',
         );
 
-        $this->assertCount(2, $events);
+        $this->assertCount(2, $events->rounds);
 
-        [$event1, $event2] = $events;
+        [$event1, $event2] = $events->rounds;
 
-        $this->assertSame(1249, $event1->id);
-        $this->assertSame('https://cdn.ifsc-climbing.org/images/Events/2023/230506_Jakarta_WC/230415_Poster_JAK23v2.jpg', $event1->poster);
-        $this->assertSame('IFSC - Climbing World Cup (S) - Jakarta (INA) 2023', $event1->description);
+        $this->assertSame('https://cdn.ifsc-climbing.org/images/Events/2023/230506_Jakarta_WC/230415_Poster_JAK23v2.jpg', $events->poster);
 
         $this->assertSame('Speed Qualifications', $event1->name);
         $this->assertSame('2023-05-06T18:15:00+07:00', $this->formatDate($event1->startTime));
@@ -168,16 +157,13 @@ final class IFSCEventsScraperTest extends TestCase
         $events = $this->fetchEventsFromFile(
             fileName: 'salt_lake_city_2023.html',
             timeZone: 'America/Denver',
-            eventName: 'IFSC - Climbing World Cup (B,S) - Salt Lake City (USA) 2023',
         );
 
-        $this->assertCount(10, $events);
+        $this->assertCount(10, $events->rounds);
 
-        [$event1, $event2, $event3, $event4, $event5, $event6, $event7, $event8, $event9, $event10] = $events;
+        [$event1, $event2, $event3, $event4, $event5, $event6, $event7, $event8, $event9, $event10] = $events->rounds;
 
-        $this->assertSame(1249, $event1->id);
-        $this->assertSame('', $event1->poster);
-        $this->assertSame('IFSC - Climbing World Cup (B,S) - Salt Lake City (USA) 2023', $event1->description);
+        $this->assertSame(null, $events->poster);
 
         $this->assertSame('Women\'s Boulder Qualification', $event1->name);
         $this->assertSame('2023-05-19T09:00:00-06:00', $this->formatDate($event1->startTime));
@@ -236,15 +222,13 @@ final class IFSCEventsScraperTest extends TestCase
         $events = $this->fetchEventsFromFile(
             fileName: 'meiringen_2022.html',
             timeZone: 'Europe/Zurich',
-            eventName: 'IFSC - Climbing World Cup (B) - Meiringen (SUI) 2022',
         );
 
-        $this->assertCount(6, $events);
+        $this->assertCount(6, $events->rounds);
 
-        [$event1, $event2, $event3, $event4, $event5, $event6] = $events;
+        [$event1, $event2, $event3, $event4, $event5, $event6] = $events->rounds;
 
-        $this->assertSame('https://cdn.ifsc-climbing.org/images/Events/2022/220408_Meiringen_WC/IFSC_WC_MEIRINGEN22_poster.jpg', $event1->poster);
-        $this->assertSame('IFSC - Climbing World Cup (B) - Meiringen (SUI) 2022', $event1->description);
+        $this->assertSame('https://cdn.ifsc-climbing.org/images/Events/2022/220408_Meiringen_WC/IFSC_WC_MEIRINGEN22_poster.jpg', $events->poster);
 
         $this->assertSame('Women\'s Boulder Qualification', $event1->name);
         $this->assertSame('2023-04-08T09:00:00+02:00', $this->formatDate($event1->startTime));
@@ -277,21 +261,20 @@ final class IFSCEventsScraperTest extends TestCase
         $this->assertSame('https://youtu.be/HPNpg-pLZOg', $event6->streamUrl);
     }
 
-    /** @return IFSCEvent[] */
-    private function fetchEventsFromFile(string $fileName, string $timeZone, string $eventName): array
+    /** @return IFSCScrapedEventsResult */
+    private function fetchEventsFromFile(string $fileName, string $timeZone): IFSCScrapedEventsResult
     {
-        $eventScraper = new IFSCEventsScraper(
+        $eventScraper = new IFSCRoundsScraper(
             $this->mockClientReturningFile($fileName),
-            new IFSCEventFactory('https://ifsc.stream/#/event/%d', new Normalizer()),
+            new IFSCRoundFactory(new Normalizer()),
             new DOMHelper(),
             new Normalizer(),
         );
 
-        return $eventScraper->fetchEventsForLeague(
-            season: 2023,
+        return $eventScraper->fetchRoundsAndPosterForEvent(
+            season: IFSCSeasonYear::SEASON_2023,
             eventId: 1249,
             timeZone: $timeZone,
-            eventName: $eventName,
         );
     }
 }

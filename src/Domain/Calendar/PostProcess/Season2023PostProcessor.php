@@ -7,119 +7,125 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Calendar\PostProcess;
 
-use Closure;
-use DOMElement;
-use DOMNodeList;
-use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
-use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
+use DateTime;
+use DateTimeImmutable;
+use Exception;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCSchedule;
-use nicoSWD\IfscCalendar\Domain\Event\Month;
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 
 final readonly class Season2023PostProcessor
 {
-    private const BERN_SCHEDULE_URL = 'https://www.ifsc-climbing.org/bern-2023/schedule';
-    private const BERN_XPATH_EVENTS = "//div[contains(@class, 'js-filter')]/div[@data-tag]";
     private const BERN_IFSC_EVENT_ID = 1301;
-    private const BERN_IFSC_EVENT_DESCRIPTION = 'IFSC World Championships Bern 2023';
-    private const BERN_IFSC_2023_POSTER = 'https://ifsc.stream/img/posters/bern2023.jpg';
-    private const BERN_TIMEZONE = 'Europe/Zurich';
-    private const BERN_IDENTIFIER = 'Bern (SUI)';
-
-    public function __construct(
-        private HttpClientInterface $httpClient,
-        private IFSCEventFactory $eventFactory,
-        private Normalizer $normalizer,
-        private DOMHelper $DOMHelper,
-    ) {
-    }
 
     /**
      * @param IFSCEvent[] $events
      * @return IFSCEvent[]
+     * @throws Exception
      */
     public function process(array $events): array
     {
-        // Add missing Bern events, which are listed on a separate page in an
-        // entirely different format. Thanks, y'all.
-        if (!$this->hasBernEvents($events)) {
-            $events = array_merge($events, $this->fetchBernEvents());
+        foreach ($events as $event) {
+            if ($this->isBernEvent($event)) {
+                $event->rounds = $this->fetchBernEvents();
+            }
         }
 
         return $events;
     }
 
-    /** @return IFSCEvent[] */
+    /**
+     * @return IFSCRound[]
+     * @throws Exception
+     */
     private function fetchBernEvents(): array
     {
-        $events = [];
-
-        foreach ($this->fetchEventsFromHTML() as $event) {
-            $schedule = $this->createSchedule(
-                sscanf($this->normalizeEventLine($event), '%d %s || %d:%d %[^$]s')
-            );
-
-            $events[] = $this->eventFactory->create(
-                name: $this->normalizer->cupName($schedule->cupName),
-                id: self::BERN_IFSC_EVENT_ID,
-                description: self::BERN_IFSC_EVENT_DESCRIPTION,
-                streamUrl: $this->extractStreamUrl($event),
-                poster: self::BERN_IFSC_2023_POSTER,
-                startTime: $schedule->duration->startTime,
-                endTime: $schedule->duration->endTime,
-            );
-        }
-
-        return $events;
+        return [
+            $this->createRound(
+                name: "Men's Boulder Qualification",
+                startTime: "2023-08-01T09:00:00+02:00",
+            ),
+            $this->createRound(
+                name: "Women's Lead Qualification",
+                startTime: "2023-08-02T11:00:00+02:00",
+            ),
+            $this->createRound(
+                name: "Men's Lead Qualification",
+                startTime: "2023-08-03T08:30:00+02:00",
+            ),
+            $this->createRound(
+                name: "Women's Boulder Qualification",
+                startTime: "2023-08-03T15:30:00+02:00",
+            ),
+            $this->createRound(
+                name: "Men's Boulder Semi-final",
+                startTime: "2023-08-04T10:00:00+02:00",
+            ),
+            $this->createRound(
+                name: "Men's Boulder Final",
+                startTime: "2023-08-04T18:30:00+02:00",
+            ),
+            $this->createRound(
+                name: "Women's Boulder Semi-final",
+                startTime: "2023-08-05T10:00:00+02:00",
+            ),
+            $this->createRound(
+                name: "Women's Boulder Final",
+                startTime: "2023-08-05T18:30:00+02:00",
+            ),
+            $this->createRound(
+                name: "Lead Semi-finals",
+                startTime: "2023-08-06T10:00:00+02:00",
+            ),
+            $this->createRound(
+                name: "Lead Finals",
+                startTime: "2023-08-06T18:30:00+02:00",
+            ),
+            $this->createRound(
+                name: "Women's Boulder & Lead Semi-final",
+                startTime: "2023-08-09T09:00:00+02:00",
+            ),
+            $this->createRound(
+                name: "Men's Boulder & Lead Semi-final",
+                startTime: "2023-08-09T13:00:00+02:00",
+            ),
+            $this->createRound(
+                name: "Boulder & Lead Semi-finals",
+                startTime: "2023-08-09T20:30:00+02:00",
+            ),
+            $this->createRound(
+                name: "Speed Qualifications",
+                startTime: "2023-08-10T09:00:00+02:00",
+            ),
+            $this->createRound(
+                name: "Speed Finals",
+                startTime: "2023-08-10T20:00:00+02:00",
+            ),
+            $this->createRound(
+                name: "Women's Boulder & Lead Final",
+                startTime: "2023-08-11T19:00:00+02:00",
+            ),
+            $this->createRound(
+                name: "Men's Boulder & Lead Final",
+                startTime: "2023-08-12T16:00:00+02:00",
+            ),
+        ];
     }
 
-    private function createSchedule(array $eventLine): IFSCSchedule
+    /** @throws Exception */
+    private function createRound(string $name, string $startTime): IFSCRound
     {
-        [$day, $month, $hour, $minute, $cupName] = $eventLine;
+        $startTime = new DateTime($startTime);
 
-        return IFSCSchedule::create(
-            day: $day,
-            month: Month::fromName($month),
-            time: "$hour:$minute",
-            timeZone: self::BERN_TIMEZONE,
-            season: 2023,
-            cupName: $cupName,
+        return new IFSCRound(
+            name: $name,
+            streamUrl: null,
+            startTime: DateTimeImmutable::createFromMutable($startTime),
+            endTime: DateTimeImmutable::createFromMutable($startTime->modify('+3 hours')),
         );
     }
 
-    private function fetchEventsFromHTML(): DOMNodeList
+    private function isBernEvent(IFSCEvent $event): bool
     {
-        $xpath = $this->DOMHelper->htmlToXPath(
-            $this->httpClient->getRetry(self::BERN_SCHEDULE_URL)
-        );
-
-        return $xpath->query(self::BERN_XPATH_EVENTS);
-    }
-
-    private function normalizeEventLine(DOMElement $event): string
-    {
-        return $this->normalizer->removeMultipleSpaces(
-            explode("\n", $event->nodeValue)[0]
-        );
-    }
-
-    /** @param IFSCEvent[] $events */
-    private function hasBernEvents(array $events): bool
-    {
-        return count(array_filter($events, $this->isBernEvent())) > 0;
-    }
-
-    private function isBernEvent(): Closure
-    {
-        return static fn(IFSCEvent $event): bool => str_contains($event->name, self::BERN_IDENTIFIER);
-    }
-
-    private function extractStreamUrl(DOMElement $event): string
-    {
-        return $this->normalizer->normalizeStreamUrl(
-            explode("\n", $event->textContent)[1]
-        );
+        return $event->eventId === self::BERN_IFSC_EVENT_ID;
     }
 }

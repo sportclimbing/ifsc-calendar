@@ -12,6 +12,7 @@ use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarResponse
 use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase;
 use nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -73,7 +74,7 @@ final class BuildCommand extends Command
             $pathInfo = pathinfo($fileName);
             $fileName = "{$pathInfo['dirname']}/{$pathInfo['filename']}.{$calFormat}";
 
-            $response = $this->buildCalendar($selectedSeason, $league, $calFormat, $output);
+            $response = $this->buildCalendar(IFSCSeasonYear::tryFrom($selectedSeason), $league, $calFormat, $output);
             $this->saveCalendar($fileName, $response->calendarContents, $output);
         }
 
@@ -83,7 +84,7 @@ final class BuildCommand extends Command
     }
 
     public function buildCalendar(
-        int $selectedSeason,
+        IFSCSeasonYear $selectedSeason,
         int $league,
         string $format,
         OutputInterface $output,

@@ -24,6 +24,11 @@ trait MockHttpClient
             {
                 return file_get_contents($this->fileName);
             }
+
+            public function getRetry(string $url): string
+            {
+                return $this->get($url);
+            }
         };
     }
 

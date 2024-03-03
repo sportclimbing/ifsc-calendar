@@ -20,14 +20,14 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
     }
 
     /** @throws GuzzleException */
-    public function getRetry(string $url): string
+    public function getRetry(string $url, array $options = []): string
     {
         $retryCount = 0;
         $html = '';
 
         do {
             try {
-                $html = $this->get($url);
+                $html = $this->get($url, $options);
             } catch (Exception $e) {
                 if (++$retryCount > 5) {
                     throw $e;
@@ -41,8 +41,14 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
     }
 
     /** @throws GuzzleException */
-    private function get(string $url): string
+    public function getHeaders(string $url): array
     {
-        return $this->client->request('GET', $url)->getBody()->getContents();
+        return $this->client->request('GET', $url)->getHeaders();
+    }
+
+    /** @throws GuzzleException */
+    private function get(string $url, array $options): string
+    {
+        return $this->client->request('GET', $url, $options)->getBody()->getContents();
     }
 }

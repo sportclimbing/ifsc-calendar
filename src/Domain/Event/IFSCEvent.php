@@ -7,33 +7,28 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
-use DateTimeImmutable;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
 
-final readonly class IFSCEvent
+final class IFSCEvent
 {
+    /** @param IFSCRound[] $rounds */
+    /** @param IFSCStarter[] $starters */
     public function __construct(
-        public string $name,
-        public int $id,
-        public string $description,
-        public string $streamUrl,
-        public string $siteUrl,
-        public string $poster,
-        public DateTimeImmutable $startTime,
-        public DateTimeImmutable $endTime,
+        public readonly IFSCSeasonYear $season,
+        public readonly int $eventId,
+        public readonly string $timeZone,
+        public readonly string $eventName,
+        public readonly string $location,
+        public readonly string $country,
+        public readonly ?string $poster,
+        public readonly string $siteUrl,
+        public readonly string $startsAt,
+        public readonly string $endsAt,
+        public readonly array $disciplines,
+        public array $rounds,
+        public array $starters = [],
     ) {
-    }
-
-    public function updateStreamUrl(string $streamUrl): self
-    {
-        return new self(
-            name: $this->name,
-            id: $this->id,
-            description: $this->description,
-            streamUrl: $streamUrl,
-            siteUrl: $this->siteUrl,
-            poster: $this->poster,
-            startTime: $this->startTime,
-            endTime: $this->endTime,
-        );
     }
 }

@@ -82,24 +82,20 @@ services:
 
   nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor:
     class: nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor
-    arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
-      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory'
-      - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer'
-      - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper'
 
   # Events
   nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher:
     class: nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher
     arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper'
+      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper'
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
+      - '%site_event_url%'
 
-  nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper:
-    class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventsScraper
+  nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper:
+    class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
-      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory'
+      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
       - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper'
       - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer'
 
@@ -109,10 +105,9 @@ services:
   nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer:
     class: nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer
 
-  nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory:
-    class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory
+  nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory:
+    class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory
     arguments:
-      - '%site_event_url%'
       - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer'
 
   # HTTP Client

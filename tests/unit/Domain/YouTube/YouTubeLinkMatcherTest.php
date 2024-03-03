@@ -9,6 +9,8 @@ namespace nicoSWD\IfscCalendar\tests\Domain\YouTube;
 
 use DateTimeImmutable;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideo;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
@@ -24,7 +26,8 @@ final class YouTubeLinkMatcherTest extends TestCase
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Speed Qualifications',
-            description: 'IFSC - Climbing World Cup (B,S) - Seoul (KOR) 2023',
+            description: 'IFSC World Cup Seoul 2023',
+            location: 'Seoul',
         );
 
         $this->assetUrlMatchesEvent('https://youtu.be/mC1RhpB4uuQ', $event);
@@ -35,7 +38,8 @@ final class YouTubeLinkMatcherTest extends TestCase
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Speed Finals',
-            description: 'IFSC - Climbing World Cup (B,S) - Seoul (KOR) 2023',
+            description: 'IFSC World Cup Seoul 2023',
+            location: 'Seoul',
         );
 
         $this->assetUrlMatchesEvent('https://youtu.be/eIa6VYrfqX8', $event);
@@ -47,7 +51,8 @@ final class YouTubeLinkMatcherTest extends TestCase
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Women\'s Boulder Qualification',
-            description: 'IFSC - Climbing World Cup (B,S) - Seoul (KOR) 2023',
+            description: 'IFSC World Cup Seoul 2023',
+            location: 'Seoul',
         );
 
         $this->assertNull($this->findStreamUrlForEvent($event));
@@ -58,7 +63,8 @@ final class YouTubeLinkMatcherTest extends TestCase
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Men\'s Boulder Qualification',
-            description: 'IFSC - Climbing World Cup (B,S) - Seoul (KOR) 2023',
+            description: 'IFSC World Cup Seoul 2023',
+            location: 'Seoul',
         );
 
         $this->assertNull($this->findStreamUrlForEvent($event));
@@ -69,7 +75,8 @@ final class YouTubeLinkMatcherTest extends TestCase
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Boulder Semi-finals',
-            description: 'IFSC - Climbing World Cup (B,S) - Seoul (KOR) 2023',
+            description: 'IFSC World Cup Seoul 2023',
+            location: 'Seoul',
         );
 
         $this->assertNull($this->findStreamUrlForEvent($event));
@@ -80,7 +87,8 @@ final class YouTubeLinkMatcherTest extends TestCase
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Boulder Qualifications',
-            description: 'IFSC - Climbing World Cup (B) - Hachioji (JPN) 2023',
+            description: 'IFSC World Cup Hachioji 2023',
+            location: 'Hachioji',
         );
 
         $this->assertNull($this->findStreamUrlForEvent($event));
@@ -91,7 +99,8 @@ final class YouTubeLinkMatcherTest extends TestCase
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Women\'s Boulder Semi-final',
-            description: 'IFSC - Climbing World Cup (B) - Hachioji (JPN) 2023',
+            description: 'IFSC World Cup Hachioji 2023',
+            location: 'Hachioji',
         );
 
         $this->assetUrlMatchesEvent('https://youtu.be/kuE-qhRq7Fk', $event);
@@ -102,7 +111,8 @@ final class YouTubeLinkMatcherTest extends TestCase
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Women\'s Speed Qualification',
-            description: 'IFSC - Climbing World Cup (B,S) - Salt Lake City (USA) 2023',
+            description: 'IFSC World Cup Salt Lake City 2023',
+            location: 'Salt Lake City',
         );
 
         $this->assetUrlMatchesEvent('https://youtu.be/n6YyV2ddbb4', $event);
@@ -113,7 +123,8 @@ final class YouTubeLinkMatcherTest extends TestCase
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Men\'s Lead Final',
-            description: 'World Cup (L,S) - Chamonix (FRA) 2023',
+            description: 'IFSC World Cup Chamonix 2023',
+            location: 'Chamonix',
         );
 
         $this->assetUrlMatchesEvent('https://youtu.be/ZNgbe8vi2OI', $event);
@@ -145,7 +156,6 @@ final class YouTubeLinkMatcherTest extends TestCase
             "iF_1fI21Z_w" => "Lead semi-finals || Chamonix 2023",
             "3zfs3s06yPQ" => "Speed finals || Chamonix 2023",
             "h6EYmiImp5g" => "Speed qualifications || Chamonix 2023",
-
         ];
 
         $videoCollection = new YouTubeVideoCollection();
@@ -162,23 +172,34 @@ final class YouTubeLinkMatcherTest extends TestCase
         return $videoCollection;
     }
 
-    private function createEventWithNameAndDescription(string $name, string $description): IFSCEvent
+    private function createEventWithNameAndDescription(string $name, string $description, string $location): IFSCEvent
     {
         return new IFSCEvent(
-            name: $name,
-            id: 1292,
-            description: $description,
-            streamUrl: '',
-            siteUrl: '',
+            season: IFSCSeasonYear::SEASON_2023,
+            eventId: 1292,
+            timeZone: '',
+            eventName: $description,
+            location: $location,
+            country: 'JPN',
             poster: 'https://cdn.ifsc-climbing.org/images/Events/2023/230506_Jakarta_WC/230415_Poster_JAK23.jpg',
-            startTime: new DateTimeImmutable('2023-09-23T19:30:00+08:00'),
-            endTime: new DateTimeImmutable('2023-09-23T21:30:00+08:00'),
+            siteUrl: '',
+            startsAt: '2023-09-23T19:30:00+08:00',
+            endsAt: '2023-09-23T21:30:00+08:00',
+            disciplines: [],
+            rounds: [
+                new IFSCRound(
+                    name: $name,
+                    streamUrl: '',
+                    startTime: new DateTimeImmutable(),
+                    endTime: new DateTimeImmutable(),
+                )
+            ],
         );
     }
 
     private function findStreamUrlForEvent(IFSCEvent $event): ?string
     {
-        return $this->linkMatcher->findStreamUrlForEvent($event, $this->createVideoCollection());
+        return $this->linkMatcher->findStreamUrlForRound($event->rounds[0], $event, $this->createVideoCollection());
     }
 
     private function assetUrlMatchesEvent(string $url, IFSCEvent $event): void

@@ -8,37 +8,35 @@
 namespace nicoSWD\IfscCalendar\Domain\YouTube;
 
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
 
 final readonly class YouTubeLinkMatcher
 {
-    private const YOUTUBE_URL = 'https://youtu.be/';
+    private const YOUTUBE_BASE_URL = 'https://youtu.be/';
 
-    // Eg: IFSC - Climbing World Cup (B,S) - Seoul (KOR) 2023
-    private const REGEX_LOCATION_AND_SEASON = '~.+\s-\s+(?<location>.+)\s+\([a-z]{3}\)\s+(?<season>20\d{2})$~';
-
-    public function findStreamUrlForEvent(IFSCEvent $event, YouTubeVideoCollection $videoCollection): ?string
+    public function findStreamUrlForRound(IFSCRound $round, IFSCEvent $event, YouTubeVideoCollection $videoCollection): ?string
     {
         foreach ($videoCollection->getIterator() as $video) {
-            if ($this->videoTitleMatchesEvent($video, $event)) {
-                return self::YOUTUBE_URL . $video->videoId;
+            if ($this->videoTitleMatchesRoundName($video, $round, $event)) {
+                return self::YOUTUBE_BASE_URL . $video->videoId;
             }
         }
 
         return null;
     }
 
-    private function videoTitleMatchesEvent(YouTubeVideo $video, IFSCEvent $event): bool
+    private function videoTitleMatchesRoundName(YouTubeVideo $video, IFSCRound $round, IFSCEvent $event): bool
     {
-        $videoTitle = strtolower($video->title);
-        $eventName = strtolower($event->name);
+        $videoTitle = mb_strtolower($video->title);
+        $roundName = mb_strtolower($round->name);
 
         if (!$this->videoTitleContainsSameLocationAndSeason($videoTitle, $event)) {
             return false;
         }
 
         $videoTags = $this->fetchTagsFromTitle($videoTitle);
-        $eventTags = $this->fetchTagsFromTitle($eventName);
+        $eventTags = $this->fetchTagsFromTitle($roundName);
 
         if ($this->videoIsHighlights($videoTags)) {
             return false;
@@ -65,31 +63,11 @@ final readonly class YouTubeLinkMatcher
         return $tags;
     }
 
-    private function getLocationAndSeason(IFSCEvent $event): ?array
-    {
-        if (preg_match(self::REGEX_LOCATION_AND_SEASON, strtolower($event->description), $eventDetails)) {
-            return [
-                $eventDetails['location'],
-                $eventDetails['season'],
-            ];
-        }
-
-        return null;
-    }
-
     private function videoTitleContainsSameLocationAndSeason(string $videoTitle, IFSCEvent $event): bool
     {
-        $locationAndSeason = $this->getLocationAndSeason($event);
-
-        if (!$locationAndSeason) {
-            return false;
-        }
-
-        [$location, $season] = $locationAndSeason;
-
         return
-            str_contains($videoTitle, $location) &&
-            str_contains($videoTitle, $season);
+            str_contains($videoTitle, mb_strtolower($event->location)) &&
+            str_contains($videoTitle, (string) $event->season->value);
     }
 
     private function videoIsHighlights(array $videoTags): bool
