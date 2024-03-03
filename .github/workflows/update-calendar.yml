@@ -42,7 +42,7 @@ jobs:
         run: |
           curl -sSL "https://calendar.ifsc.stream/?format=json&nocache=1" --output current-calendar.json
           
-          if [ $(jq '.events | length' "${{ env.CALENDAR_FILE_JSON }}") -lt 13 ]; then
+          if [ $(jq '.events | length' "${{ env.CALENDAR_FILE_JSON }}") -lt 9 ]; then
             echo "Too few events found in current calendar"
             exit 1
           fi

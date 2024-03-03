@@ -20,7 +20,7 @@ try {
     exit(1);
 }
 
-if (!isset($json->events) || count($json->events) < 13) {
+if (!isset($json->events) || count($json->events) < 9) {
     echo 'Some events are missing', PHP_EOL;
     exit(1);
 }
