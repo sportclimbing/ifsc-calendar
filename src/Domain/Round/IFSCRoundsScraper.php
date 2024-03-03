@@ -7,6 +7,9 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Round;
 
+use DateTime;
+use DateTimeImmutable;
+use DateTimeZone;
 use DOMElement;
 use DOMXPath;
 use Exception;
@@ -41,8 +44,9 @@ final readonly class IFSCRoundsScraper
     {
         /** @var IFSCSchedule[] $schedules */
         $schedules = [];
-        $dateRegex = $this->buildDateRegex();
         $xpath = $this->getXPathForEventsWithId($eventId);
+        $dateRegex = $this->buildDateRegex();
+        [$startDate, $endDate] = $this->getDateRage($xpath);
 
         foreach ($this->domHelper->getParagraphs($xpath) as $paragraph) {
             if (!preg_match_all($dateRegex, $this->normalizeParagraph($paragraph), $matches)) {
@@ -64,6 +68,8 @@ final readonly class IFSCRoundsScraper
         }
 
         return new IFSCScrapedEventsResult(
+            $this->dateWithTimezone($startDate, $timeZone),
+            $this->dateWithTimezone($endDate, $timeZone),
             $this->domHelper->getPoster($xpath),
             $this->getRounds($schedules),
         );
@@ -147,6 +153,32 @@ final readonly class IFSCRoundsScraper
         return $schedules;
     }
 
+    /**
+     * @return DateTime[]
+     * @throws IFSCEventsScraperException
+     */
+    private function getDateRage(DOMXPath $xpath): array
+    {
+        $regex = '~
+            ^(?<start_day>\d{2})
+            (?:\s+(?<start_month>[A-Z]+))?
+            \s+-\s+
+            (?<end_day>\d{2})\s+
+            (?<end_month>[A-Z]+)\s+
+            (?<year>20\d{2})$~ix';
+
+        if (!preg_match($regex, $this->domHelper->getDateRange($xpath), matches: $dateRange, flags: PREG_UNMATCHED_AS_NULL)) {
+            throw new IFSCEventsScraperException('Unable to find date range');
+        }
+
+        $dateRange['start_month'] ??= $dateRange['end_month'];
+
+        return [
+            $this->createStartDate($dateRange['start_day'], $dateRange['start_month'], $dateRange['year']),
+            $this->createStartDate($dateRange['end_day'], $dateRange['end_month'], $dateRange['year']),
+        ];
+    }
+
     private function buildLeagueUri(int $id): string
     {
         return sprintf(self::IFSC_EVENT_PAGE_URL, $id);
@@ -160,5 +192,16 @@ final readonly class IFSCRoundsScraper
     private function getNonEmptyLines(array $matches, int $key): array
     {
         return $this->normalizer->nonEmptyLines($matches['times'][$key]);
+    }
+
+    private function createStartDate(string $day, string $month, string $year): DateTime
+    {
+        return DateTime::createFromFormat('d F Y H:i:s', "{$day} {$month} {$year} 08:00:00");
+    }
+
+    /** @throws Exception */
+    private function dateWithTimezone(DateTime $date, string $timeZone): DateTimeImmutable
+    {
+        return DateTimeImmutable::createFromMutable($date)->setTimezone(new DateTimeZone($timeZone));
     }
 }

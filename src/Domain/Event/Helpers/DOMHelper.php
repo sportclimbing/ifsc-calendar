@@ -17,6 +17,8 @@ final readonly class DOMHelper
 
     private const XPATH_SIDEBAR = "//div[@class='text2']";
 
+    private const XPATH_EVENT_DATE_RANGE = "//div[@class='title']/h2[@class='date_span']";
+
     public function htmlToXPath(string $html): DOMXPath
     {
         $lastValue = libxml_use_internal_errors(true);
@@ -50,6 +52,11 @@ final readonly class DOMHelper
         return null;
     }
 
+    public function getDateRange(DOMXPath $xpath): string
+    {
+        return trim($xpath->query(self::XPATH_EVENT_DATE_RANGE)->item(0)->textContent);
+    }
+
     private function normalizeHtml(string $html): string
     {
         $find = [
@@ -69,9 +76,9 @@ final readonly class DOMHelper
         return preg_replace($find, $replace, $html);
     }
 
-    private function hasPosterPrefix(string $textContent, &$match): bool
+    private function hasPosterPrefix(string $textContent, ?array &$match): bool
     {
-        if (preg_match('~^(?:https://(?:cdn|www)\.ifsc-climbing\.org)?(?<path>/images/Events/[^$]+)~', $textContent, $match)) {
+        if (preg_match('~^(?:https://(?:cdn|www)\.ifsc-climbing\.org)?(?<path>/images/Events/[^$]+)~', $textContent, $match) === 1) {
             return true;
         }
 

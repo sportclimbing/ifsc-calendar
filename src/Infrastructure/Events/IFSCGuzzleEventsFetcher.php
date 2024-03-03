@@ -9,7 +9,7 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Events;
 
 use Closure;
 use DateTimeImmutable;
-use DateTimeZone;
+use DateTimeInterface;
 use Exception;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\GuzzleException;
@@ -63,7 +63,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
             if (!empty($scrapedRounds->rounds)) {
                 $rounds = $scrapedRounds->rounds;
             } else {
-                $rounds = $this->generateRounds($eventInfo);
+                $rounds = $this->generateRounds($eventInfo, $scrapedRounds);
             }
 
             $events[] = new IFSCEvent(
@@ -75,8 +75,8 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
                 country: $eventInfo->country,
                 poster: $scrapedRounds->poster,
                 siteUrl: $this->getSiteUrl($season, $event),
-                startsAt: $eventInfo->starts_at,
-                endsAt: $eventInfo->ends_at,
+                startsAt: $this->formatDate($scrapedRounds->startDate),
+                endsAt: $this->formatDate($scrapedRounds->endDate),
                 disciplines: $this->getDisciplines($eventInfo),
                 rounds: $rounds,
                 starters: $this->fetchAthletes($event->event_id, $sessionId),
@@ -190,14 +190,19 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
         $disciplines = [];
 
         foreach ($info->disciplines as $discipline) {
-            $disciplines = array_merge($disciplines, explode('&', $discipline->kind));
+            if ($discipline->kind === 'combined') {
+                $disciplines[] = 'boulder';
+                $disciplines[] = 'lead';
+            } else {
+                $disciplines = array_merge($disciplines, explode('&', $discipline->kind));
+            }
         }
 
         return array_unique($disciplines);
     }
 
     /** @throws Exception */
-    private function generateRounds(object $eventInfo): array
+    private function generateRounds(object $eventInfo, IFSCScrapedEventsResult $scrapedRounds): array
     {
         $rounds = [];
 
@@ -206,8 +211,8 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
                 $rounds[] = new IFSCRound(
                     name: $this->getRoundName($round),
                     streamUrl: null,
-                    startTime: $this->getStartTime($eventInfo),
-                    endTime: $this->getStartTime($eventInfo)->modify('+3 hours'),
+                    startTime: $scrapedRounds->startDate,
+                    endTime: $scrapedRounds->startDate->modify('+3 hours'),
                     scheduleConfirmed: false,
                 );
             }
@@ -229,32 +234,6 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     private function replaceVariables(array $params): Closure
     {
         return static fn (array $match): string => (string) $params[$match['var_name']];
-    }
-
-    private function buildLeagueUri(int $leagueId): string
-    {
-        return sprintf(self::IFSC_LEAGUE_API_ENDPOINT, $leagueId);
-    }
-
-    private function buildStartersUri(int $eventId): string
-    {
-        return sprintf(self::IFSC_STARTERS_API_ENDPOINT, $eventId);
-    }
-
-    private function buildInfoUri(int $eventId): string
-    {
-        return sprintf(self::IFSC_EVENT_API_ENDPOINT, $eventId);
-    }
-
-    /** @throws Exception */
-    private function getStartTime(object $eventInfo): DateTimeImmutable
-    {
-        return new DateTimeImmutable($eventInfo->starts_at, new DateTimeZone($eventInfo->timezone->value));
-    }
-
-    private function getRoundName(object $round): string
-    {
-        return sprintf("%s's %s %s", $round->category, ucfirst($round->kind), $round->name);
     }
 
     /**
@@ -313,7 +292,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
             }
         }
 
-        usort($matches, static fn (IFSCStarter $athlete1, IFSCStarter $athlete2): int => $athlete2->score <=> $athlete1->score);
+        usort($matches, $this->sortByScore());
 
         return $matches;
     }
@@ -324,5 +303,35 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
             $starter['firstName'] === $athlete['firstname'] &&
             $starter['lastName'] === $athlete['lastname'] &&
             $starter['country'] === $athlete['country'];
+    }
+
+    private function buildLeagueUri(int $leagueId): string
+    {
+        return sprintf(self::IFSC_LEAGUE_API_ENDPOINT, $leagueId);
+    }
+
+    private function buildStartersUri(int $eventId): string
+    {
+        return sprintf(self::IFSC_STARTERS_API_ENDPOINT, $eventId);
+    }
+
+    private function buildInfoUri(int $eventId): string
+    {
+        return sprintf(self::IFSC_EVENT_API_ENDPOINT, $eventId);
+    }
+
+    public function formatDate(DateTimeImmutable $scrapedRounds): string
+    {
+        return $scrapedRounds->format(DateTimeInterface::RFC3339);
+    }
+
+    private function getRoundName(object $round): string
+    {
+        return sprintf("%s's %s %s", $round->category, ucfirst($round->kind), $round->name);
+    }
+
+    private function sortByScore(): Closure
+    {
+        return static fn (IFSCStarter $athlete1, IFSCStarter $athlete2): int => $athlete2->score <=> $athlete1->score;
     }
 }

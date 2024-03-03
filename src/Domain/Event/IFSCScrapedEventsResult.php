@@ -7,12 +7,15 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
+use DateTimeImmutable;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 
 final readonly class IFSCScrapedEventsResult
 {
     /** @param IFSCRound[] $rounds */
     public function __construct(
+        public DateTimeImmutable $startDate,
+        public DateTimeImmutable $endDate,
         public ?string $poster,
         public array $rounds,
     ) {

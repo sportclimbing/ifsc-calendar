@@ -11,13 +11,4 @@ use Exception;
 
 final class IFSCEventsScraperException extends Exception
 {
-    public static function timeParseExceptionForEventWithId(string $time, int $eventId): self
-    {
-        return new self("Unable to parse time '{$time}' for event with ID '{$eventId}'");
-    }
-
-    public static function noEventsScrapedForEventWithName(string $eventName): self
-    {
-        return new self("Unable to scrape events for ID '{$eventName}'");
-    }
 }
