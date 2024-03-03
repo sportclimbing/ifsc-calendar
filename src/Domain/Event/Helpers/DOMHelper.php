@@ -19,6 +19,8 @@ final readonly class DOMHelper
 
     private const XPATH_EVENT_DATE_RANGE = "//div[@class='title']/h2[@class='date_span']";
 
+    private const REGEX_EVENT_POSTER = '~^(?:https://(?:cdn|www)\.ifsc-climbing\.org)?(?<path>/images/Events/[^$]+)~';
+
     public function htmlToXPath(string $html): DOMXPath
     {
         $lastValue = libxml_use_internal_errors(true);
@@ -78,7 +80,7 @@ final readonly class DOMHelper
 
     private function hasPosterPrefix(string $textContent, ?array &$match): bool
     {
-        if (preg_match('~^(?:https://(?:cdn|www)\.ifsc-climbing\.org)?(?<path>/images/Events/[^$]+)~', $textContent, $match) === 1) {
+        if (preg_match(self::REGEX_EVENT_POSTER, $textContent, $match) === 1) {
             return true;
         }
 
