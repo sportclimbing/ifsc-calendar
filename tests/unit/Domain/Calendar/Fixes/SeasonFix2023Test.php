@@ -9,6 +9,7 @@ namespace nicoSWD\IfscCalendar\tests\Domain\Calendar\Fixes;
 
 use nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\tests\Helpers\MockHttpClient;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -24,7 +25,7 @@ final class SeasonFix2023Test extends TestCase
     {
         $events = [
             new IFSCEvent(
-                season: 2023,
+                season: IFSCSeasonYear::SEASON_2023,
                 eventId: 1301,
                 timeZone: '',
                 eventName: '',

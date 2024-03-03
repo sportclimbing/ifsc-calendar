@@ -12,6 +12,7 @@ use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\tests\Helpers\MockHttpClient;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -271,7 +272,7 @@ final class IFSCEventsScraperTest extends TestCase
         );
 
         return $eventScraper->fetchRoundsAndPosterForEvent(
-            season: 2023,
+            season: IFSCSeasonYear::SEASON_2023,
             eventId: 1249,
             timeZone: $timeZone,
         );
