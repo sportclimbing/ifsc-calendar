@@ -9,7 +9,6 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Events;
 
 use Closure;
 use DateTimeImmutable;
-use DateTimeInterface;
 use Exception;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\GuzzleException;
@@ -322,7 +321,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
 
     public function formatDate(DateTimeImmutable $scrapedRounds): string
     {
-        return $scrapedRounds->format(DateTimeInterface::RFC3339);
+        return $scrapedRounds->format('Y-m-d\TH:i:s');
     }
 
     private function getRoundName(object $round): string

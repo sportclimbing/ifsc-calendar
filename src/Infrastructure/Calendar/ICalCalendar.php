@@ -9,9 +9,12 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Calendar;
 
 use DateInterval;
 use DateTimeImmutable;
+use DateTimeZone;
 use Eluceo\iCal\Domain\Entity\Calendar;
 use Eluceo\iCal\Domain\Entity\Event;
+use Eluceo\iCal\Domain\Enum\EventStatus;
 use Eluceo\iCal\Domain\ValueObject\DateTime;
+use Eluceo\iCal\Domain\ValueObject\Location;
 use Eluceo\iCal\Domain\ValueObject\TimeSpan;
 use Eluceo\iCal\Domain\ValueObject\Uri;
 use Eluceo\iCal\Presentation\Factory\CalendarFactory;
@@ -60,11 +63,11 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         $calendarEvents = [];
 
         foreach ($events as $event) {
-            if (!empty($event->rounds)) {
-                foreach ($event->rounds as $round) {
-                    if (!$this->isQualificationRound($round)) {
-                        $calendarEvents[] = $this->createEvent($event, $round);
-                    }
+            $rounds = $this->getNonQualificationRounds($event);
+
+            if (!empty($rounds)) {
+                foreach ($rounds as $round) {
+                    $calendarEvents[] = $this->createEvent($event, $round);
                 }
             } else {
                 $calendarEvents[] = $this->createEventWithoutRounds($event);
@@ -80,6 +83,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
             ->setSummary("IFSC: {$round->name}")
             ->setDescription($this->buildDescription($event))
             ->setUrl(new Uri($event->siteUrl))
+            ->setStatus($this->getEventStatus($round))
             ->setOccurrence($this->buildTimeSpan($round));
     }
 
@@ -88,8 +92,10 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     {
         return (new Event())
             ->setSummary($event->eventName)
-            ->setDescription($this->buildDescription($event))
+            ->setDescription($this->buildDescription($event, confirmedSchedule: false))
             ->setUrl(new Uri($event->siteUrl))
+            ->setStatus(EventStatus::TENTATIVE())
+            ->setLocation(new Location("{$event->location} ({$event->country})"))
             ->setOccurrence($this->buildGenericTimeSpan($event));
     }
 
@@ -105,14 +111,47 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     private function buildGenericTimeSpan(IFSCEvent $event): TimeSpan
     {
         return new TimeSpan(
-            new DateTime(new DateTimeImmutable($event->startsAt), applyTimeZone: true),
-            new DateTime(new DateTimeImmutable($event->endsAt), applyTimeZone: true),
+            new DateTime(new DateTimeImmutable($event->startsAt, new DateTimeZone($event->timeZone)), applyTimeZone: true),
+            new DateTime(new DateTimeImmutable($event->endsAt, new DateTimeZone($event->timeZone)), applyTimeZone: true),
         );
     }
 
-    private function buildDescription(IFSCEvent $event): string
+    private function buildDescription(IFSCEvent $event, bool $confirmedSchedule = true): string
     {
-        return "{$event->eventName}\n\n{$event->siteUrl}";
+        $description  = "{$event->eventName}\n\n";
+
+        if (!$confirmedSchedule) {
+            $description .= "⚠️ Precise schedule has not been announced yet. This calendar will update automatically once it's published!\n\n";
+        }
+
+        $description.= "Stream URL:\n{$event->siteUrl}\n";
+
+        if ($event->starters) {
+            $description .= "\nStart List:\n";
+        }
+
+        foreach ($event->starters as $starter) {
+            $description .= " - {$starter->firstName} {$starter->lastName} ({$starter->country})\n";
+        }
+
+        if ($event->starters) {
+            $description .= " - ...\n";
+        }
+
+        return $description;
+    }
+
+    private function getEventStatus(IFSCRound $round): EventStatus
+    {
+        return $round->scheduleConfirmed
+            ? EventStatus::CONFIRMED()
+            : EventStatus::TENTATIVE();
+    }
+
+    /** @return IFSCRound[] */
+    private function getNonQualificationRounds(IFSCEvent $event): array
+    {
+        return array_filter($event->rounds, fn (IFSCRound $round): bool => !$this->isQualificationRound($round));
     }
 
     private function isQualificationRound(IFSCRound $round): bool
