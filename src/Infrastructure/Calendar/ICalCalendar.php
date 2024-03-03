@@ -124,6 +124,13 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
             $description .= "⚠️ Precise schedule has not been announced yet. This calendar will update automatically once it's published!\n\n";
         }
 
+        $description .= "Disciplines:\n";
+
+        foreach ($event->disciplines as $discipline) {
+            $description .= " - " . ucfirst($discipline) ."\n";
+        }
+
+        $description .= "\n";
         $description.= "Stream URL:\n{$event->siteUrl}\n";
 
         if ($event->starters) {
