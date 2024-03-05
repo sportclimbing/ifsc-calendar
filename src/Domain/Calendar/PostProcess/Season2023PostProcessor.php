@@ -15,7 +15,7 @@ use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 
 final readonly class Season2023PostProcessor
 {
-    private const BERN_IFSC_EVENT_ID = 1301;
+    private const int BERN_IFSC_EVENT_ID = 1301;
 
     /**
      * @param IFSCEvent[] $events

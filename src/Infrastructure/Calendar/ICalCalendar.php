@@ -22,6 +22,7 @@ use Exception;
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use Override;
 
 final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 {
@@ -36,6 +37,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
      * @inheritDoc
      * @throws Exception
      */
+    #[Override]
     public function generateForEvents(array $events): string
     {
         return (string) $this->calendarFactory->createCalendar(

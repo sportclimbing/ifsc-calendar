@@ -19,7 +19,7 @@ final readonly class IFSCRoundFactory
 
     public function create(
         string $name,
-        string $streamUrl,
+        ?string $streamUrl,
         DateTimeImmutable $startTime,
         DateTimeImmutable $endTime,
     ): IFSCRound {
@@ -31,7 +31,7 @@ final readonly class IFSCRoundFactory
         );
     }
 
-    private function getStreamUrl(string $streamUrl): string
+    private function getStreamUrl(?string $streamUrl): ?string
     {
         return $this->normalizer->normalizeStreamUrl($streamUrl);
     }

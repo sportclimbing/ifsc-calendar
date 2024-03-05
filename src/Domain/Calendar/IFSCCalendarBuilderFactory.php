@@ -19,23 +19,20 @@ final readonly class IFSCCalendarBuilderFactory
     }
 
     /**
-     * @param string $format
      * @param IFSCEvent[] $events
-     * @return string
      * @throws InvalidArgumentException
      */
-    public function generateForFormat(string $format, array $events): string
+    public function generateForFormat(IFSCCalendarFormat $format, array $events): string
     {
         return $this->getGeneratorForFormat($format)->generateForEvents($events);
     }
 
     /** @throws InvalidArgumentException */
-    private function getGeneratorForFormat(string $format): IFSCCalendarGeneratorInterface
+    private function getGeneratorForFormat(IFSCCalendarFormat $format): IFSCCalendarGeneratorInterface
     {
         return match ($format) {
-            'ics' => $this->icsCalendarGenerator,
-            'json' => $this->jsonCalendarGenerator,
-            default => throw new InvalidArgumentException("Unsupported format '{$format}"),
+            IFSCCalendarFormat::FORMAT_ICS => $this->icsCalendarGenerator,
+            IFSCCalendarFormat::FORMAT_JSON => $this->jsonCalendarGenerator,
         };
     }
 }

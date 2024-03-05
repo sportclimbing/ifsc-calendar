@@ -11,6 +11,8 @@ use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarRequest;
 use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarResponse;
 use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase;
 use nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase;
+use nicoSWD\IfscCalendar\Domain\Calendar\Exceptions\NoEventsFoundException;
+use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarFormat;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use Symfony\Component\Console\Command\Command;
@@ -68,13 +70,16 @@ final class BuildCommand extends Command
             $selectedLeague = $this->getSelectedLeague($leaguesByName, $helper, $input, $output);
         }
 
-        $league = $leaguesByName[$selectedLeague];
+        $leagueId = $leaguesByName[$selectedLeague];
 
         foreach (explode(',', $format) as $calFormat) {
-            $pathInfo = pathinfo($fileName);
-            $fileName = "{$pathInfo['dirname']}/{$pathInfo['filename']}.{$calFormat}";
+            $format = IFSCCalendarFormat::from($calFormat);
+            $season = IFSCSeasonYear::from($selectedSeason);
 
-            $response = $this->buildCalendar(IFSCSeasonYear::tryFrom($selectedSeason), $league, $calFormat, $output);
+            $pathInfo = pathinfo($fileName);
+            $fileName = "{$pathInfo['dirname']}/{$pathInfo['filename']}.{$format->value}";
+
+            $response = $this->buildCalendar($season, $leagueId, $format, $output);
             $this->saveCalendar($fileName, $response->calendarContents, $output);
         }
 
@@ -83,18 +88,19 @@ final class BuildCommand extends Command
         return self::SUCCESS;
     }
 
+    /** @throws NoEventsFoundException */
     public function buildCalendar(
         IFSCSeasonYear $selectedSeason,
-        int $league,
-        string $format,
+        int $leagueId,
+        IFSCCalendarFormat $format,
         OutputInterface $output,
     ): BuildCalendarResponse {
         $output->writeln("[+] Fetching event info...");
 
         return $this->buildCalendarUseCase->execute(
             new BuildCalendarRequest(
+                leagueId: $leagueId,
                 season: $selectedSeason,
-                league: $league,
                 format: $format,
             )
         );

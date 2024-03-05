@@ -7,12 +7,15 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Calendar;
 
+use Exception;
 use nicoSWD\IfscCalendar\Domain\Calendar\Exceptions\NoEventsFoundException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher;
+use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
 
 final readonly class IFSCCalendarBuilder
 {
@@ -25,16 +28,19 @@ final readonly class IFSCCalendarBuilder
     ) {
     }
 
-    /** @throws NoEventsFoundException */
-    public function generateForLeague(IFSCSeasonYear $season, int $league, string $format): string
+    /**
+     * @throws NoEventsFoundException
+     * @throws Exception
+     */
+    public function generateForLeague(IFSCSeasonYear $season, int $leagueId, IFSCCalendarFormat $format): string
     {
         $events = $this->calendarPostProcess->process(
             season: $season,
-            events: $this->fetchEvents($season, $league),
+            events: $this->fetchEvents($season, $leagueId),
         );
 
         if (empty($events)) {
-            throw NoEventsFoundException::forLeague($league);
+            throw NoEventsFoundException::forLeague($leagueId);
         }
 
         $this->fetchEventStreamUrls($events, $season);
@@ -48,23 +54,25 @@ final readonly class IFSCCalendarBuilder
         $videoCollection = $this->linkFetcher->fetchRecentVideos($season);
 
         foreach ($events as $event) {
-            foreach ($event->rounds as &$round) {
-                if ($round->streamUrl) {
-                    continue;
-                }
-
-                $streamUrl = $this->linkMatcher->findStreamUrlForRound($round, $event, $videoCollection);
-
-                if ($streamUrl) {
-                    $round = $round->updateStreamUrl($streamUrl);
+            foreach ($event->rounds as $round) {
+                if (!$round->streamUrl) {
+                    $round->streamUrl = $this->searchStreamUrl($round, $event, $videoCollection);
                 }
             }
         }
     }
 
     /** @return IFSCEvent[] */
-    private function fetchEvents(IFSCSeasonYear $season, int $league): array
+    private function fetchEvents(IFSCSeasonYear $season, int $leagueId): array
     {
-        return $this->eventFetcher->fetchEventsForLeague($season, $league);
+        return $this->eventFetcher->fetchEventsForLeague($season, $leagueId);
+    }
+
+    private function searchStreamUrl(
+        IFSCRound $round,
+        IFSCEvent $event,
+        YouTubeVideoCollection $videoCollection
+    ): ?string {
+        return $this->linkMatcher->findStreamUrlForRound($round, $event, $videoCollection);
     }
 }

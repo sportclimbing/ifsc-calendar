@@ -7,6 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar;
 
+use nicoSWD\IfscCalendar\Domain\Calendar\Exceptions\NoEventsFoundException;
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder;
 
 final readonly class BuildCalendarUseCase
@@ -16,6 +17,7 @@ final readonly class BuildCalendarUseCase
     ) {
     }
 
+    /** @throws NoEventsFoundException */
     public function execute(BuildCalendarRequest $buildCalendarRequest): BuildCalendarResponse
     {
         return new BuildCalendarResponse(
@@ -23,11 +25,12 @@ final readonly class BuildCalendarUseCase
         );
     }
 
+    /** @throws NoEventsFoundException */
     public function buildCalendar(BuildCalendarRequest $buildCalendarRequest): string
     {
         return $this->calendarBuilder->generateForLeague(
             season: $buildCalendarRequest->season,
-            league: $buildCalendarRequest->league,
+            leagueId: $buildCalendarRequest->leagueId,
             format: $buildCalendarRequest->format,
         );
     }

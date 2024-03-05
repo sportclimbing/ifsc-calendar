@@ -15,15 +15,17 @@ use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
+use Override;
 
 final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
 {
-    private const IFSC_EVENT_INFO_URL = 'https://www.ifsc-climbing.org/component/ifsc/?view=event&WetId=%d';
+    private const string IFSC_EVENT_INFO_URL = 'https://www.ifsc-climbing.org/component/ifsc/?view=event&WetId=%d';
 
     /**
      * @inheritDoc
      * @throws Exception
      */
+    #[Override]
     public function generateForEvents(array $events): string
     {
         $jsonEvents = ['events' => []];

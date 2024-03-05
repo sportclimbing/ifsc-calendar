@@ -13,7 +13,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
 
 final readonly class YouTubeLinkMatcher
 {
-    private const YOUTUBE_BASE_URL = 'https://youtu.be/';
+    private const string YOUTUBE_BASE_URL = 'https://youtu.be/';
 
     public function findStreamUrlForRound(IFSCRound $round, IFSCEvent $event, YouTubeVideoCollection $videoCollection): ?string
     {

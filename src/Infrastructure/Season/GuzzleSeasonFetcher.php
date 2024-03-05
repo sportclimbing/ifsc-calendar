@@ -16,7 +16,7 @@ use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcherInterface;
 
 final readonly class GuzzleSeasonFetcher implements IFSCSeasonFetcherInterface
 {
-    private const IFSC_SEASONS_API_URL = 'https://components.ifsc-climbing.org/results-api.php?api=index';
+    private const string IFSC_SEASONS_API_URL = 'https://components.ifsc-climbing.org/results-api.php?api=index';
 
     public function __construct(
         private HttpClientInterface $client,
@@ -40,8 +40,8 @@ final readonly class GuzzleSeasonFetcher implements IFSCSeasonFetcherInterface
 
         foreach ($response->seasons as $season) {
             $seasons[$season->name] = new IFSCSeason(
-                name: $season->name,
                 id: $season->id,
+                name: $season->name,
                 leagues: $this->buildLeagues($season),
             );
         }
@@ -56,8 +56,8 @@ final readonly class GuzzleSeasonFetcher implements IFSCSeasonFetcherInterface
 
         foreach ($season->leagues as $league) {
             $leagues[] = new IFSCLeague(
-                name: $league->name,
                 id: $league->id,
+                name: $league->name,
             );
         }
 

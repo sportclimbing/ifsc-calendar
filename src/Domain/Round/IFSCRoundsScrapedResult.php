@@ -7,16 +7,12 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Round;
 
-use DateTimeImmutable;
-
-final class IFSCRound
+final readonly class IFSCRoundsScrapedResult
 {
     public function __construct(
-        public readonly string $name,
+        public string $roundName,
+        public string $startTime,
         public ?string $streamUrl,
-        public readonly DateTimeImmutable $startTime,
-        public readonly DateTimeImmutable $endTime,
-        public readonly bool $scheduleConfirmed = true,
     ) {
     }
 }

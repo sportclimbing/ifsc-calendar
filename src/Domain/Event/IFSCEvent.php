@@ -13,8 +13,13 @@ use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
 
 final class IFSCEvent
 {
-    /** @param IFSCRound[] $rounds */
-    /** @param IFSCStarter[] $starters */
+    /** @var IFSCRound[] $rounds */
+    public array $rounds;
+
+    /**
+     * @param IFSCRound[] $rounds
+     * @param IFSCStarter[] $starters
+     */
     public function __construct(
         public readonly IFSCSeasonYear $season,
         public readonly int $eventId,
@@ -27,8 +32,9 @@ final class IFSCEvent
         public readonly string $startsAt,
         public readonly string $endsAt,
         public readonly array $disciplines,
-        public array $rounds,
+        array $rounds,
         public array $starters = [],
     ) {
+        $this->rounds = $rounds;
     }
 }

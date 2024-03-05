@@ -5,13 +5,10 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Domain\League;
+namespace nicoSWD\IfscCalendar\Domain\Calendar;
 
-final readonly class IFSCLeague
+enum IFSCCalendarFormat: string
 {
-    public function __construct(
-        public int $id,
-        public string $name,
-    ) {
-    }
+    case FORMAT_JSON = 'json';
+    case FORMAT_ICS = 'ics';
 }

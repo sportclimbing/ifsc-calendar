@@ -11,6 +11,7 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
+use Override;
 
 final readonly class HttpGuzzleClient implements HttpClientInterface
 {
@@ -20,6 +21,7 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
     }
 
     /** @throws GuzzleException */
+    #[Override]
     public function getRetry(string $url, array $options = []): string
     {
         $retryCount = 0;
