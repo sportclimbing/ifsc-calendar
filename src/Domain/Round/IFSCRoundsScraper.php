@@ -31,7 +31,6 @@ final readonly class IFSCRoundsScraper
 
     public function __construct(
         private HttpClientInterface $client,
-        private IFSCRoundFactory $roundFactory,
         private DOMHelper $domHelper,
         private Normalizer $normalizer,
     ) {
@@ -105,7 +104,11 @@ final readonly class IFSCRoundsScraper
         $startTime = $this->normalizer->normalizeTime($match['time']);
         $streamUrl = $this->normalizer->firstUrl($match['url'] ?? '');
 
-        return new IFSCRoundsScrapedResult($roundName, $startTime, new IFSCStreamUrl($streamUrl));
+        return new IFSCRoundsScrapedResult(
+            $roundName,
+            $startTime,
+            new IFSCStreamUrl($streamUrl),
+        );
     }
 
     /**
@@ -117,7 +120,7 @@ final readonly class IFSCRoundsScraper
         $rounds = [];
 
         foreach ($schedules as $schedule) {
-            $rounds[] = $this->roundFactory->create(
+            $rounds[] = new IFSCRound(
                 name: $schedule->roundName,
                 streamUrl: $schedule->streamUrl,
                 startTime: $schedule->duration->startTime,

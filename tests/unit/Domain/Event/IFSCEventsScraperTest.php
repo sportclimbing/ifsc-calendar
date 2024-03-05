@@ -10,7 +10,6 @@ namespace nicoSWD\IfscCalendar\tests\Domain\Event;
 use DateTimeZone;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
@@ -267,7 +266,6 @@ final class IFSCEventsScraperTest extends TestCase
     {
         $eventScraper = new IFSCRoundsScraper(
             $this->mockClientReturningFile($fileName),
-            new IFSCRoundFactory(new Normalizer()),
             new DOMHelper(),
             new Normalizer(),
         );

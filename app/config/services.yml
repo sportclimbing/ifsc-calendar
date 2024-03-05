@@ -95,7 +95,6 @@ services:
     class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
-      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
       - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper'
       - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer'
 
@@ -104,9 +103,6 @@ services:
 
   nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer:
     class: nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer
-
-  nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory:
-    class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory
 
   # HTTP Client
   nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient:
