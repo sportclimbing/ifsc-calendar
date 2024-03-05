@@ -7,7 +7,6 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Calendar;
 
-use InvalidArgumentException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 
 final readonly class IFSCCalendarBuilderFactory
@@ -20,14 +19,12 @@ final readonly class IFSCCalendarBuilderFactory
 
     /**
      * @param IFSCEvent[] $events
-     * @throws InvalidArgumentException
      */
     public function generateForFormat(IFSCCalendarFormat $format, array $events): string
     {
         return $this->getGeneratorForFormat($format)->generateForEvents($events);
     }
 
-    /** @throws InvalidArgumentException */
     private function getGeneratorForFormat(IFSCCalendarFormat $format): IFSCCalendarGeneratorInterface
     {
         return match ($format) {

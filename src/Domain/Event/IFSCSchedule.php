@@ -8,19 +8,18 @@
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
 use DateTimeZone;
-use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
 
 final readonly class IFSCSchedule
 {
     private function __construct(
         public string $roundName,
-        public ?string $streamUrl,
+        public IFSCStreamUrl $streamUrl,
         public IFSCEventDuration $duration,
     ) {
     }
 
-    /** @throws InvalidURLException */
     public static function create(
         int $day,
         Month $month,
@@ -28,10 +27,8 @@ final readonly class IFSCSchedule
         DateTimeZone $timeZone,
         IFSCSeasonYear $season,
         string $roundName,
-        ?string $streamUrl = null,
+        IFSCStreamUrl $streamUrl,
     ): self  {
-        self::assertValidUrl($streamUrl);
-
         return new self(
             roundName: $roundName,
             streamUrl: $streamUrl,
@@ -45,11 +42,5 @@ final readonly class IFSCSchedule
         );
     }
 
-    /** @throws InvalidURLException */
-    private static function assertValidUrl(?string $streamUrl): void
-    {
-        if ($streamUrl !== null && !filter_var($streamUrl, FILTER_VALIDATE_URL)) {
-            throw new InvalidURLException("Invalid URL: {$streamUrl}");
-        }
-    }
+
 }

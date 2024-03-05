@@ -7,12 +7,14 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Round;
 
+use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
+
 final readonly class IFSCRoundsScrapedResult
 {
     public function __construct(
         public string $roundName,
         public string $startTime,
-        public ?string $streamUrl,
+        public IFSCStreamUrl $streamUrl,
     ) {
     }
 }

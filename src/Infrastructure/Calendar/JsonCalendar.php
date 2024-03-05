@@ -60,7 +60,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
     {
         $format = static fn (IFSCRound $round): array => [
             'name' => $round->name,
-            'stream_url' => $round->streamUrl,
+            'stream_url' => $round->streamUrl->url,
             'starts_at' => $round->startTime->format(DateTimeInterface::RFC3339),
             'ends_at' => $round->endTime->format(DateTimeInterface::RFC3339),
             'schedule_confirmed' => $round->scheduleConfirmed,

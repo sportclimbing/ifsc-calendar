@@ -11,6 +11,7 @@ use DateTimeImmutable;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideo;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
@@ -189,7 +190,7 @@ final class YouTubeLinkMatcherTest extends TestCase
             rounds: [
                 new IFSCRound(
                     name: $name,
-                    streamUrl: '',
+                    streamUrl: new IFSCStreamUrl(),
                     startTime: new DateTimeImmutable(),
                     endTime: new DateTimeImmutable(),
                 )

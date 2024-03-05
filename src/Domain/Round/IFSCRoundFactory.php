@@ -8,31 +8,21 @@
 namespace nicoSWD\IfscCalendar\Domain\Round;
 
 use DateTimeImmutable;
-use nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer;
+use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
 
 final readonly class IFSCRoundFactory
 {
-    public function __construct(
-        private Normalizer $normalizer,
-    ) {
-    }
-
     public function create(
         string $name,
-        ?string $streamUrl,
+        IFSCStreamUrl $streamUrl,
         DateTimeImmutable $startTime,
         DateTimeImmutable $endTime,
     ): IFSCRound {
         return new IFSCRound(
             name: $name,
-            streamUrl: $this->getStreamUrl($streamUrl),
+            streamUrl: $streamUrl,
             startTime: $startTime,
             endTime: $endTime,
         );
-    }
-
-    private function getStreamUrl(?string $streamUrl): ?string
-    {
-        return $this->normalizer->normalizeStreamUrl($streamUrl);
     }
 }

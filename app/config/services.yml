@@ -107,8 +107,6 @@ services:
 
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory:
     class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory
-    arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer'
 
   # HTTP Client
   nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient:

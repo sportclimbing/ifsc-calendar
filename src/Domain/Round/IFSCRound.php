@@ -8,12 +8,13 @@
 namespace nicoSWD\IfscCalendar\Domain\Round;
 
 use DateTimeImmutable;
+use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
 
 final class IFSCRound
 {
     public function __construct(
         public readonly string $name,
-        public ?string $streamUrl,
+        public IFSCStreamUrl $streamUrl,
         public readonly DateTimeImmutable $startTime,
         public readonly DateTimeImmutable $endTime,
         public readonly bool $scheduleConfirmed = true,

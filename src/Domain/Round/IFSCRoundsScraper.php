@@ -23,6 +23,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Event\Month;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
 
 final readonly class IFSCRoundsScraper
 {
@@ -37,7 +38,6 @@ final readonly class IFSCRoundsScraper
     }
 
     /**
-     * @throws InvalidURLException
      * @throws IFSCEventsScraperException
      * @throws Exception
      */
@@ -85,7 +85,10 @@ final readonly class IFSCRoundsScraper
         );
     }
 
-    /** @throws IFSCEventsScraperException */
+    /**
+     * @throws IFSCEventsScraperException
+     * @throws InvalidURLException
+     */
     private function parseEventDetails(string $line): IFSCRoundsScrapedResult
     {
         $regex = '~^
@@ -102,7 +105,7 @@ final readonly class IFSCRoundsScraper
         $startTime = $this->normalizer->normalizeTime($match['time']);
         $streamUrl = $this->normalizer->firstUrl($match['url'] ?? '');
 
-        return new IFSCRoundsScrapedResult($roundName, $startTime, $streamUrl);
+        return new IFSCRoundsScrapedResult($roundName, $startTime, new IFSCStreamUrl($streamUrl));
     }
 
     /**
@@ -126,8 +129,8 @@ final readonly class IFSCRoundsScraper
     }
 
     /**
-     * @throws InvalidURLException
      * @throws IFSCEventsScraperException
+     * @throws InvalidURLException
      */
     private function createSchedule(string $name, string $line, string $day, DateTimeZone $timeZone, IFSCSeasonYear $season): IFSCSchedule
     {

@@ -12,6 +12,7 @@ use DateTimeImmutable;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
 
 final readonly class Season2023PostProcessor
 {
@@ -118,7 +119,7 @@ final readonly class Season2023PostProcessor
 
         return new IFSCRound(
             name: $name,
-            streamUrl: null,
+            streamUrl: new IFSCStreamUrl(),
             startTime: DateTimeImmutable::createFromMutable($startTime),
             endTime: DateTimeImmutable::createFromMutable($startTime->modify('+3 hours')),
         );

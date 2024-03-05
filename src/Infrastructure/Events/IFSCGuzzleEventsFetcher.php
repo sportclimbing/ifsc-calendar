@@ -16,7 +16,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use JsonException;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
-use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
@@ -24,6 +23,7 @@ use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
+use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient;
 use Override;
 
@@ -49,7 +49,6 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     /**
      * @inheritdoc
      * @throws IFSCEventsScraperException
-     * @throws InvalidURLException
      * @throws Exception
      */
     #[Override]
@@ -159,7 +158,6 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     }
 
     /**
-     * @throws InvalidURLException
      * @throws IFSCEventsScraperException
      * @throws Exception
      */
@@ -213,7 +211,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
             foreach ($category->category_rounds as $round) {
                 $rounds[] = new IFSCRound(
                     name: $this->getRoundName($round),
-                    streamUrl: null,
+                    streamUrl: new IFSCStreamUrl(),
                     startTime: $scrapedRounds->startDate,
                     endTime: $scrapedRounds->startDate->modify('+3 hours'),
                     scheduleConfirmed: false,
