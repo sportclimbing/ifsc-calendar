@@ -12,11 +12,17 @@ use DateTimeImmutable;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
 
 final readonly class Season2023PostProcessor
 {
     private const int BERN_IFSC_EVENT_ID = 1301;
+
+    public function __construct(
+        private IFSCRoundFactory $roundFactory,
+    ) {
+    }
 
     /**
      * @param IFSCEvent[] $events
@@ -117,7 +123,7 @@ final readonly class Season2023PostProcessor
     {
         $startTime = new DateTime($startTime);
 
-        return new IFSCRound(
+        return $this->roundFactory->create(
             name: $name,
             streamUrl: new IFSCStreamUrl(),
             startTime: DateTimeImmutable::createFromMutable($startTime),

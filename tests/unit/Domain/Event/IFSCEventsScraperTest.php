@@ -14,6 +14,7 @@ use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 use nicoSWD\IfscCalendar\tests\Helpers\MockHttpClient;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -262,12 +263,11 @@ final class IFSCEventsScraperTest extends TestCase
         $this->assertSame('https://youtu.be/HPNpg-pLZOg', $event6->streamUrl->url);
     }
 
-    /** @return IFSCScrapedEventsResult */
     private function fetchEventsFromFile(string $fileName, string $timeZone): IFSCScrapedEventsResult
     {
         $eventScraper = new IFSCRoundsScraper(
             $this->mockClientReturningFile($fileName),
-            new IFSCRoundFactory(new Normalizer()),
+            new IFSCRoundFactory(new IFSCTagsParser()),
             new DOMHelper(),
             new Normalizer(),
         );

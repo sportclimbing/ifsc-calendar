@@ -10,9 +10,15 @@ namespace nicoSWD\IfscCalendar\Domain\YouTube;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
+use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 
 final readonly class YouTubeLinkMatcher
 {
+    public function __construct(
+        private IFSCTagsParser $tagsParser,
+    ) {
+    }
+
     private const string YOUTUBE_BASE_URL = 'https://youtu.be/';
 
     public function findStreamUrlForRound(IFSCRound $round, IFSCEvent $event, YouTubeVideoCollection $videoCollection): ?string
@@ -49,18 +55,9 @@ final readonly class YouTubeLinkMatcher
         return $videoTags === $eventTags;
     }
 
-    /** @return Tag[] */
     private function fetchTagsFromTitle(string $title): array
     {
-        $tags = [];
-
-        foreach (Tag::cases() as $eventType) {
-            if (preg_match("~\b{$eventType->value}\b~", $title)) {
-                $tags[] = $eventType;
-            }
-        }
-
-        return $tags;
+        return $this->tagsParser->fromString($title)->allTags();
     }
 
     private function videoTitleContainsSameLocationAndSeason(string $videoTitle, IFSCEvent $event): bool
@@ -80,13 +77,13 @@ final readonly class YouTubeLinkMatcher
 
     private function videoIsMensAndWomensCombined(array $videoTags, array $eventTags): bool
     {
-        if (!$this->hasTag($videoTags, Tag::MENS) &&
-            !$this->hasTag($videoTags, Tag::WOMENS)
+        if (!$this->hasTag($videoTags, Tag::MEN) &&
+            !$this->hasTag($videoTags, Tag::WOMEN)
         ) {
             $eventTags = $this->removeTags(
                 $eventTags,
-                Tag::MENS,
-                Tag::WOMENS,
+                Tag::MEN,
+                Tag::WOMEN,
             );
         }
 

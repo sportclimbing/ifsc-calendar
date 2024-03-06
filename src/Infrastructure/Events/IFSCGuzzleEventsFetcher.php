@@ -18,7 +18,7 @@ use JsonException;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
@@ -42,6 +42,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     public function __construct(
         private IFSCRoundsScraper $roundsScraper,
         private HttpGuzzleClient $httpClient,
+        private IFSCRoundFactory $roundFactory,
         private string $siteUrl,
     ) {
     }
@@ -209,12 +210,11 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
 
         foreach ($eventInfo->d_cats as $category) {
             foreach ($category->category_rounds as $round) {
-                $rounds[] = new IFSCRound(
+                $rounds[] = $this->roundFactory->create(
                     name: $this->getRoundName($round),
                     streamUrl: new IFSCStreamUrl(),
                     startTime: $scrapedRounds->startDate,
                     endTime: $scrapedRounds->startDate->modify('+3 hours'),
-                    scheduleConfirmed: false,
                 );
             }
         }

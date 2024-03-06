@@ -10,8 +10,11 @@ namespace nicoSWD\IfscCalendar\tests\Domain\YouTube;
 use DateTimeImmutable;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundCategory;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundKind;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
+use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideo;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
@@ -190,6 +193,9 @@ final class YouTubeLinkMatcherTest extends TestCase
             rounds: [
                 new IFSCRound(
                     name: $name,
+                    category: IFSCRoundCategory::WOMEN,
+                    disciplines: [],
+                    kind: IFSCRoundKind::FINAL,
                     streamUrl: new IFSCStreamUrl(),
                     startTime: new DateTimeImmutable(),
                     endTime: new DateTimeImmutable(),
@@ -210,6 +216,8 @@ final class YouTubeLinkMatcherTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->linkMatcher = new YouTubeLinkMatcher();
+        $this->linkMatcher = new YouTubeLinkMatcher(
+            new IFSCTagsParser(),
+        );
     }
 }

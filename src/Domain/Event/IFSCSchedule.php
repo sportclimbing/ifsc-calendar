@@ -41,6 +41,4 @@ final readonly class IFSCSchedule
             ),
         );
     }
-
-
 }

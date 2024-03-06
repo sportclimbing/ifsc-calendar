@@ -9,7 +9,9 @@ namespace nicoSWD\IfscCalendar\tests\Domain\Calendar\Fixes;
 
 use nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 use nicoSWD\IfscCalendar\tests\Helpers\MockHttpClient;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -117,7 +119,11 @@ final class SeasonFix2023Test extends TestCase
 
     protected function setUp(): void
     {
-        $this->season2023Fix = new Season2023PostProcessor();
+        $this->season2023Fix = new Season2023PostProcessor(
+            new IFSCRoundFactory(
+                new IFSCTagsParser()
+            )
+        );
 
         parent::setUp();
     }
