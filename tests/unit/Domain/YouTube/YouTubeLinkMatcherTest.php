@@ -193,7 +193,7 @@ final class YouTubeLinkMatcherTest extends TestCase
             rounds: [
                 new IFSCRound(
                     name: $name,
-                    category: IFSCRoundCategory::WOMEN,
+                    categories: [IFSCRoundCategory::WOMEN],
                     disciplines: [],
                     kind: IFSCRoundKind::FINAL,
                     streamUrl: new IFSCStreamUrl(),

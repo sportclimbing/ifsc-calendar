@@ -15,6 +15,7 @@ use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundCategory;
 use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
 use Override;
 
@@ -61,17 +62,14 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
         return json_encode($jsonEvents, flags: JSON_PRETTY_PRINT);
     }
 
-    /**
-     * @param IFSCRound[] $rounds
-     * @return IFSCRound[]
-     */
+    /** @param IFSCRound[] $rounds */
     private function formatRound(array $rounds): array
     {
         $format = fn (IFSCRound $round): array => [
             'name' => $round->name,
-            'category' => $round->category,
-            'kind' => $round->kind?->value,
+            'categories' => $this->buildCategories($round),
             'disciplines' => $this->buildDisciplines($round),
+            'kind' => $round->kind?->value,
             'stream_url' => $round->streamUrl->url,
             'starts_at' => $this->formatDate($round->startTime),
             'ends_at' => $this->formatDate($round->endTime),
@@ -98,9 +96,16 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
         return sprintf(self::IFSC_EVENT_INFO_URL, $event->eventId);
     }
 
+    /** @return string[] */
     private function buildDisciplines(IFSCRound $round): array
     {
         return array_map(static fn (IFSCDiscipline $discipline): string => $discipline->value, $round->disciplines);
+    }
+
+    /** @return string[] */
+    private function buildCategories(IFSCRound $round): array
+    {
+        return array_map(static fn (IFSCRoundCategory $category): string => $category->value, $round->categories);
     }
 
     /** @throws Exception */

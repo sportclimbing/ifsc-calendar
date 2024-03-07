@@ -30,7 +30,7 @@ final readonly class IFSCRoundFactory
 
         return new IFSCRound(
             name: $name,
-            category: $tags->getCategory(),
+            categories: $tags->getCategories(),
             disciplines: $tags->getDisciplines(),
             kind: $tags->getRoundKind(),
             streamUrl: $streamUrl,

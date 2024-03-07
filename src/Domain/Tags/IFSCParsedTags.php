@@ -68,15 +68,18 @@ final readonly class IFSCParsedTags
         return null;
     }
 
-    public function getCategory(): ?IFSCRoundCategory
+    /** @return IFSCRoundCategory[] */
+    public function getCategories(): array
     {
+        $categories = [];
+
         foreach (self::CATEGORIES as $name => $tag) {
             if ($this->hasTag($tag)) {
-                return IFSCRoundCategory::from($name);
+                $categories[] = IFSCRoundCategory::from($name);
             }
         }
 
-        return null;
+        return $categories;
     }
 
     private function hasTag(Tag $tag): bool

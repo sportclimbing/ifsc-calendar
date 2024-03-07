@@ -13,10 +13,13 @@ use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
 
 final class IFSCRound
 {
-    /** @param IFSCDiscipline[] $disciplines */
+    /**
+     * @param IFSCRoundCategory[] $categories
+     * @param IFSCDiscipline[] $disciplines
+     */
     public function __construct(
         public readonly string $name,
-        public readonly ?IFSCRoundCategory $category,
+        public readonly array $categories,
         public readonly array $disciplines,
         public readonly ?IFSCRoundKind $kind,
         public IFSCStreamUrl $streamUrl,
