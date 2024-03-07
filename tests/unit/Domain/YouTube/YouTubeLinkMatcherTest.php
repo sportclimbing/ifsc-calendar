@@ -181,6 +181,7 @@ final class YouTubeLinkMatcherTest extends TestCase
         return new IFSCEvent(
             season: IFSCSeasonYear::SEASON_2023,
             eventId: 1292,
+            leagueId: 431,
             timeZone: '',
             eventName: $description,
             location: $location,

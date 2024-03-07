@@ -23,6 +23,7 @@ final class IFSCEvent
     public function __construct(
         public readonly IFSCSeasonYear $season,
         public readonly int $eventId,
+        public readonly int $leagueId,
         public readonly string $timeZone,
         public readonly string $eventName,
         public readonly string $location,

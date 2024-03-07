@@ -29,6 +29,7 @@ final class SeasonFix2023Test extends TestCase
             new IFSCEvent(
                 season: IFSCSeasonYear::SEASON_2023,
                 eventId: 1301,
+                leagueId: 431,
                 timeZone: '',
                 eventName: '',
                 location: 'Jakata',

@@ -71,6 +71,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
             $events[] = new IFSCEvent(
                 season: $season,
                 eventId: $event->event_id,
+                leagueId: $leagueId,
                 timeZone: $event->timezone->value,
                 eventName: $event->event,
                 location: $eventInfo->location,
