@@ -12,8 +12,9 @@ use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
 final readonly class BuildCalendarRequest
 {
+    /** @param int[] $leagueIds */
     public function __construct(
-        public int $leagueId,
+        public array $leagueIds,
         public IFSCSeasonYear $season,
         public IFSCCalendarFormat $format,
     ) {

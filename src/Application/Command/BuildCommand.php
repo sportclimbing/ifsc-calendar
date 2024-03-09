@@ -37,19 +37,20 @@ final class BuildCommand extends Command
         $this->setName('nicoswd:build-ifsc-calender')
             ->setDescription('Build a custom IFSC calender (.ics)')
             ->addOption('season', mode: InputOption::VALUE_OPTIONAL, description: 'IFSC Season')
-            ->addOption('league', mode: InputOption::VALUE_OPTIONAL, description: 'IFSC League')
+            ->addOption('league', mode: InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, description: 'IFSC Leagues')
             ->addOption('format', mode: InputOption::VALUE_OPTIONAL, description: 'Output format', default: 'ics')
             ->addOption('output', mode: InputOption::VALUE_OPTIONAL, description: '.ics output file name', default: 'ifsc-calendar.ics')
         ;
     }
 
+    /** @throws NoEventsFoundException */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $helper = $this->getHelper('question');
         $seasons = $this->getSeasons();
 
         $selectedSeason = $input->getOption('season');
-        $selectedLeague = $input->getOption('league');
+        $selectedLeagues = $input->getOption('league');
         $fileName = $input->getOption('output');
         $format = $input->getOption('format');
 
@@ -66,11 +67,15 @@ final class BuildCommand extends Command
             $leaguesByName[$league->name] = $league->id;
         }
 
-        if (!$selectedLeague) {
-            $selectedLeague = $this->getSelectedLeague($leaguesByName, $helper, $input, $output);
+        if (!$selectedLeagues) {
+            $selectedLeagues = $this->getSelectedLeague($leaguesByName, $helper, $input, $output);
         }
 
-        $leagueId = $leaguesByName[$selectedLeague];
+        $leagueIds = [];
+
+        foreach ($selectedLeagues as $name) {
+            $leagueIds[] = $leaguesByName[$name];
+        }
 
         foreach (explode(',', $format) as $calFormat) {
             $format = IFSCCalendarFormat::from($calFormat);
@@ -79,7 +84,7 @@ final class BuildCommand extends Command
             $pathInfo = pathinfo($fileName);
             $fileName = "{$pathInfo['dirname']}/{$pathInfo['filename']}.{$format->value}";
 
-            $response = $this->buildCalendar($season, $leagueId, $format, $output);
+            $response = $this->buildCalendar($season, $leagueIds, $format, $output);
             $this->saveCalendar($fileName, $response->calendarContents, $output);
         }
 
@@ -88,10 +93,13 @@ final class BuildCommand extends Command
         return self::SUCCESS;
     }
 
-    /** @throws NoEventsFoundException */
+    /**
+     * @param int[] $leagueIds
+     * @throws NoEventsFoundException
+     */
     public function buildCalendar(
         IFSCSeasonYear $selectedSeason,
-        int $leagueId,
+        array $leagueIds,
         IFSCCalendarFormat $format,
         OutputInterface $output,
     ): BuildCalendarResponse {
@@ -99,7 +107,7 @@ final class BuildCommand extends Command
 
         return $this->buildCalendarUseCase->execute(
             new BuildCalendarRequest(
-                leagueId: $leagueId,
+                leagueIds: $leagueIds,
                 season: $selectedSeason,
                 format: $format,
             )
@@ -133,14 +141,14 @@ final class BuildCommand extends Command
         return (int) $helper->ask($input, $output, $question);
     }
 
-    public function getSelectedLeague(array $leaguesByName, Helper $helper, InputInterface $input, OutputInterface $output): string
+    public function getSelectedLeague(array $leaguesByName, Helper $helper, InputInterface $input, OutputInterface $output): array
     {
         $question = new ChoiceQuestion(
             'Please select a league (defaults to "' . key($leaguesByName) . '")',
             array_keys($leaguesByName),
             0
         );
-        $question->setMultiselect(false);
+        $question->setMultiselect(true);
         $question->setErrorMessage('League %s is invalid.');
 
         return $helper->ask($input, $output, $question);

@@ -12,6 +12,7 @@ use nicoSWD\IfscCalendar\Domain\Calendar\Exceptions\NoEventsFoundException;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
@@ -27,25 +28,34 @@ final readonly class IFSCCalendarBuilder
         private IFSCCalendarPostProcess $calendarPostProcess,
         private YouTubeLinkFetcher $linkFetcher,
         private YouTubeLinkMatcher $linkMatcher,
+        private IFSCEventSorter $eventSorter,
     ) {
     }
 
     /**
+     * @param int[] $leagueIds
      * @throws NoEventsFoundException
      * @throws Exception
      */
-    public function generateForLeague(IFSCSeasonYear $season, int $leagueId, IFSCCalendarFormat $format): string
+    public function generateForLeague(IFSCSeasonYear $season, array $leagueIds, IFSCCalendarFormat $format): string
     {
-        $events = $this->calendarPostProcess->process(
-            season: $season,
-            events: $this->fetchEvents($season, $leagueId),
-        );
+        $events = [];
 
-        if (empty($events)) {
-            throw NoEventsFoundException::forLeague($leagueId);
+        foreach ($leagueIds as $leagueId) {
+            $leagueEvents = $this->calendarPostProcess->process(
+                season: $season,
+                events: $this->fetchEvents($season, $leagueId),
+            );
+
+            if (empty($leagueEvents)) {
+                throw NoEventsFoundException::forLeague($leagueId);
+            }
+
+            $this->fetchEventStreamUrls($leagueEvents, $season);
+            $events = array_merge($events, $leagueEvents);
         }
 
-        $this->fetchEventStreamUrls($events, $season);
+        $this->eventSorter->sortByDate($events);
 
         return $this->calendarBuilderFactory->generateForFormat($format, $events);
     }

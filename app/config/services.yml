@@ -31,6 +31,10 @@ services:
       - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess'
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher'
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher'
+      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter'
+
+  nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter:
+    class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter
 
   nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar:
     class: nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar
