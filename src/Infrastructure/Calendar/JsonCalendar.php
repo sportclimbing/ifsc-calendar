@@ -74,7 +74,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
             'stream_url' => $round->streamUrl->url,
             'starts_at' => $this->formatDate($round->startTime),
             'ends_at' => $this->formatDate($round->endTime),
-            'schedule_confirmed' => $round->scheduleConfirmed,
+            'schedule_status' => $round->status->value,
         ];
 
         return array_map($format, $rounds);

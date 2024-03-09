@@ -21,6 +21,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
 use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
@@ -216,6 +217,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
                     streamUrl: new IFSCStreamUrl(),
                     startTime: $scrapedRounds->startDate,
                     endTime: $scrapedRounds->startDate->modify('+3 hours'),
+                    status: IFSCRoundStatus::ESTIMATED,
                 );
             }
         }

@@ -24,7 +24,7 @@ final readonly class IFSCRoundFactory
         IFSCStreamUrl $streamUrl,
         DateTimeImmutable $startTime,
         DateTimeImmutable $endTime,
-        bool $scheduleConfirmed = false,
+        IFSCRoundStatus $status,
     ): IFSCRound {
         $tags = $this->getTags($name);
 
@@ -36,7 +36,7 @@ final readonly class IFSCRoundFactory
             streamUrl: $streamUrl,
             startTime: $startTime,
             endTime: $endTime,
-            scheduleConfirmed: $scheduleConfirmed,
+            status: $status,
         );
     }
 

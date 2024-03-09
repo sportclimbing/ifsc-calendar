@@ -122,7 +122,7 @@ final readonly class IFSCRoundsScraper
                 streamUrl: $schedule->streamUrl,
                 startTime: $schedule->duration->startTime,
                 endTime: $schedule->duration->endTime,
-                scheduleConfirmed: true,
+                status: IFSCRoundStatus::CONFIRMED,
             );
         }
 

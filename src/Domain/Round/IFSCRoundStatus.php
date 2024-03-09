@@ -7,14 +7,13 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Round;
 
-enum IFSCRoundKind: string
+enum IFSCRoundStatus: string
 {
-    case QUALIFICATION = 'qualification';
-    case SEMI_FINAL = 'semi-final';
-    case FINAL = 'final';
+    case CONFIRMED = 'confirmed';
+    case ESTIMATED = 'estimated';
 
-    public function isQualification(): bool
+    public function isConfirmed(): bool
     {
-        return $this === self::QUALIFICATION;
+        return $this === self::CONFIRMED;
     }
 }

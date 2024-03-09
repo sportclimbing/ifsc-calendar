@@ -13,6 +13,7 @@ use Exception;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
 use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
 
 final readonly class Season2023PostProcessor
@@ -128,6 +129,7 @@ final readonly class Season2023PostProcessor
             streamUrl: new IFSCStreamUrl(),
             startTime: DateTimeImmutable::createFromMutable($startTime),
             endTime: DateTimeImmutable::createFromMutable($startTime->modify('+3 hours')),
+            status: IFSCRoundStatus::CONFIRMED,
         );
     }
 

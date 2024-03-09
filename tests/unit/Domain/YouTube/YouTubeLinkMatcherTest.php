@@ -12,6 +12,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundCategory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundKind;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
@@ -200,7 +201,8 @@ final class YouTubeLinkMatcherTest extends TestCase
                     streamUrl: new IFSCStreamUrl(),
                     startTime: new DateTimeImmutable(),
                     endTime: new DateTimeImmutable(),
-                )
+                    status: IFSCRoundStatus::CONFIRMED,
+                ),
             ],
         );
     }

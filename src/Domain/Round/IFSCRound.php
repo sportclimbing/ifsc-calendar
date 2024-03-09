@@ -25,7 +25,7 @@ final class IFSCRound
         public IFSCStreamUrl $streamUrl,
         public readonly DateTimeImmutable $startTime,
         public readonly DateTimeImmutable $endTime,
-        public readonly bool $scheduleConfirmed = true,
+        public readonly IFSCRoundStatus $status,
     ) {
     }
 }

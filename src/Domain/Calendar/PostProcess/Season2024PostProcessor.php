@@ -19,6 +19,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
 use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
 
 final readonly class Season2024PostProcessor
@@ -58,6 +59,7 @@ final readonly class Season2024PostProcessor
     }
 
     /**
+     * @return IFSCRound[]
      * @throws IFSCEventsScraperException
      * @throws Exception
      */
@@ -83,13 +85,18 @@ final readonly class Season2024PostProcessor
     }
 
     /** @throws Exception */
-    private function createRound(string $name, DateTime $startTime, DateTime $endTime): IFSCRound
-    {
+    private function createRound(
+        string $name,
+        DateTime $startTime,
+        DateTime $endTime,
+        IFSCRoundStatus $status = IFSCRoundStatus::CONFIRMED
+    ): IFSCRound {
         return $this->roundFactory->create(
             name: ucwords($name),
             streamUrl: new IFSCStreamUrl(),
             startTime: DateTimeImmutable::createFromMutable($startTime),
             endTime: DateTimeImmutable::createFromMutable($endTime),
+            status: $status,
         );
     }
 
@@ -170,9 +177,25 @@ final readonly class Season2024PostProcessor
         return (int) ceil(($diff->m + ($diff->h * 60)) / 2);
     }
 
-    private function getRoundNames(string $name): array
+    /** @throws Exception */
+    private function createRound1(array $roundNames, DateTime $startTime, DateTime $endTime, int $avgRoundDuration): IFSCRound
     {
-        return preg_split('~\s*,\s+~', $name, limit: 2, flags: PREG_SPLIT_NO_EMPTY);
+        return $this->createRound(
+            $roundNames[0],
+            $startTime,
+            $this->calcEndTime($endTime, $avgRoundDuration),
+        );
+    }
+
+    /** @throws Exception */
+    private function createRound2(array $roundNames, DateTime $startTime, DateTime $endTime, int $avgRoundDuration): IFSCRound
+    {
+        return $this->createRound(
+            $roundNames[1],
+            $this->calcStartTime($startTime, $avgRoundDuration),
+            $endTime,
+            IFSCRoundStatus::ESTIMATED
+        );
     }
 
     private function calcEndTime(DateTime $endTime, int $avg): DateTime
@@ -185,15 +208,9 @@ final readonly class Season2024PostProcessor
         return $startTime->modify("+{$avg} minutes");
     }
 
-    /** @throws Exception */
-    private function createRound1(array $roundNames, DateTime $startTime, DateTime $endTime, int $avgRoundDuration): IFSCRound
+    /** @return string[] */
+    private function getRoundNames(string $name): array
     {
-        return $this->createRound($roundNames[0], $startTime, $this->calcEndTime($endTime, $avgRoundDuration));
-    }
-
-    /** @throws Exception */
-    private function createRound2(array $roundNames, DateTime $startTime, DateTime $endTime, int $avgRoundDuration): IFSCRound
-    {
-        return $this->createRound($roundNames[1], $this->calcStartTime($startTime, $avgRoundDuration), $endTime);
+        return preg_split('~\s*,\s+~', $name, limit: 2, flags: PREG_SPLIT_NO_EMPTY);
     }
 }
