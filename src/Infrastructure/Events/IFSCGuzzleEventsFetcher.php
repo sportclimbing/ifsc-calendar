@@ -329,7 +329,13 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
 
     private function getRoundName(object $round): string
     {
-        return sprintf("%s's %s %s", $round->category, ucfirst($round->kind), $round->name);
+        $kind = preg_replace_callback(
+            pattern: '~(\w)&(\w)~',
+            callback: static fn (array $match): string => $match[1] . ' & ' . $match[2],
+            subject: $round->kind,
+        );
+
+        return ucwords(sprintf("%s's %s %s", $round->category, $kind, $round->name));
     }
 
     private function sortByScore(): Closure
