@@ -8,7 +8,8 @@
 namespace nicoSWD\IfscCalendar\Domain\Calendar;
 
 use Exception;
-use nicoSWD\IfscCalendar\Domain\Calendar\Exceptions\NoEventsFoundException;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\NoRoundsForEventFoundEvent;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
@@ -29,12 +30,12 @@ final readonly class IFSCCalendarBuilder
         private YouTubeLinkFetcher $linkFetcher,
         private YouTubeLinkMatcher $linkMatcher,
         private IFSCEventSorter $eventSorter,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
     /**
      * @param int[] $leagueIds
-     * @throws NoEventsFoundException
      * @throws Exception
      */
     public function generateForLeague(IFSCSeasonYear $season, array $leagueIds, IFSCCalendarFormat $format): string
@@ -47,12 +48,8 @@ final readonly class IFSCCalendarBuilder
                 events: $this->fetchEvents($season, $leagueId),
             );
 
-            if (empty($leagueEvents)) {
-                throw NoEventsFoundException::forLeague($leagueId);
-            }
-
             $this->fetchEventStreamUrls($leagueEvents, $season);
-            $events = array_merge($events, $leagueEvents);
+            $this->appendEventsWithRounds($events, $leagueEvents);
         }
 
         $this->eventSorter->sortByDate($events);
@@ -87,8 +84,32 @@ final readonly class IFSCCalendarBuilder
     private function searchStreamUrl(
         IFSCRound $round,
         IFSCEvent $event,
-        YouTubeVideoCollection $videoCollection
+        YouTubeVideoCollection $videoCollection,
     ): IFSCStreamUrl {
         return new IFSCStreamUrl($this->linkMatcher->findStreamUrlForRound($round, $event, $videoCollection));
+    }
+
+    /**
+     * @param IFSCEvent[] $events
+     * @param IFSCEvent[] $leagueEvents
+     */
+    private function appendEventsWithRounds(array &$events, array $leagueEvents): void
+    {
+        $filteredEvents = [];
+
+        foreach ($leagueEvents as $event) {
+            if (empty($event->rounds)) {
+                $this->emitNoRoundsFoundWarning($event);
+            } else {
+                $filteredEvents[] = $event;
+            }
+        }
+
+        $events = array_merge($events, $filteredEvents);
+    }
+
+    private function emitNoRoundsFoundWarning(IFSCEvent $event): void
+    {
+        $this->eventDispatcher->dispatch(new NoRoundsForEventFoundEvent($event->eventName));
     }
 }

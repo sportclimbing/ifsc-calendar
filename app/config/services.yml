@@ -11,6 +11,14 @@ services:
     public: true
     tags: [console.command]
 
+  Symfony\Component\EventDispatcher\EventDispatcher:
+    class: Symfony\Component\EventDispatcher\EventDispatcher
+
+  nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher:
+    class: nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher
+    arguments:
+      - '@Symfony\Component\EventDispatcher\EventDispatcher'
+
   # Calendar
   nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase:
     class: nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase
@@ -32,6 +40,7 @@ services:
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher'
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher'
       - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter'
+      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
 
   nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter:
     class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter
@@ -106,6 +115,7 @@ services:
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper'
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
+      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
       - '%site_event_url%'
 
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper:

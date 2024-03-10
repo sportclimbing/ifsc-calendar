@@ -15,6 +15,8 @@ use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use JsonException;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\FetchingSessionIdCookieEvent;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
@@ -44,6 +46,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
         private IFSCRoundsScraper $roundsScraper,
         private HttpGuzzleClient $httpClient,
         private IFSCRoundFactory $roundFactory,
+        private EventDispatcherInterface $eventDispatcher,
         private string $siteUrl,
     ) {
     }
@@ -140,6 +143,8 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     /** @throws IFSCEventsScraperException */
     private function fetchSessionIdCookie(): string
     {
+        $this->eventDispatcher->dispatch(new FetchingSessionIdCookieEvent());
+
         try {
             $headers = $this->httpClient->getHeaders(self::IFSC_RESULTS_INFO_PAGE);
         }  catch (GuzzleException $e) {
