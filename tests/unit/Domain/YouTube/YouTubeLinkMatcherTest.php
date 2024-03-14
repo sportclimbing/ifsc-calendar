@@ -8,13 +8,14 @@
 namespace nicoSWD\IfscCalendar\tests\Domain\YouTube;
 
 use DateTimeImmutable;
+use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundCategory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundKind;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
-use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideo;
@@ -198,7 +199,7 @@ final class YouTubeLinkMatcherTest extends TestCase
                     categories: [IFSCRoundCategory::WOMEN],
                     disciplines: [],
                     kind: IFSCRoundKind::FINAL,
-                    streamUrl: new IFSCStreamUrl(),
+                    streamUrl: new StreamUrl(),
                     startTime: new DateTimeImmutable(),
                     endTime: new DateTimeImmutable(),
                     status: IFSCRoundStatus::CONFIRMED,
@@ -207,9 +208,10 @@ final class YouTubeLinkMatcherTest extends TestCase
         );
     }
 
+    /** @throws InvalidURLException */
     private function findStreamUrlForEvent(IFSCEvent $event): ?string
     {
-        return $this->linkMatcher->findStreamUrlForRound($event->rounds[0], $event, $this->createVideoCollection());
+        return $this->linkMatcher->findStreamUrlForRound($event->rounds[0], $event, $this->createVideoCollection())->url;
     }
 
     private function assetUrlMatchesEvent(string $url, IFSCEvent $event): void

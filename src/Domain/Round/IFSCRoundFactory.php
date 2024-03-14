@@ -8,7 +8,7 @@
 namespace nicoSWD\IfscCalendar\Domain\Round;
 
 use DateTimeImmutable;
-use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCParsedTags;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 
@@ -21,7 +21,7 @@ final readonly class IFSCRoundFactory
 
     public function create(
         string $name,
-        IFSCStreamUrl $streamUrl,
+        StreamUrl $streamUrl,
         DateTimeImmutable $startTime,
         DateTimeImmutable $endTime,
         IFSCRoundStatus $status,
@@ -40,8 +40,8 @@ final readonly class IFSCRoundFactory
         );
     }
 
-    private function getTags(string $name): IFSCParsedTags
+    private function getTags(string $string): IFSCParsedTags
     {
-        return $this->tagsParser->fromString($name);
+        return $this->tagsParser->fromString($string);
     }
 }

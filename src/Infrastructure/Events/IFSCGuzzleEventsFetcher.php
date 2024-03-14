@@ -26,7 +26,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
-use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient;
 use Override;
 
@@ -219,7 +219,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
             foreach ($category->category_rounds as $round) {
                 $rounds[] = $this->roundFactory->create(
                     name: $this->getRoundName($round),
-                    streamUrl: new IFSCStreamUrl(),
+                    streamUrl: new StreamUrl(),
                     startTime: $scrapedRounds->startDate,
                     endTime: $scrapedRounds->startDate->modify('+3 hours'),
                     status: IFSCRoundStatus::ESTIMATED,

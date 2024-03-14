@@ -23,7 +23,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Event\Month;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
-use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 
 final readonly class IFSCRoundsScraper
 {
@@ -103,9 +103,9 @@ final readonly class IFSCRoundsScraper
 
         $roundName = $this->normalizer->cupName($match['name']);
         $startTime = $this->normalizer->normalizeTime($match['time']);
-        $streamUrl = $this->normalizer->firstUrl($match['url'] ?? '');
+        $streamUrl = $this->normalizer->firstUrl($match['url'] ?? null);
 
-        return new IFSCRoundsScrapedResult($roundName, $startTime, new IFSCStreamUrl($streamUrl));
+        return new IFSCRoundsScrapedResult($roundName, $startTime, new StreamUrl($streamUrl));
     }
 
     /**

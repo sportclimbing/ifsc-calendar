@@ -14,14 +14,17 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 final readonly class SymfonyEventDispatcher implements EventDispatcherInterface
 {
+    private const string EVENT_NAME = 'event.loggable';
+
     public function __construct(
         private EventDispatcher $eventDispatcher,
     ) {
+        $this->eventDispatcher->addListener(self::EVENT_NAME, [new ConsoleEventListener(), 'logMessage']);
     }
 
     #[Override]
     public function dispatch(Event $event): void
     {
-        $this->eventDispatcher->dispatch($event, 'event.loggable');
+        $this->eventDispatcher->dispatch($event, self::EVENT_NAME);
     }
 }

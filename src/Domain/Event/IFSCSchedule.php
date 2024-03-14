@@ -9,13 +9,13 @@ namespace nicoSWD\IfscCalendar\Domain\Event;
 
 use DateTimeZone;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
-use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 
 final readonly class IFSCSchedule
 {
     private function __construct(
         public string $roundName,
-        public IFSCStreamUrl $streamUrl,
+        public StreamUrl $streamUrl,
         public IFSCEventDuration $duration,
     ) {
     }
@@ -27,7 +27,7 @@ final readonly class IFSCSchedule
         DateTimeZone $timeZone,
         IFSCSeasonYear $season,
         string $roundName,
-        IFSCStreamUrl $streamUrl,
+        StreamUrl $streamUrl,
     ): self  {
         return new self(
             roundName: $roundName,

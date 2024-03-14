@@ -20,7 +20,7 @@ use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
-use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 
 final readonly class Season2024PostProcessor
 {
@@ -93,7 +93,7 @@ final readonly class Season2024PostProcessor
     ): IFSCRound {
         return $this->roundFactory->create(
             name: ucwords($name),
-            streamUrl: new IFSCStreamUrl(),
+            streamUrl: new StreamUrl(),
             startTime: DateTimeImmutable::createFromMutable($startTime),
             endTime: DateTimeImmutable::createFromMutable($endTime),
             status: $status,
@@ -181,9 +181,9 @@ final readonly class Season2024PostProcessor
     private function createRound1(array $roundNames, DateTime $startTime, DateTime $endTime, int $avgRoundDuration): IFSCRound
     {
         return $this->createRound(
-            $roundNames[0],
-            $startTime,
-            $this->calcEndTime($endTime, $avgRoundDuration),
+            name: $roundNames[0],
+            startTime: $startTime,
+            endTime: $this->calcEndTime($endTime, $avgRoundDuration),
         );
     }
 
@@ -191,21 +191,21 @@ final readonly class Season2024PostProcessor
     private function createRound2(array $roundNames, DateTime $startTime, DateTime $endTime, int $avgRoundDuration): IFSCRound
     {
         return $this->createRound(
-            $roundNames[1],
-            $this->calcStartTime($startTime, $avgRoundDuration),
-            $endTime,
-            IFSCRoundStatus::ESTIMATED
+            name: $roundNames[1],
+            startTime: $this->calcStartTime($startTime, $avgRoundDuration),
+            endTime: $endTime,
+            status: IFSCRoundStatus::ESTIMATED,
         );
     }
 
-    private function calcEndTime(DateTime $endTime, int $avg): DateTime
+    private function calcEndTime(DateTime $endTime, int $avgRoundDuration): DateTime
     {
-        return $endTime->modify("-{$avg} minutes");
+        return $endTime->modify("-{$avgRoundDuration} minutes");
     }
 
-    private function calcStartTime(DateTime $startTime, int $avg): DateTime
+    private function calcStartTime(DateTime $startTime, int $avgRoundDuration): DateTime
     {
-        return $startTime->modify("+{$avg} minutes");
+        return $startTime->modify("+{$avgRoundDuration} minutes");
     }
 
     /** @return string[] */

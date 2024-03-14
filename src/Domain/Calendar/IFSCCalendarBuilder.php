@@ -16,7 +16,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
-use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
@@ -85,8 +85,8 @@ final readonly class IFSCCalendarBuilder
         IFSCRound $round,
         IFSCEvent $event,
         YouTubeVideoCollection $videoCollection,
-    ): IFSCStreamUrl {
-        return new IFSCStreamUrl($this->linkMatcher->findStreamUrlForRound($round, $event, $videoCollection));
+    ): StreamUrl {
+        return $this->linkMatcher->findStreamUrlForRound($round, $event, $videoCollection);
     }
 
     /**

@@ -9,7 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\Round;
 
 use DateTimeImmutable;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
-use nicoSWD\IfscCalendar\Domain\Stream\IFSCStreamUrl;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 
 final class IFSCRound
 {
@@ -21,8 +21,8 @@ final class IFSCRound
         public readonly string $name,
         public readonly array $categories,
         public readonly array $disciplines,
-        public readonly ?IFSCRoundKind $kind,
-        public IFSCStreamUrl $streamUrl,
+        public readonly IFSCRoundKind $kind,
+        public StreamUrl $streamUrl,
         public readonly DateTimeImmutable $startTime,
         public readonly DateTimeImmutable $endTime,
         public readonly IFSCRoundStatus $status,

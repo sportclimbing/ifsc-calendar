@@ -29,11 +29,8 @@ final class BuildCommand extends Command
     public function __construct(
         private readonly FetchSeasonsUseCase $fetchSeasonsUseCase,
         private readonly BuildCalendarUseCase $buildCalendarUseCase,
-        private readonly EventDispatcher $eventDispatcher,
     ) {
         parent::__construct();
-
-        $eventDispatcher->addListener('event.loggable', [new ConsoleEventListener(), 'logMessage']);
     }
 
     protected function configure(): void

@@ -9,9 +9,11 @@ namespace nicoSWD\IfscCalendar\Domain\Stream;
 
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 
-final class IFSCStreamUrl
+final class StreamUrl
 {
-    const string YOUTUBE_BASE_URL = 'https://youtu.be/%s';
+    private const string YOUTUBE_BASE_URL = 'https://youtu.be/%s';
+
+    private const string REGEX_YOUTUBE_ID = '~youtu(\.be|be\.com)/(live/|watch\?v=)?(?<video_id>[a-zA-Z0-9_-]{10,})~';
 
     public readonly ?string $url;
 
@@ -36,9 +38,7 @@ final class IFSCStreamUrl
 
     private function normalizeStreamUrl(?string $streamUrl): ?string
     {
-        $regex = '~youtu(\.be|be\.com)/(live/|watch\?v=)?(?<video_id>[a-zA-Z0-9_-]{10,})~';
-
-        if ($streamUrl !== null && preg_match($regex, $streamUrl, $match)) {
+        if ($streamUrl !== null && preg_match(self::REGEX_YOUTUBE_ID, $streamUrl, $match)) {
             return sprintf(self::YOUTUBE_BASE_URL, $match['video_id']);
         }
 
