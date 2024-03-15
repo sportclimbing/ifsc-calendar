@@ -54,6 +54,10 @@ final class IFSCEvent
             return $match['name'];
         }
 
+        if (preg_match('~(?<name>Olympic\s+(?:Games|(Qualifier\sSeries)))~', $this->eventName, $match)) {
+            return $match['name'];
+        }
+
         throw new InvalidLeagueName('Unable to parse league name');
     }
 }
