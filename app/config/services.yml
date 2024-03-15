@@ -115,6 +115,7 @@ services:
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper'
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Season\GuzzleSeasonFetcher'
       - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
       - '%site_event_url%'
 

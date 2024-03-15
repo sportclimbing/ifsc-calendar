@@ -12,16 +12,15 @@ use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarResponse
 use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase;
 use nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase;
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarFormat;
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
-use nicoSWD\IfscCalendar\Infrastructure\DomainEvent\ConsoleEventListener;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Filesystem\Filesystem;
 
 final class BuildCommand extends Command
@@ -44,6 +43,7 @@ final class BuildCommand extends Command
         ;
     }
 
+    /** @throws HttpException */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $helper = $this->getHelper('question');
@@ -111,7 +111,10 @@ final class BuildCommand extends Command
         );
     }
 
-    /** @return IFSCSeason[] */
+    /**
+     * @return IFSCSeason[]
+     * @throws HttpException
+     */
     private function getSeasons(): array
     {
         $seasons = [];

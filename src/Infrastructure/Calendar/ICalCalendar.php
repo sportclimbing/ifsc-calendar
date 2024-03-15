@@ -20,6 +20,7 @@ use Eluceo\iCal\Domain\ValueObject\Uri;
 use Eluceo\iCal\Presentation\Factory\CalendarFactory;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
+use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidLeagueName;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use Override;
@@ -93,7 +94,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     private function createEventWithoutRounds(IFSCEvent $event): Event
     {
         return (new Event())
-            ->setSummary($event->eventName)
+            ->setSummary($event->normalizedName())
             ->setDescription($this->buildDescription($event))
             ->setUrl(new Uri($event->siteUrl))
             ->setStatus(EventStatus::TENTATIVE())
@@ -118,9 +119,10 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         );
     }
 
+    /** @throws InvalidLeagueName */
     private function buildDescription(IFSCEvent $event, ?IFSCRound $round = null): string
     {
-        $description  = "{$event->eventName}\n\n";
+        $description  = "{$event->normalizedName()}\n\n";
 
         if ($round === null || !$round->status->isConfirmed()) {
             $description .= "⚠️ Precise schedule has not been announced yet. This calendar will update automatically once it's published!\n\n";

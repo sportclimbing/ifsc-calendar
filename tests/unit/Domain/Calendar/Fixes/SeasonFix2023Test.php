@@ -30,6 +30,7 @@ final class SeasonFix2023Test extends TestCase
                 season: IFSCSeasonYear::SEASON_2023,
                 eventId: 1301,
                 leagueId: 431,
+                leagueName: 'World Cups and World Championships',
                 timeZone: '',
                 eventName: '',
                 location: 'Jakata',

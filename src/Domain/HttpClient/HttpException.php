@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @license  http://opensource.org/licenses/mit-license.php MIT
@@ -7,8 +7,8 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\HttpClient;
 
-interface HttpClientInterface
+use Exception;
+
+final class HttpException extends Exception
 {
-    /** @throws HttpException */
-    public function getRetry(string $url): string;
 }

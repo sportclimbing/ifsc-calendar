@@ -184,6 +184,7 @@ final class YouTubeLinkMatcherTest extends TestCase
             season: IFSCSeasonYear::SEASON_2023,
             eventId: 1292,
             leagueId: 431,
+            leagueName: 'World Cups and World Championships',
             timeZone: '',
             eventName: $description,
             location: $location,

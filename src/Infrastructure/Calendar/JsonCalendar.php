@@ -44,8 +44,9 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
             $jsonEvents['events'][] = [
                 'id' => $event->eventId,
                 'league_id' => $event->leagueId,
+                'league_name' => $event->leagueName,
                 'season' => $event->season->value,
-                'name' => $event->eventName,
+                'name' => $event->normalizedName(),
                 'country' => $event->country,
                 'location' => $event->location,
                 'poster' => $event->poster,

@@ -7,6 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
+use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidLeagueName;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
@@ -24,6 +25,7 @@ final class IFSCEvent
         public readonly IFSCSeasonYear $season,
         public readonly int $eventId,
         public readonly int $leagueId,
+        public readonly string $leagueName,
         public readonly string $timeZone,
         public readonly string $eventName,
         public readonly string $location,
@@ -34,8 +36,24 @@ final class IFSCEvent
         public readonly string $endsAt,
         public readonly array $disciplines,
         array $rounds,
-        public array $starters = [],
+        public readonly array $starters = [],
     ) {
         $this->rounds = $rounds;
+    }
+
+    /** @throws InvalidLeagueName */
+    public function normalizedName(): string
+    {
+        return sprintf('IFSC %s - %s', $this->leagueName(), $this->location);
+    }
+
+    /** @throws InvalidLeagueName */
+    private function leagueName(): string
+    {
+        if (preg_match('~(?<name>(?:World|Continental)\s+(?:Cup|Championships?))~', $this->eventName, $match)) {
+            return $match['name'];
+        }
+
+        throw new InvalidLeagueName('Unable to parse league name');
     }
 }

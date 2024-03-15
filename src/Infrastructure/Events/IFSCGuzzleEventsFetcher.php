@@ -20,10 +20,12 @@ use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcherInterface;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
 use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
@@ -46,6 +48,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
         private IFSCRoundsScraper $roundsScraper,
         private HttpGuzzleClient $httpClient,
         private IFSCRoundFactory $roundFactory,
+        private IFSCSeasonFetcherInterface $seasonFetcher,
         private EventDispatcherInterface $eventDispatcher,
         private string $siteUrl,
     ) {
@@ -76,9 +79,10 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
                 season: $season,
                 eventId: $event->event_id,
                 leagueId: $leagueId,
+                leagueName: $this->fetchLeagueName($season, $eventInfo->league_season_id),
                 timeZone: $event->timezone->value,
                 eventName: $event->event,
-                location: $eventInfo->location,
+                location: $this->fixFatFinger($eventInfo->location),
                 country: $eventInfo->country,
                 poster: $scrapedRounds->poster,
                 siteUrl: $this->getSiteUrl($season, $event),
@@ -133,7 +137,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
             $response = $this->httpClient->getRetry($url, $options);
 
             return @json_decode($response, flags: JSON_THROW_ON_ERROR);
-        } catch (GuzzleException $e) {
+        } catch (HttpException $e) {
             throw new IFSCEventsScraperException("Unable to retrieve HTML: {$e->getMessage()}");
         } catch (JsonException $e) {
             throw new IFSCEventsScraperException("Unable to parse JSON: {$e->getMessage()}");
@@ -348,5 +352,16 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     private function sortByScore(): Closure
     {
         return static fn (IFSCStarter $athlete1, IFSCStarter $athlete2): int => $athlete2->score <=> $athlete1->score;
+    }
+
+    /** @throws HttpException */
+    private function fetchLeagueName(IFSCSeasonYear $season, int $leagueId): string
+    {
+        return $this->seasonFetcher->fetchLeagueNameById($season, $leagueId);
+    }
+
+    private function fixFatFinger(string $location): string
+    {
+        return str_replace('CIty', 'City', $location);
     }
 }

@@ -18,6 +18,7 @@ final readonly class IFSCParsedTags
         IFSCDiscipline::BOULDER->value => Tag::BOULDER,
         IFSCDiscipline::LEAD->value => Tag::LEAD,
         IFSCDiscipline::SPEED->value => Tag::SPEED,
+        IFSCDiscipline::COMBINED->value => Tag::COMBINED,
     ];
 
     private const array ROUND_TYPES = [
@@ -50,7 +51,12 @@ final readonly class IFSCParsedTags
 
         foreach (self::DISCIPLINES as $name => $tag) {
             if ($this->hasTag($tag)) {
-                $disciplines[] = IFSCDiscipline::from($name);
+                if ($tag === Tag::COMBINED) {
+                    $disciplines[] = IFSCDiscipline::BOULDER;
+                    $disciplines[] = IFSCDiscipline::LEAD;
+                } else {
+                    $disciplines[] = IFSCDiscipline::from($name);
+                }
             }
         }
 
@@ -77,6 +83,11 @@ final readonly class IFSCParsedTags
             if ($this->hasTag($tag)) {
                 $categories[] = IFSCRoundCategory::from($name);
             }
+        }
+
+        if (empty($categories)) {
+            $categories[] = IFSCRoundCategory::WOMEN;
+            $categories[] = IFSCRoundCategory::MEN;
         }
 
         return $categories;

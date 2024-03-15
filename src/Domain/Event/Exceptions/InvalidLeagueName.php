@@ -5,12 +5,10 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Domain\Discipline;
+namespace nicoSWD\IfscCalendar\Domain\Event\Exceptions;
 
-enum IFSCDiscipline: string
+use Exception;
+
+final class InvalidLeagueName extends Exception
 {
-    case BOULDER = 'boulder';
-    case LEAD = 'lead';
-    case SPEED = 'speed';
-    case COMBINED = 'combined';
 }
