@@ -9,6 +9,10 @@ namespace nicoSWD\IfscCalendar\Domain\Season;
 
 enum IFSCSeasonYear: int
 {
+    case SEASON_2016 = 2016;
+    case SEASON_2017 = 2017;
+    case SEASON_2018 = 2018;
+    case SEASON_2019 = 2019;
     case SEASON_2020 = 2020;
     case SEASON_2021 = 2021;
     case SEASON_2022 = 2022;

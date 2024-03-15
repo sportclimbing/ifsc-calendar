@@ -20,8 +20,10 @@ use Eluceo\iCal\Domain\ValueObject\Uri;
 use Eluceo\iCal\Presentation\Factory\CalendarFactory;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
+use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidLeagueName;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use Override;
 
 final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 {
@@ -36,6 +38,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
      * @inheritDoc
      * @throws Exception
      */
+    #[Override]
     public function generateForEvents(array $events): string
     {
         return (string) $this->calendarFactory->createCalendar(
@@ -81,7 +84,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     {
         return (new Event())
             ->setSummary("IFSC: {$round->name}")
-            ->setDescription($this->buildDescription($event))
+            ->setDescription($this->buildDescription($event, $round))
             ->setUrl(new Uri($event->siteUrl))
             ->setStatus($this->getEventStatus($round))
             ->setOccurrence($this->buildTimeSpan($round));
@@ -91,8 +94,8 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     private function createEventWithoutRounds(IFSCEvent $event): Event
     {
         return (new Event())
-            ->setSummary($event->eventName)
-            ->setDescription($this->buildDescription($event, confirmedSchedule: false))
+            ->setSummary($event->normalizedName())
+            ->setDescription($this->buildDescription($event))
             ->setUrl(new Uri($event->siteUrl))
             ->setStatus(EventStatus::TENTATIVE())
             ->setLocation(new Location("{$event->location} ({$event->country})"))
@@ -116,11 +119,12 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         );
     }
 
-    private function buildDescription(IFSCEvent $event, bool $confirmedSchedule = true): string
+    /** @throws InvalidLeagueName */
+    private function buildDescription(IFSCEvent $event, ?IFSCRound $round = null): string
     {
-        $description  = "{$event->eventName}\n\n";
+        $description  = "{$event->normalizedName()}\n\n";
 
-        if (!$confirmedSchedule) {
+        if ($round === null || !$round->status->isConfirmed()) {
             $description .= "⚠️ Precise schedule has not been announced yet. This calendar will update automatically once it's published!\n\n";
         }
 
@@ -150,7 +154,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
     private function getEventStatus(IFSCRound $round): EventStatus
     {
-        return $round->scheduleConfirmed
+        return $round->status->isConfirmed()
             ? EventStatus::CONFIRMED()
             : EventStatus::TENTATIVE();
     }
@@ -158,11 +162,6 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     /** @return IFSCRound[] */
     private function getNonQualificationRounds(IFSCEvent $event): array
     {
-        return array_filter($event->rounds, fn (IFSCRound $round): bool => !$this->isQualificationRound($round));
-    }
-
-    private function isQualificationRound(IFSCRound $round): bool
-    {
-        return preg_match('~qualifications?~i', $round->name) === 1;
+        return array_filter($event->rounds, static fn (IFSCRound $round): bool => !$round->kind->isQualification());
     }
 }

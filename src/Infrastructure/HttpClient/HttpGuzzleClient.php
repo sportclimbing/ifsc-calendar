@@ -7,10 +7,11 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\HttpClient;
 
-use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
+use Override;
 
 final readonly class HttpGuzzleClient implements HttpClientInterface
 {
@@ -19,7 +20,8 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
     ) {
     }
 
-    /** @throws GuzzleException */
+    /** @inheritDoc */
+    #[Override]
     public function getRetry(string $url, array $options = []): string
     {
         $retryCount = 0;
@@ -28,9 +30,9 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
         do {
             try {
                 $html = $this->get($url, $options);
-            } catch (Exception $e) {
+            } catch (GuzzleException $e) {
                 if (++$retryCount > 5) {
-                    throw $e;
+                    throw new HttpException($e->getMessage(), $e->getCode());
                 }
 
                 sleep(2);

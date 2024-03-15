@@ -12,35 +12,49 @@ use DateTimeInterface;
 use DateTimeZone;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
+use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundCategory;
 use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
+use Override;
 
 final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
 {
-    private const IFSC_EVENT_INFO_URL = 'https://www.ifsc-climbing.org/component/ifsc/?view=event&WetId=%d';
+    private const string IFSC_EVENT_INFO_URL = 'https://www.ifsc-climbing.org/component/ifsc/?view=event&WetId=%d';
+
+    private const string GENERATED_BY_URL = 'https://github.com/sportclimbing/ifsc-calendar';
 
     /**
      * @inheritDoc
      * @throws Exception
      */
+    #[Override]
     public function generateForEvents(array $events): string
     {
-        $jsonEvents = ['events' => []];
+        $jsonEvents = [
+            'events' => [],
+            'metadata' => [
+                'updated_at' => $this->formatDate(new DateTime()),
+                'generated_by' => self::GENERATED_BY_URL,
+            ],
+        ];
 
         foreach ($events as $event) {
             $jsonEvents['events'][] = [
                 'id' => $event->eventId,
+                'league_id' => $event->leagueId,
+                'league_name' => $event->leagueName,
                 'season' => $event->season->value,
-                'name' => $event->eventName,
+                'name' => $event->normalizedName(),
                 'country' => $event->country,
                 'location' => $event->location,
                 'poster' => $event->poster,
                 'site_url' => $event->siteUrl,
                 'event_url' => $this->buildUrl($event),
                 'disciplines' => $event->disciplines,
-                'starts_at' => $this->formatDate($event->startsAt, $event->timeZone),
-                'ends_at' => $this->formatDate($event->endsAt, $event->timeZone),
+                'starts_at' => $this->formatDateString($event->startsAt, $event->timeZone),
+                'ends_at' => $this->formatDateString($event->endsAt, $event->timeZone),
                 'timezone' => $event->timeZone,
                 'rounds' => $this->formatRound($event->rounds),
                 'start_list' => $this->formatStarters($event->starters),
@@ -50,18 +64,18 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
         return json_encode($jsonEvents, flags: JSON_PRETTY_PRINT);
     }
 
-    /**
-     * @param IFSCRound[] $rounds
-     * @return IFSCRound[]
-     */
+    /** @param IFSCRound[] $rounds */
     private function formatRound(array $rounds): array
     {
-        $format = static fn (IFSCRound $round): array => [
+        $format = fn (IFSCRound $round): array => [
             'name' => $round->name,
-            'stream_url' => $round->streamUrl,
-            'starts_at' => $round->startTime->format(DateTimeInterface::RFC3339),
-            'ends_at' => $round->endTime->format(DateTimeInterface::RFC3339),
-            'schedule_confirmed' => $round->scheduleConfirmed,
+            'categories' => $this->buildCategories($round),
+            'disciplines' => $this->buildDisciplines($round),
+            'kind' => $round->kind?->value,
+            'stream_url' => $round->streamUrl->url,
+            'starts_at' => $this->formatDate($round->startTime),
+            'ends_at' => $this->formatDate($round->endTime),
+            'schedule_status' => $round->status->value,
         ];
 
         return array_map($format, $rounds);
@@ -84,12 +98,29 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
         return sprintf(self::IFSC_EVENT_INFO_URL, $event->eventId);
     }
 
+    /** @return string[] */
+    private function buildDisciplines(IFSCRound $round): array
+    {
+        return array_map(static fn (IFSCDiscipline $discipline): string => $discipline->value, $round->disciplines);
+    }
+
+    /** @return string[] */
+    private function buildCategories(IFSCRound $round): array
+    {
+        return array_map(static fn (IFSCRoundCategory $category): string => $category->value, $round->categories);
+    }
+
     /** @throws Exception */
-    private function formatDate(string $date, string $timeZone): string
+    private function formatDateString(string $date, string $timeZone): string
     {
         $dateTime = new DateTime($date);
         $dateTime->setTimezone(new DateTimeZone($timeZone));
 
+        return $this->formatDate($dateTime);
+    }
+
+    private function formatDate(DateTimeInterface $dateTime): string
+    {
         return $dateTime->format(DateTimeInterface::RFC3339);
     }
 }

@@ -11,6 +11,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use DOMElement;
+use DOMNodeList;
 use DOMXPath;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
@@ -22,10 +23,11 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Event\Month;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 
 final readonly class IFSCRoundsScraper
 {
-    private const IFSC_EVENT_PAGE_URL = 'https://www.ifsc-climbing.org/component/ifsc/?view=event&WetId=%d';
+    private const string IFSC_EVENT_PAGE_URL = 'https://www.ifsc-climbing.org/component/ifsc/?view=event&WetId=%d';
 
     public function __construct(
         private HttpClientInterface $client,
@@ -36,67 +38,58 @@ final readonly class IFSCRoundsScraper
     }
 
     /**
-     * @throws InvalidURLException
      * @throws IFSCEventsScraperException
      * @throws Exception
      */
-    public function fetchRoundsAndPosterForEvent(IFSCSeasonYear $season, int $eventId, string $timeZone): IFSCScrapedEventsResult
+    public function fetchRoundsAndPosterForEvent(IFSCSeasonYear $season, int $eventId, DateTimeZone $timeZone): IFSCScrapedEventsResult
     {
         /** @var IFSCSchedule[] $schedules */
         $schedules = [];
-        $xpath = $this->getXPathForEventsWithId($eventId);
-        $dateRegex = $this->buildDateRegex();
-        [$startDate, $endDate] = $this->getDateRage($xpath);
+        $xpath = $this->getXPathForEventWithId($eventId);
 
-        foreach ($this->domHelper->getParagraphs($xpath) as $paragraph) {
-            if (!preg_match_all($dateRegex, $this->normalizeParagraph($paragraph), $matches)) {
+        foreach ($this->getParagraphs($xpath) as $paragraph) {
+            $schedule = $this->getSchedule($paragraph);
+
+            if (!$schedule) {
                 continue;
             }
 
-            foreach ($matches['day'] as $key => $day) {
-                foreach ($this->getNonEmptyLines($matches, $key) as $line) {
-                    $schedules = $this->getSchedule(
-                        name: $matches['month'][$key],
+            foreach ($schedule['day'] as $key => $day) {
+                foreach ($this->getNonEmptyLines($schedule, $key) as $line) {
+                    $schedules[] = $this->createSchedule(
+                        name: $schedule['month'][$key],
                         line: $line,
                         day: $day,
                         timeZone: $timeZone,
                         season: $season,
-                        schedules: $schedules,
                     );
                 }
             }
         }
 
+        [$startDate, $endDate] = $this->getDateRage($xpath);
+
         return new IFSCScrapedEventsResult(
             $this->dateWithTimezone($startDate, $timeZone),
             $this->dateWithTimezone($endDate, $timeZone),
             $this->domHelper->getPoster($xpath),
-            $this->getRounds($schedules),
+            $this->createRounds($schedules),
         );
     }
 
     /** @throws Exception */
-    private function getXPathForEventsWithId(int $eventId): DOMXPath
+    private function getXPathForEventWithId(int $eventId): DOMXPath
     {
         return $this->domHelper->htmlToXPath(
-            $this->client->getRetry($this->buildLeagueUri($eventId))
+            $this->client->getRetry($this->buildEventUri($eventId))
         );
     }
 
-    private function buildDateRegex(): string
-    {
-        $months = implode('|', Month::monthNames());
-
-        return "~
-            (?:MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY),\s+
-            (?<day>\d{1,2})\s+
-            (?<month>$months):[\r\n]*
-            (?<times>((\d{1,2}:\d{2}|TBD|TBC)\s+[^\r\n]+[\r\n]*)+)
-            ~xsi";
-    }
-
-    /** @throws IFSCEventsScraperException */
-    private function parseEventDetails(string $line): array
+    /**
+     * @throws IFSCEventsScraperException
+     * @throws InvalidURLException
+     */
+    private function parseEventDetails(string $line): IFSCRoundsScrapedResult
     {
         $regex = '~^
             (?<time>(\d{1,2}:\d{1,2}(?:\s+(?:AM|PM))?|TBC|TBD))\s+
@@ -108,23 +101,28 @@ final readonly class IFSCRoundsScraper
             throw new IFSCEventsScraperException("No event found in line: {$line}");
         }
 
+        $roundName = $this->normalizer->cupName($match['name']);
         $startTime = $this->normalizer->normalizeTime($match['time']);
-        $cupName = $this->normalizer->cupName($match['name']);
-        $streamUrl = $this->normalizer->firstUrl($match['url'] ?? '');
+        $streamUrl = $this->normalizer->firstUrl($match['url'] ?? null);
 
-        return [$cupName, $startTime, $streamUrl];
+        return new IFSCRoundsScrapedResult($roundName, $startTime, new StreamUrl($streamUrl));
     }
 
-    private function getRounds(array $schedules): array
+    /**
+     * @param IFSCSchedule[] $schedules
+     * @return IFSCRound[]
+     */
+    private function createRounds(array $schedules): array
     {
         $rounds = [];
 
         foreach ($schedules as $schedule) {
             $rounds[] = $this->roundFactory->create(
-                name: $schedule->cupName,
+                name: $schedule->roundName,
                 streamUrl: $schedule->streamUrl,
                 startTime: $schedule->duration->startTime,
                 endTime: $schedule->duration->endTime,
+                status: IFSCRoundStatus::CONFIRMED,
             );
         }
 
@@ -132,25 +130,39 @@ final readonly class IFSCRoundsScraper
     }
 
     /**
-     * @throws InvalidURLException
      * @throws IFSCEventsScraperException
+     * @throws InvalidURLException
      */
-    private function getSchedule(string $name, string $line, string $day, string $timeZone, IFSCSeasonYear $season, array $schedules): array
+    private function createSchedule(string $name, string $line, string $day, DateTimeZone $timeZone, IFSCSeasonYear $season): IFSCSchedule
     {
-        [$cupName, $eventTime, $streamUrl] = $this->parseEventDetails($line);
+        $eventDetails = $this->parseEventDetails($line);
         $month = Month::fromName($name);
 
-        $schedules[] = IFSCSchedule::create(
+        return IFSCSchedule::create(
             day: (int) $day,
             month: $month,
-            time: $eventTime,
+            time: $eventDetails->startTime,
             timeZone: $timeZone,
             season: $season,
-            cupName: $cupName,
-            streamUrl: $streamUrl,
+            roundName: $eventDetails->roundName,
+            streamUrl: $eventDetails->streamUrl,
         );
+    }
 
-        return $schedules;
+    private function getSchedule(DOMElement $paragraph): ?array
+    {
+        $dateRegex = "~
+            (?:MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY),\s+
+            (?<day>\d{1,2})\s+
+            (?<month>JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER):[\r\n]*
+            (?<times>((\d{1,2}:\d{2}|TBD|TBC)\s+[^\r\n]+[\r\n]*)+)
+            ~xsi";
+
+        if (preg_match_all($dateRegex, $this->normalizeParagraph($paragraph), $matches)) {
+            return $matches;
+        }
+
+        return null;
     }
 
     /**
@@ -179,9 +191,9 @@ final readonly class IFSCRoundsScraper
         ];
     }
 
-    private function buildLeagueUri(int $id): string
+    private function buildEventUri(int $eventId): string
     {
-        return sprintf(self::IFSC_EVENT_PAGE_URL, $id);
+        return sprintf(self::IFSC_EVENT_PAGE_URL, $eventId);
     }
 
     private function normalizeParagraph(DOMElement $paragraph): string
@@ -194,14 +206,19 @@ final readonly class IFSCRoundsScraper
         return $this->normalizer->nonEmptyLines($matches['times'][$key]);
     }
 
+    private function getParagraphs(DOMXPath $xpath): DOMNodeList
+    {
+        return $this->domHelper->getParagraphs($xpath);
+    }
+
     private function createStartDate(string $day, string $month, string $year): DateTime
     {
         return DateTime::createFromFormat('d F Y H:i:s', "{$day} {$month} {$year} 08:00:00");
     }
 
     /** @throws Exception */
-    private function dateWithTimezone(DateTime $date, string $timeZone): DateTimeImmutable
+    private function dateWithTimezone(DateTime $date, DateTimeZone $timeZone): DateTimeImmutable
     {
-        return DateTimeImmutable::createFromMutable($date)->setTimezone(new DateTimeZone($timeZone));
+        return DateTimeImmutable::createFromMutable($date)->setTimezone($timeZone);
     }
 }

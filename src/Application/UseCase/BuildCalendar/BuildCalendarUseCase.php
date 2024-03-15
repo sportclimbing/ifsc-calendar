@@ -27,7 +27,7 @@ final readonly class BuildCalendarUseCase
     {
         return $this->calendarBuilder->generateForLeague(
             season: $buildCalendarRequest->season,
-            league: $buildCalendarRequest->league,
+            leagueIds: $buildCalendarRequest->leagueIds,
             format: $buildCalendarRequest->format,
         );
     }

@@ -24,13 +24,13 @@ final readonly class IFSCEventDuration
         int $day,
         Month $month,
         string $time,
-        string $timeZone,
+        DateTimeZone $timeZone,
         IFSCSeasonYear $season,
     ): self {
         [$hour, $minute] = sscanf($time, '%d:%d');
 
         $date = new DateTime();
-        $date->setTimezone(new DateTimeZone($timeZone));
+        $date->setTimezone($timeZone);
         $date->setDate($season->value, $month->value, $day);
         $date->setTime($hour, $minute);
 

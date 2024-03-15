@@ -7,23 +7,32 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\YouTube;
 
+use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
+use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 
 final readonly class YouTubeLinkMatcher
 {
-    private const YOUTUBE_BASE_URL = 'https://youtu.be/';
+    public function __construct(
+        private IFSCTagsParser $tagsParser,
+    ) {
+    }
 
-    public function findStreamUrlForRound(IFSCRound $round, IFSCEvent $event, YouTubeVideoCollection $videoCollection): ?string
+    private const string YOUTUBE_BASE_URL = 'https://youtu.be/';
+
+    /** @throws InvalidURLException */
+    public function findStreamUrlForRound(IFSCRound $round, IFSCEvent $event, YouTubeVideoCollection $videoCollection): StreamUrl
     {
         foreach ($videoCollection->getIterator() as $video) {
             if ($this->videoTitleMatchesRoundName($video, $round, $event)) {
-                return self::YOUTUBE_BASE_URL . $video->videoId;
+                return new StreamUrl(self::YOUTUBE_BASE_URL . $video->videoId);
             }
         }
 
-        return null;
+        return new StreamUrl();
     }
 
     private function videoTitleMatchesRoundName(YouTubeVideo $video, IFSCRound $round, IFSCEvent $event): bool
@@ -49,18 +58,9 @@ final readonly class YouTubeLinkMatcher
         return $videoTags === $eventTags;
     }
 
-    /** @return Tag[] */
     private function fetchTagsFromTitle(string $title): array
     {
-        $tags = [];
-
-        foreach (Tag::cases() as $eventType) {
-            if (preg_match("~\b{$eventType->value}\b~", $title)) {
-                $tags[] = $eventType;
-            }
-        }
-
-        return $tags;
+        return $this->tagsParser->fromString($title)->allTags();
     }
 
     private function videoTitleContainsSameLocationAndSeason(string $videoTitle, IFSCEvent $event): bool
@@ -80,13 +80,13 @@ final readonly class YouTubeLinkMatcher
 
     private function videoIsMensAndWomensCombined(array $videoTags, array $eventTags): bool
     {
-        if (!$this->hasTag($videoTags, Tag::MENS) &&
-            !$this->hasTag($videoTags, Tag::WOMENS)
+        if (!$this->hasTag($videoTags, Tag::MEN) &&
+            !$this->hasTag($videoTags, Tag::WOMEN)
         ) {
             $eventTags = $this->removeTags(
                 $eventTags,
-                Tag::MENS,
-                Tag::WOMENS,
+                Tag::MEN,
+                Tag::WOMEN,
             );
         }
 

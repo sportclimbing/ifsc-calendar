@@ -9,37 +9,47 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Events;
 
 use Closure;
 use DateTimeImmutable;
+use DateTimeZone;
 use Exception;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use JsonException;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\FetchingSessionIdCookieEvent;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
-use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcherInterface;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient;
+use Override;
 
 final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterface
 {
-    private const IFSC_LEAGUE_API_ENDPOINT = 'https://components.ifsc-climbing.org/results-api.php?api=season_leagues_calendar&league=%d';
+    private const string IFSC_LEAGUE_API_ENDPOINT = 'https://components.ifsc-climbing.org/results-api.php?api=season_leagues_calendar&league=%d';
 
-    private const IFSC_STARTERS_API_ENDPOINT = 'https://components.ifsc-climbing.org/results-api.php?api=starters&event_id=%d';
+    private const string IFSC_STARTERS_API_ENDPOINT = 'https://components.ifsc-climbing.org/results-api.php?api=starters&event_id=%d';
 
-    private const IFSC_EVENT_API_ENDPOINT = 'https://ifsc.results.info/api/v1/events/%d';
+    private const string IFSC_EVENT_API_ENDPOINT = 'https://ifsc.results.info/api/v1/events/%d';
 
-    private const IFSC_SESSION_COOKIE_NAME = '_verticallife_resultservice_session';
+    private const string IFSC_SESSION_COOKIE_NAME = '_verticallife_resultservice_session';
 
-    private const IFSC_RESULTS_INFO_PAGE = 'https://ifsc.results.info/';
+    private const string IFSC_RESULTS_INFO_PAGE = 'https://ifsc.results.info/';
 
     public function __construct(
         private IFSCRoundsScraper $roundsScraper,
         private HttpGuzzleClient $httpClient,
+        private IFSCRoundFactory $roundFactory,
+        private IFSCSeasonFetcherInterface $seasonFetcher,
+        private EventDispatcherInterface $eventDispatcher,
         private string $siteUrl,
     ) {
     }
@@ -47,9 +57,9 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     /**
      * @inheritdoc
      * @throws IFSCEventsScraperException
-     * @throws InvalidURLException
      * @throws Exception
      */
+    #[Override]
     public function fetchEventsForLeague(IFSCSeasonYear $season, int $leagueId): array
     {
         $sessionId = $this->fetchSessionIdCookie();
@@ -68,9 +78,11 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
             $events[] = new IFSCEvent(
                 season: $season,
                 eventId: $event->event_id,
+                leagueId: $leagueId,
+                leagueName: $this->fetchLeagueName($season, $eventInfo->league_season_id),
                 timeZone: $event->timezone->value,
                 eventName: $event->event,
-                location: $eventInfo->location,
+                location: $this->fixFatFinger($eventInfo->location),
                 country: $eventInfo->country,
                 poster: $scrapedRounds->poster,
                 siteUrl: $this->getSiteUrl($season, $event),
@@ -125,7 +137,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
             $response = $this->httpClient->getRetry($url, $options);
 
             return @json_decode($response, flags: JSON_THROW_ON_ERROR);
-        } catch (GuzzleException $e) {
+        } catch (HttpException $e) {
             throw new IFSCEventsScraperException("Unable to retrieve HTML: {$e->getMessage()}");
         } catch (JsonException $e) {
             throw new IFSCEventsScraperException("Unable to parse JSON: {$e->getMessage()}");
@@ -135,6 +147,8 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     /** @throws IFSCEventsScraperException */
     private function fetchSessionIdCookie(): string
     {
+        $this->eventDispatcher->dispatch(new FetchingSessionIdCookieEvent());
+
         try {
             $headers = $this->httpClient->getHeaders(self::IFSC_RESULTS_INFO_PAGE);
         }  catch (GuzzleException $e) {
@@ -156,15 +170,15 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     }
 
     /**
-     * @throws InvalidURLException
      * @throws IFSCEventsScraperException
+     * @throws Exception
      */
     private function fetchScrapedRounds(IFSCSeasonYear $season, object $event): IFSCScrapedEventsResult
     {
         return $this->roundsScraper->fetchRoundsAndPosterForEvent(
             season: $season,
             eventId: $event->event_id,
-            timeZone: $event->timezone->value,
+            timeZone: new DateTimeZone($event->timezone->value),
         );
     }
 
@@ -207,12 +221,12 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
 
         foreach ($eventInfo->d_cats as $category) {
             foreach ($category->category_rounds as $round) {
-                $rounds[] = new IFSCRound(
+                $rounds[] = $this->roundFactory->create(
                     name: $this->getRoundName($round),
-                    streamUrl: null,
+                    streamUrl: new StreamUrl(),
                     startTime: $scrapedRounds->startDate,
                     endTime: $scrapedRounds->startDate->modify('+3 hours'),
-                    scheduleConfirmed: false,
+                    status: IFSCRoundStatus::ESTIMATED,
                 );
             }
         }
@@ -326,11 +340,28 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
 
     private function getRoundName(object $round): string
     {
-        return sprintf("%s's %s %s", $round->category, ucfirst($round->kind), $round->name);
+        $kind = preg_replace_callback(
+            pattern: '~(\w)&(\w)~',
+            callback: static fn (array $match): string => $match[1] . ' & ' . $match[2],
+            subject: $round->kind,
+        );
+
+        return ucwords(sprintf("%s's %s %s", $round->category, $kind, $round->name));
     }
 
     private function sortByScore(): Closure
     {
         return static fn (IFSCStarter $athlete1, IFSCStarter $athlete2): int => $athlete2->score <=> $athlete1->score;
+    }
+
+    /** @throws HttpException */
+    private function fetchLeagueName(IFSCSeasonYear $season, int $leagueId): string
+    {
+        return $this->seasonFetcher->fetchLeagueNameById($season, $leagueId);
+    }
+
+    private function fixFatFinger(string $location): string
+    {
+        return str_replace('CIty', 'City', $location);
     }
 }

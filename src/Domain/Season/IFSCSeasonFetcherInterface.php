@@ -7,7 +7,16 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Season;
 
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
+
 interface IFSCSeasonFetcherInterface
 {
-    public function fetchSeasons();
+    /**
+     * @return IFSCSeason[]
+     * @throws HttpException
+     */
+    public function fetchSeasons(): array;
+
+    /** @throws HttpException */
+    public function fetchLeagueNameById(IFSCSeasonYear $season, int $leagueId): string;
 }

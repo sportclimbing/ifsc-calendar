@@ -13,13 +13,13 @@ use DOMXPath;
 
 final readonly class DOMHelper
 {
-    private const XPATH_PARAGRAPHS = "//*[@id='ifsc_event']/div/div/div[@class='text']/p";
+    private const string XPATH_PARAGRAPHS = "//*[@id='ifsc_event']/div/div/div[@class='text']/p";
 
-    private const XPATH_SIDEBAR = "//div[@class='text2']";
+    private const string XPATH_SIDEBAR = "//div[@class='text2']";
 
-    private const XPATH_EVENT_DATE_RANGE = "//div[@class='title']/h2[@class='date_span']";
+    private const string XPATH_EVENT_DATE_RANGE = "//div[@class='title']/h2[@class='date_span']";
 
-    private const REGEX_EVENT_POSTER = '~^(?:https://(?:cdn|www)\.ifsc-climbing\.org)?(?<path>/images/Events/[^$]+)~';
+    private const string REGEX_EVENT_POSTER = '~^(?:https://(?:cdn|www)\.ifsc-climbing\.org)?(?<path>/images/Events/[^$]+)~';
 
     public function htmlToXPath(string $html): DOMXPath
     {

@@ -8,26 +8,24 @@
 namespace nicoSWD\IfscCalendar\Domain\Round;
 
 use DateTimeImmutable;
+use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 
-final readonly class IFSCRound
+final class IFSCRound
 {
+    /**
+     * @param IFSCRoundCategory[] $categories
+     * @param IFSCDiscipline[] $disciplines
+     */
     public function __construct(
-        public string $name,
-        public ?string $streamUrl,
-        public DateTimeImmutable $startTime,
-        public DateTimeImmutable $endTime,
-        public bool $scheduleConfirmed = true,
+        public readonly string $name,
+        public readonly array $categories,
+        public readonly array $disciplines,
+        public readonly IFSCRoundKind $kind,
+        public StreamUrl $streamUrl,
+        public readonly DateTimeImmutable $startTime,
+        public readonly DateTimeImmutable $endTime,
+        public readonly IFSCRoundStatus $status,
     ) {
-    }
-
-    public function updateStreamUrl(string $streamUrl): self
-    {
-        return new self(
-            name: $this->name,
-            streamUrl: $streamUrl,
-            startTime: $this->startTime,
-            endTime: $this->endTime,
-            scheduleConfirmed: $this->scheduleConfirmed,
-        );
     }
 }

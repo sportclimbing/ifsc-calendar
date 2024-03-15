@@ -7,46 +7,58 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\Season;
 
-use Exception;
-use GuzzleHttp\Exception\GuzzleException;
+use JsonException;
+use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcherInterface;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use Override;
 
 final readonly class GuzzleSeasonFetcher implements IFSCSeasonFetcherInterface
 {
-    private const IFSC_SEASONS_API_URL = 'https://components.ifsc-climbing.org/results-api.php?api=index';
+    private const string IFSC_SEASONS_API_URL = 'https://components.ifsc-climbing.org/results-api.php?api=index';
 
     public function __construct(
         private HttpClientInterface $client,
     ) {
     }
 
-    /**
-     * @return IFSCSeason[]
-     * @throws Exception|GuzzleException
-     */
+    /** @inheritDoc */
+    #[Override]
     public function fetchSeasons(): array
     {
-        $response = $this->client->getRetry(self::IFSC_SEASONS_API_URL);
-        $response = @json_decode($response);
-
-        if (json_last_error()) {
-            throw new Exception(json_last_error_msg());
-        }
-
         $seasons = [];
 
-        foreach ($response->seasons as $season) {
+        foreach ($this->fetchSeasonsFromApi()->seasons as $season) {
             $seasons[$season->name] = new IFSCSeason(
-                name: $season->name,
                 id: $season->id,
+                name: $season->name,
                 leagues: $this->buildLeagues($season),
             );
         }
 
         return $seasons;
+    }
+
+    /**
+     * @throws IFSCEventsScraperException
+     * @throws HttpException
+     */
+    #[Override]
+    public function fetchLeagueNameById(IFSCSeasonYear $season, int $leagueId): string
+    {
+        // todo: use https://ifsc.results.info/api/v1/season_leagues/431
+        // requires stupid auth token, maybe move to IFSCGuzzleEventsFetcher
+        foreach ($this->fetchSeasons()[$season->value]->leagues as $league) {
+            if ($league->id === $leagueId) {
+                return $league->name;
+            }
+        }
+
+        throw new IFSCEventsScraperException('Unable to fetch league name');
     }
 
     /** @return IFSCLeague[] */
@@ -56,11 +68,29 @@ final readonly class GuzzleSeasonFetcher implements IFSCSeasonFetcherInterface
 
         foreach ($season->leagues as $league) {
             $leagues[] = new IFSCLeague(
-                name: $league->name,
                 id: $league->id,
+                name: $league->name,
             );
         }
 
         return $leagues;
+    }
+
+    /** @throws HttpException */
+    private function fetchSeasonsFromApi(): object
+    {
+        try {
+            $response = @json_decode($this->getRawJson(), flags: JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            throw new HttpException($e->getMessage(), $e->getCode());
+        }
+
+        return $response;
+    }
+
+    /** @throws HttpException */
+    private function getRawJson(): string
+    {
+        return $this->client->getRetry(self::IFSC_SEASONS_API_URL);
     }
 }

@@ -15,8 +15,8 @@ final readonly class IFSCSeason
     public array $leagues;
 
     public function __construct(
-        public string $name,
         public int $id,
+        public string $name,
         array $leagues,
     ) {
         $this->leagues = $leagues;

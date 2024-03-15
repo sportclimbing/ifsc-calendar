@@ -37,10 +37,4 @@ enum Month: int
 
         throw new InvalidArgumentException("Invalid month '{$name}'");
     }
-
-    /** @return string[] */
-    public static function monthNames(): array
-    {
-        return array_map(static fn (self $month): string => $month->name, self::cases());
-    }
 }

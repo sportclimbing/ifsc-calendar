@@ -9,6 +9,7 @@ namespace nicoSWD\IfscCalendar\tests\Helpers;
 
 use DateTimeInterface;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
+use Override;
 
 trait MockHttpClient
 {
@@ -25,6 +26,7 @@ trait MockHttpClient
                 return file_get_contents($this->fileName);
             }
 
+            #[Override]
             public function getRetry(string $url): string
             {
                 return $this->get($url);

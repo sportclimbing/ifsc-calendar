@@ -47,24 +47,13 @@ final readonly class Normalizer
         return preg_replace('~[^\w\s\r\n\':,-./?=&]+~', ' ', $text);
     }
 
-    public function firstUrl(string $urls): string
+    public function firstUrl(string $urls): ?string
     {
-        return preg_split('~\s+~', $urls, flags: PREG_SPLIT_NO_EMPTY)[0] ?? '';
+        return preg_split('~\s+~', $urls, flags: PREG_SPLIT_NO_EMPTY)[0] ?? null;
     }
 
     public function removeNewLines(string $string): string
     {
         return preg_replace('~[\r\n]+~', ' ', $string);
-    }
-
-    public function normalizeStreamUrl(string $streamUrl): string
-    {
-        $regex = '~youtu(\.be|be\.com)/(live/|watch\?v=)?(?<video_id>[a-zA-Z0-9_-]{10,})~';
-
-        if (preg_match($regex, $streamUrl, $match)) {
-            return sprintf('https://youtu.be/%s', $match['video_id']);
-        }
-
-        return $streamUrl;
     }
 }

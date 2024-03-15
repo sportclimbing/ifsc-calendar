@@ -7,6 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons;
 
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcher;
 
 final readonly class FetchSeasonsUseCase
@@ -16,10 +17,11 @@ final readonly class FetchSeasonsUseCase
     ) {
     }
 
+    /** @throws HttpException */
     public function execute(): FetchSeasonsResponse
     {
         return new FetchSeasonsResponse(
-            $this->IFSCSeasonFetcher->fetchSeasons()
+            $this->IFSCSeasonFetcher->fetchSeasons(),
         );
     }
 }

@@ -9,5 +9,6 @@ namespace nicoSWD\IfscCalendar\Domain\HttpClient;
 
 interface HttpClientInterface
 {
+    /** @throws HttpException */
     public function getRetry(string $url): string;
 }
