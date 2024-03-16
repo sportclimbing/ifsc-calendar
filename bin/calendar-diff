@@ -253,4 +253,9 @@ if ($changedEvents) {
     $diff .= $changedEvents;
 }
 
+if (!$diff && $oldEvents !== $newEvents) {
+    echo "Untracked changes", PHP_EOL;
+    exit(1);
+}
+
 echo $diff;
