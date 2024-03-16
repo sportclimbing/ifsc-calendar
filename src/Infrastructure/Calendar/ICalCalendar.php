@@ -13,6 +13,9 @@ use DateTimeZone;
 use Eluceo\iCal\Domain\Entity\Calendar;
 use Eluceo\iCal\Domain\Entity\Event;
 use Eluceo\iCal\Domain\Enum\EventStatus;
+use Eluceo\iCal\Domain\ValueObject\Alarm;
+use Eluceo\iCal\Domain\ValueObject\Alarm\DisplayAction;
+use Eluceo\iCal\Domain\ValueObject\Alarm\RelativeTrigger;
 use Eluceo\iCal\Domain\ValueObject\DateTime;
 use Eluceo\iCal\Domain\ValueObject\Location;
 use Eluceo\iCal\Domain\ValueObject\TimeSpan;
@@ -42,7 +45,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     public function generateForEvents(array $events): string
     {
         return (string) $this->calendarFactory->createCalendar(
-            $this->createCalenderFromEvents($events)
+            $this->createCalenderFromEvents($events),
         );
     }
 
@@ -80,13 +83,16 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         return $calendarEvents;
     }
 
+    /** @throws InvalidLeagueName */
     private function createEvent(IFSCEvent $event, IFSCRound $round): Event
     {
         return (new Event())
-            ->setSummary("IFSC: {$round->name}")
+            ->setSummary(sprintf("IFSC: %s - %s (%s)", $round->name, $event->eventName, $event->country))
             ->setDescription($this->buildDescription($event, $round))
             ->setUrl(new Uri($event->siteUrl))
             ->setStatus($this->getEventStatus($round))
+            ->setLocation(new Location("{$event->location} ({$event->country})"))
+            ->addAlarm($this->createAlarm($event, $round))
             ->setOccurrence($this->buildTimeSpan($round));
     }
 
@@ -94,7 +100,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     private function createEventWithoutRounds(IFSCEvent $event): Event
     {
         return (new Event())
-            ->setSummary($event->normalizedName())
+            ->setSummary(sprintf('%s (%s)', $event->normalizedName(), $event->country))
             ->setDescription($this->buildDescription($event))
             ->setUrl(new Uri($event->siteUrl))
             ->setStatus(EventStatus::TENTATIVE())
@@ -113,25 +119,36 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     /** @throws Exception */
     private function buildGenericTimeSpan(IFSCEvent $event): TimeSpan
     {
+        $timezone = new DateTimeZone($event->timeZone);
+
         return new TimeSpan(
-            new DateTime(new DateTimeImmutable($event->startsAt, new DateTimeZone($event->timeZone)), applyTimeZone: true),
-            new DateTime(new DateTimeImmutable($event->endsAt, new DateTimeZone($event->timeZone)), applyTimeZone: true),
+            new DateTime(new DateTimeImmutable($event->startsAt, $timezone), applyTimeZone: true),
+            new DateTime(new DateTimeImmutable($event->endsAt, $timezone), applyTimeZone: true),
         );
     }
 
     /** @throws InvalidLeagueName */
     private function buildDescription(IFSCEvent $event, ?IFSCRound $round = null): string
     {
-        $description  = "{$event->normalizedName()}\n\n";
+        $description  = "{$event->normalizedName()} ({$event->country})\n\n";
 
-        if ($round === null || !$round->status->isConfirmed()) {
-            $description .= "⚠️ Precise schedule has not been announced yet. This calendar will update automatically once it's published!\n\n";
+        if (!$round?->status->isConfirmed()) {
+            $description .= "⚠️ Precise schedule has not been announced yet. ";
+            $description .= "This calendar will update automatically once it's published!\n\n";
         }
+
+        $description.= "League: {$event->leagueName}\n\n";
 
         $description .= "Disciplines:\n";
 
-        foreach ($event->disciplines as $discipline) {
-            $description .= " - " . ucfirst($discipline) ."\n";
+        if ($round) {
+            foreach ($round->disciplines as $discipline) {
+                $description .= " - " . ucfirst($discipline->value) ."\n";
+            }
+        } else {
+            foreach ($event->disciplines as $discipline) {
+                $description .= " - " . ucfirst($discipline) ."\n";
+            }
         }
 
         $description .= "\n";
@@ -139,13 +156,11 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
         if ($event->starters) {
             $description .= "\nStart List:\n";
-        }
 
-        foreach ($event->starters as $starter) {
-            $description .= " - {$starter->firstName} {$starter->lastName} ({$starter->country})\n";
-        }
+            foreach ($event->starters as $starter) {
+                $description .= " - {$starter->firstName} {$starter->lastName} ({$starter->country})\n";
+            }
 
-        if ($event->starters) {
             $description .= " - ...\n";
         }
 
@@ -163,5 +178,19 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     private function getNonQualificationRounds(IFSCEvent $event): array
     {
         return array_filter($event->rounds, static fn (IFSCRound $round): bool => !$round->kind->isQualification());
+    }
+
+    private function createAlarm(IFSCEvent $event, IFSCRound $round): Alarm
+    {
+        $trigger = new RelativeTrigger(
+            DateInterval::createFromDateString('-1 hour'),
+        );
+
+        return new Alarm(
+            new DisplayAction(
+                description: "Reminder: IFSC: {$round->name} - {$event->location} ({$event->country}) starts in 1 hour!"
+            ),
+            $trigger->withRelationToEnd(),
+        );
     }
 }
