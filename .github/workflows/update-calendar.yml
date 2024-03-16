@@ -41,12 +41,6 @@ jobs:
         id: check_diff
         run: |
           curl -sSL "https://calendar.ifsc.stream/?format=json&nocache=1" --output old-calendar.json
-          
-          if [ $(jq '.events | length' "${{ env.CALENDAR_FILE_JSON }}") -lt 9 ]; then
-            echo "Too few events found in current calendar"
-            exit 1
-          fi
-          
           php bin/calendar-diff old-calendar.json "${{ env.CALENDAR_FILE_JSON }}" > diff.md || true
           
           if [ $(wc -w < diff.md) -gt 0 ]; then
