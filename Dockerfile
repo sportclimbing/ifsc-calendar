@@ -10,4 +10,4 @@ RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 RUN make && make install
 
-ENTRYPOINT ["/usr/local/bin/ifsc-calendar"]
+CMD ["/usr/local/bin/ifsc-calendar"]
