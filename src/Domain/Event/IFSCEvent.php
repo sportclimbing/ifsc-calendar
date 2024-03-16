@@ -44,7 +44,7 @@ final class IFSCEvent
     /** @throws InvalidLeagueName */
     public function normalizedName(): string
     {
-        return sprintf('IFSC %s - %s', $this->leagueName(), $this->location);
+        return sprintf('IFSC: %s - %s', $this->leagueName(), $this->location);
     }
 
     /** @throws InvalidLeagueName */
