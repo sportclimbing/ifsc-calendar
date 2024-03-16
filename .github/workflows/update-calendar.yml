@@ -21,14 +21,13 @@ jobs:
         with:
           image: ghcr.io/sportclimbing/ifsc-calendar:latest
           options: -v ${{ github.workspace }}:/app
-          run: | 
-            ifsc-calendar \ 
-              --season 2024 \
-              --league "World Cups and World Championships" \
-              --league "Games" \
-              --league "IFSC Paraclimbing" \
-              --output "/app/${{ env.CALENDAR_FILE_ICS }}" \
-              --format "ics,json"
+          run: ifsc-calendar \ 
+                --season 2024 \
+                --league "World Cups and World Championships" \
+                --league "Games" \
+                --league "IFSC Paraclimbing" \
+                --output "/app/${{ env.CALENDAR_FILE_ICS }}" \
+                --format "ics,json"
 
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
