@@ -21,7 +21,8 @@ jobs:
         with:
           image: ghcr.io/sportclimbing/ifsc-calendar:latest
           options: -v ${{ github.workspace }}:/app
-          run: |
+          run: | 
+            ifsc-calendar \ 
               --season 2024 \
               --league "World Cups and World Championships" \
               --league "Games" \
