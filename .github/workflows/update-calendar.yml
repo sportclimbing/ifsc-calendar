@@ -19,7 +19,7 @@ jobs:
       - name: "Generate calendar files"
         uses: addnab/docker-run-action@v3
         with:
-          image: sportclimbing/ifsc-calendar:latest
+          image: ghcr.io/sportclimbing/ifsc-calendar:latest
           options: -v ${{ github.workspace }}:/app
           run: |
               --season 2024 \
