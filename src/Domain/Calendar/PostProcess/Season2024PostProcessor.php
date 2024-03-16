@@ -108,10 +108,7 @@ final readonly class Season2024PostProcessor
     {
         [$time, $name] = explode("\n", $node->nodeValue, limit: 2);
 
-        return [
-            $this->normalizeRoundName($name),
-            ...$this->parseStartAndEndTime($time),
-        ];
+        return [$name, ...$this->parseStartAndEndTime($time)];
     }
 
     /**
@@ -128,15 +125,6 @@ final readonly class Season2024PostProcessor
         }
 
         throw new IFSCEventsScraperException("Unable to parse string from time: {$time}");
-    }
-
-    private function normalizeRoundName(string $name): string
-    {
-        return preg_replace(
-            ["~[\r\n]+~", '~\s{2,}~', '~(boulder|lead) round ~i'],
-            ['', ' ', ''],
-            trim($name),
-        );
     }
 
     private function createDateFromMatch(string $day, string $time): DateTime
@@ -211,6 +199,25 @@ final readonly class Season2024PostProcessor
     /** @return string[] */
     private function getRoundNames(string $name): array
     {
-        return preg_split('~\s*,\s+~', $name, limit: 2, flags: PREG_SPLIT_NO_EMPTY);
+        $callback = static function (string $name): string {
+            $regex = '~, (Boulder|Lead) Round~i';
+
+            if (preg_match($regex, $name, $match)) {
+                $name = match ($match[1]) {
+                    'Boulder' => str_replace(' & Lead', '', $name),
+                    'Lead' => str_replace('Boulder & ', '', $name),
+                };
+
+                $name = preg_replace($regex, '', $name);
+            }
+
+            return trim($name);
+        };
+
+        return array_filter(
+            array_map($callback,
+                explode("\n", $name, limit: 2)
+            )
+        );
     }
 }
