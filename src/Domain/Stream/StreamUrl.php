@@ -13,14 +13,19 @@ final class StreamUrl
 {
     private const string YOUTUBE_BASE_URL = 'https://youtu.be/%s';
 
+    private const string YOUTUBE_THUMB_URL = 'https://img.youtube.com/vi/%s/0.jpg';
+
     private const string REGEX_YOUTUBE_ID = '~youtu(\.be|be\.com)/(live/|watch\?v=)?(?<video_id>[a-zA-Z0-9_-]{10,})~';
 
     public readonly ?string $url;
 
     /** @throws InvalidURLException */
     public function __construct(?string $url = null) {
-        $this->assertValidUrl($url);
-        $this->url = $this->normalizeStreamUrl($url);
+        if ($url !== null) {
+            $this->url = $this->normalizeStreamUrl($url);
+        } else {
+            $this->url = null;
+        }
     }
 
     public function hasUrl(): bool
@@ -28,20 +33,46 @@ final class StreamUrl
         return $this->url !== null;
     }
 
-    /** @throws InvalidURLException */
-    private function assertValidUrl(?string $streamUrl): void
+    public function youTubeThumbUrl(): ?string
     {
-        if ($streamUrl !== null && !filter_var($streamUrl, FILTER_VALIDATE_URL)) {
-            throw new InvalidURLException("Invalid URL: {$streamUrl}");
+        if ($this->hasUrl()) {
+            $videoId = $this->getVideoId($this->url);
+
+            if ($videoId) {
+                return sprintf(self::YOUTUBE_THUMB_URL, $videoId);
+            }
         }
+
+        return null;
     }
 
-    private function normalizeStreamUrl(?string $streamUrl): ?string
+    /** @throws InvalidURLException */
+    private function normalizeStreamUrl(string $streamUrl): ?string
     {
-        if ($streamUrl !== null && preg_match(self::REGEX_YOUTUBE_ID, $streamUrl, $match)) {
-            return sprintf(self::YOUTUBE_BASE_URL, $match['video_id']);
+        $this->assertValidUrl($streamUrl);
+        $videoId = $this->getVideoId($streamUrl);
+
+        if ($videoId) {
+            return sprintf(self::YOUTUBE_BASE_URL, $videoId);
         }
 
         return $streamUrl;
+    }
+
+    private function getVideoId(string $url): ?string
+    {
+        if (preg_match(self::REGEX_YOUTUBE_ID, $url, $match)) {
+            return $match['video_id'];
+        }
+
+        return null;
+    }
+
+    /** @throws InvalidURLException */
+    private function assertValidUrl(string $streamUrl): void
+    {
+        if (!filter_var($streamUrl, FILTER_VALIDATE_URL)) {
+            throw new InvalidURLException("Invalid URL: {$streamUrl}");
+        }
     }
 }
