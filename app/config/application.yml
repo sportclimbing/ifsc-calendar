@@ -1,0 +1,18 @@
+services:
+  nicoSWD\IfscCalendar\Application\Command\BuildCommand:
+    class: nicoSWD\IfscCalendar\Application\Command\BuildCommand
+    public: true
+    tags: [ console.command ]
+    lazy: true
+    arguments:
+      - '@nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase'
+      - '@nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase'
+
+  nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase:
+    class: nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase
+    autowire: true
+
+  nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase:
+    class: nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase
+    arguments:
+      - '@nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcher'

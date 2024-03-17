@@ -1,0 +1,67 @@
+services:
+  # IFSC API Client
+  nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientFactory:
+    class: nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientFactory
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
+      - '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientAuthenticator'
+
+  nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient:
+    factory: '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientFactory'
+
+  nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientAuthenticator:
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
+      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
+
+  # Event
+  nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider:
+    class: nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient'
+
+  # Domain Event
+  nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher:
+    class: nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher
+    autowire: true
+
+  # Calendar
+  nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar: ~
+
+  nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar:
+    class: nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar
+    arguments:
+      - '@Eluceo\iCal\Presentation\Factory\CalendarFactory'
+      - '%calendar_product_identifier%'
+      - '%calendar_published_ttl%'
+
+  # Raking
+  nicoSWD\IfscCalendar\Infrastructure\Ranking\IFSCApiWorldRankingProvider:
+    class: nicoSWD\IfscCalendar\Infrastructure\Ranking\IFSCApiWorldRankingProvider
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient'
+
+  # Start List
+  nicoSWD\IfscCalendar\Infrastructure\StartList\ApiStartListProvider:
+    class: nicoSWD\IfscCalendar\Infrastructure\StartList\ApiStartListProvider
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient'
+
+  # YouTube
+  nicoSWD\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider:
+    class: nicoSWD\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider
+    arguments:
+      - '@nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideoCollection'
+
+  nicoSWD\IfscVideos\Infrastructure\YouTube\YouTubeVideoProvider: ~
+
+  # HTTP Client
+  nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient:
+    class: nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient
+    arguments:
+      - '@GuzzleHttp\Client'
+
+  # Vendor services
+  Symfony\Component\EventDispatcher\EventDispatcher: ~
+  Eluceo\iCal\Presentation\Factory\CalendarFactory: ~
+  GuzzleHttp\Client: ~
