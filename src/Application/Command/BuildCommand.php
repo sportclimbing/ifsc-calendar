@@ -7,12 +7,13 @@
  */
 namespace nicoSWD\IfscCalendar\Application\Command;
 
+use Closure;
 use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarRequest;
 use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarResponse;
 use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase;
 use nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase;
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarFormat;
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
+use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use Symfony\Component\Console\Command\Command;
@@ -43,7 +44,7 @@ class BuildCommand extends Command
         ;
     }
 
-    /** @throws HttpException */
+    /** @throws InvalidURLException */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $helper = $this->getHelper('question');
@@ -77,15 +78,15 @@ class BuildCommand extends Command
             $leagueIds[] = $leaguesByName[$name];
         }
 
-        foreach (explode(',', $format) as $calFormat) {
-            $format = IFSCCalendarFormat::from($calFormat);
-            $season = IFSCSeasonYear::from($selectedSeason);
+        $formats = array_map($this->createFormats(), explode(',', $format));
+        $season = IFSCSeasonYear::from($selectedSeason);
 
-            $pathInfo = pathinfo($fileName);
+        $pathInfo = pathinfo($fileName);
+        $response = $this->buildCalendar($season, $leagueIds, $formats, $output);
+
+        foreach ($formats as $format) {
             $fileName = "{$pathInfo['dirname']}/{$pathInfo['filename']}.{$format->value}";
-
-            $response = $this->buildCalendar($season, $leagueIds, $format, $output);
-            $this->saveCalendar($fileName, $response->calendarContents, $output);
+            $this->saveCalendar($fileName, $response->calendarContents[$format->value], $output);
         }
 
         $output->writeln("[+] Done!");
@@ -93,11 +94,15 @@ class BuildCommand extends Command
         return self::SUCCESS;
     }
 
-    /** @param int[] $leagueIds */
+    /**
+     * @param int[] $leagueIds
+     * @param IFSCCalendarFormat[] $formats
+     * @throws InvalidURLException
+     */
     public function buildCalendar(
         IFSCSeasonYear $selectedSeason,
         array $leagueIds,
-        IFSCCalendarFormat $format,
+        array $formats,
         OutputInterface $output,
     ): BuildCalendarResponse {
         $output->writeln("[+] Fetching event info...");
@@ -106,15 +111,12 @@ class BuildCommand extends Command
             new BuildCalendarRequest(
                 leagueIds: $leagueIds,
                 season: $selectedSeason,
-                format: $format,
+                formats: $formats,
             )
         );
     }
 
-    /**
-     * @return IFSCSeason[]
-     * @throws HttpException
-     */
+    /** @return IFSCSeason[] */
     private function getSeasons(): array
     {
         $seasons = [];
@@ -160,5 +162,10 @@ class BuildCommand extends Command
 
         $filesystem = new Filesystem();
         $filesystem->dumpFile($fileName, $calendarContents);
+    }
+
+    private function createFormats(): Closure
+    {
+        return static fn (string $format): IFSCCalendarFormat => IFSCCalendarFormat::from($format);
     }
 }

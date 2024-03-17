@@ -9,8 +9,9 @@ namespace nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar;
 
 final readonly class BuildCalendarResponse
 {
+    /** @param string[] $calendarContents */
     public function __construct(
-        public string $calendarContents,
+        public array $calendarContents,
     ) {
     }
 }

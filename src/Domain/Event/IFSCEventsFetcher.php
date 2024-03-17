@@ -12,6 +12,8 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\EventScrapingStartedEvent;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRankingException;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
@@ -32,6 +34,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         private IFSCStartListGenerator $startListGenerator,
         private IFSCRoundFactory $roundFactory,
         private IFSCEventInfoProviderInterface $eventInfoProvider,
+        private EventDispatcherInterface $eventDispatcher,
         private string $siteUrl,
     ) {
     }
@@ -49,6 +52,8 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         $events = [];
 
         foreach ($this->eventInfoProvider->fetchEventsForLeague($leagueId) as $event) {
+            $this->emitScrapingStartedEvent($event);
+
             $scrapedRounds = $this->fetchScrapedRounds($season, $event);
             $eventInfo = $this->eventInfoProvider->fetchInfo($event->event_id);
 
@@ -178,5 +183,10 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
     private function fixFatFinger(string $location): string
     {
         return str_replace('CIty', 'City', $location);
+    }
+
+    private function emitScrapingStartedEvent(object $event): void
+    {
+        $this->eventDispatcher->dispatch(new EventScrapingStartedEvent($event->event));
     }
 }

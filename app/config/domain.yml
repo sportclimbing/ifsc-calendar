@@ -79,6 +79,7 @@ services:
       - '@nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator'
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
       - '@nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider'
+      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
       - '%site_event_url%'
 
   nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper: ~

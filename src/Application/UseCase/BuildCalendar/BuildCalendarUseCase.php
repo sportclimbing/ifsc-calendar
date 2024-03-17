@@ -8,6 +8,7 @@
 namespace nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar;
 
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder;
+use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 
 final readonly class BuildCalendarUseCase
 {
@@ -16,6 +17,7 @@ final readonly class BuildCalendarUseCase
     ) {
     }
 
+    /** @throws InvalidURLException */
     public function execute(BuildCalendarRequest $buildCalendarRequest): BuildCalendarResponse
     {
         return new BuildCalendarResponse(
@@ -23,12 +25,13 @@ final readonly class BuildCalendarUseCase
         );
     }
 
-    public function buildCalendar(BuildCalendarRequest $buildCalendarRequest): string
+    /** @throws InvalidURLException */
+    private function buildCalendar(BuildCalendarRequest $buildCalendarRequest): array
     {
         return $this->calendarBuilder->generateForLeague(
             season: $buildCalendarRequest->season,
             leagueIds: $buildCalendarRequest->leagueIds,
-            format: $buildCalendarRequest->format,
+            formats: $buildCalendarRequest->formats,
         );
     }
 }

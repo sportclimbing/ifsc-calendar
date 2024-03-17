@@ -12,7 +12,6 @@ services:
   nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientAuthenticator:
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
-      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
 
   # Event
   nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider:

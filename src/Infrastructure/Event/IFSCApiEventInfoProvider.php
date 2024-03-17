@@ -40,7 +40,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
             );
         } catch (HttpException $e) {
             throw new IFSCApiClientException(
-                "Unable to retrieve events for league: {$e->getMessage()}"
+                "Unable to retrieve events info: {$e->getMessage()}"
             );
         }
     }
@@ -73,7 +73,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
             );
         } catch (HttpException $e) {
             throw new IFSCApiClientException(
-                "Unable to retrieve events for league: {$e->getMessage()}"
+                "Unable to retrieve league name: {$e->getMessage()}"
             );
         }
 

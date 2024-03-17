@@ -10,11 +10,16 @@ namespace nicoSWD\IfscCalendar\Domain\DomainEvent\Event;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\Event;
 use Override;
 
-final class FetchingSessionIdCookieEvent extends Event
+final class EventScrapingStartedEvent extends Event
 {
+    public function __construct(
+        private readonly string $eventName,
+    ) {
+    }
+
     #[Override]
     public function getMessage(): string
     {
-        return "[+] Fetching session ID...";
+        return sprintf("[+] Started scraping schedule for event '%s'... ", $this->eventName);
     }
 }
