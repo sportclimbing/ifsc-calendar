@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\Events;
+namespace nicoSWD\IfscCalendar\Infrastructure\Event;
 
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventInfoProviderInterface;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;

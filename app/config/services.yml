@@ -30,8 +30,8 @@ services:
 
   Symfony\Component\EventDispatcher\EventDispatcher: ~
 
-  nicoSWD\IfscCalendar\Infrastructure\Events\IFSCApiEventInfoProvider:
-    class: nicoSWD\IfscCalendar\Infrastructure\Events\IFSCApiEventInfoProvider
+  nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider:
+    class: nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient'
 
@@ -108,7 +108,7 @@ services:
   nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcher:
     class: nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcher
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCApiEventInfoProvider'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider'
 
   nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess:
     class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess
@@ -135,7 +135,7 @@ services:
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper'
       - '@nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator'
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
-      - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCApiEventInfoProvider'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider'
       - '%site_event_url%'
 
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper:
