@@ -31,6 +31,12 @@ trait MockHttpClient
             {
                 return $this->get($url);
             }
+
+            #[Override]
+            public function getHeaders(string $url): array
+            {
+                return [];
+            }
         };
     }
 
