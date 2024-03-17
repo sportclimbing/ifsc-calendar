@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @license  http://opensource.org/licenses/mit-license.php MIT
@@ -7,11 +7,8 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\StartList;
 
-interface IFSCStartListProviderInterface
+use Exception;
+
+final class IFSCStartListException extends Exception
 {
-    /**
-     * @throws IFSCStartListException
-     * @return IFSCStarter[]
-     */
-    public function fetchStartListForEvent(int $eventId): array;
 }

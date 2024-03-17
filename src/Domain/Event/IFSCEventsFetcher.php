@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\Events;
+namespace nicoSWD\IfscCalendar\Domain\Event;
 
 use Closure;
 use DateTimeImmutable;
@@ -13,20 +13,18 @@ use DateTimeZone;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventInfoProviderInterface;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
+use nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListException;
 use nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator;
 use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
+use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;
 
-final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterface
+final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
 {
     public function __construct(
         private IFSCRoundsScraper $roundsScraper,
@@ -40,7 +38,8 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
     /**
      * @inheritdoc
      * @throws IFSCEventsScraperException
-     * @throws Exception
+     * @throws IFSCStartListException
+     * @throws IFSCApiClientException
      */
     #[Override]
     public function fetchEventsForLeague(IFSCSeasonYear $season, int $leagueId): array
@@ -72,7 +71,7 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
                 endsAt: $this->formatDate($scrapedRounds->endDate),
                 disciplines: $this->getDisciplines($eventInfo),
                 rounds: $rounds,
-                starters: $this->fetchAthletes($event->event_id),
+                starters: $this->buildStartList($event->event_id),
             );
         }
 
@@ -108,7 +107,6 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
         return array_unique($disciplines);
     }
 
-    /** @throws Exception */
     private function generateRounds(object $eventInfo, IFSCScrapedEventsResult $scrapedRounds): array
     {
         $rounds = [];
@@ -159,19 +157,22 @@ final readonly class IFSCGuzzleEventsFetcher implements IFSCEventFetcherInterfac
         return ucwords(sprintf("%s's %s %s", $round->category, $kind, $round->name));
     }
 
-    private function fixFatFinger(string $location): string
-    {
-        return str_replace('CIty', 'City', $location);
-    }
-
     private function fetchLeagueName(object $eventInfo): string
     {
         return $this->eventInfoProvider->fetchLeagueNameById($eventInfo->league_season_id);
     }
 
-    /** @return IFSCStarter[] */
-    private function fetchAthletes(int $eventId): array
+    /**
+     * @return IFSCStarter[]
+     * @throws IFSCStartListException
+     */
+    private function buildStartList(int $eventId): array
     {
-        return $this->startListGenerator->fetchAthletes($eventId);
+        return $this->startListGenerator->buildStartList($eventId);
+    }
+
+    private function fixFatFinger(string $location): string
+    {
+        return str_replace('CIty', 'City', $location);
     }
 }

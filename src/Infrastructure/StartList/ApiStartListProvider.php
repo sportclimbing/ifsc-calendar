@@ -7,9 +7,12 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\StartList;
 
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
+use nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListException;
 use nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListProviderInterface;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
+use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;
 
 final readonly class ApiStartListProvider implements IFSCStartListProviderInterface
@@ -25,13 +28,19 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
     ) {
     }
 
-    #[Override]
     /** @inheritdoc */
+    #[Override]
     public function fetchStartListForEvent(int $eventId): array
     {
-        $athletes = $this->apiClient->fetchAuth(
-            sprintf(self::IFSC_STARTERS_API_ENDPOINT, $eventId),
-        );
+        try {
+            $athletes = $this->apiClient->authenticatedGet(
+                sprintf(self::IFSC_STARTERS_API_ENDPOINT, $eventId),
+            );
+        } catch (HttpException|IFSCApiClientException $e) {
+            throw new IFSCStartListException(
+                "Unable to fetch start list: {$e->getMessage()}"
+            );
+        }
 
         $startList = [];
 
@@ -46,18 +55,32 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
         return $startList;
     }
 
+    /** @throws IFSCStartListException */
     public function fetchWorldRankCategories(): array
     {
-        return $this->apiClient->fetchAuth(
-            self::IFSC_WORLD_RANK_CATEGORIES_ENDPOINT
-        );
+        try {
+            return $this->apiClient->authenticatedGet(
+                self::IFSC_WORLD_RANK_CATEGORIES_ENDPOINT
+            );
+        } catch (HttpException|IFSCApiClientException $e) {
+            throw new IFSCStartListException(
+                "Unable to fetch world rank categories: {$e->getMessage()}"
+            );
+        }
     }
 
+    /** @throws IFSCStartListException */
     public function fetchWorldRankForCategory(int $categoryId): array
     {
-        $response = $this->apiClient->fetchAuth(
-            sprintf(self::IFSC_WORLD_RANK_CATEGORY_INFO_ENDPOINT, $categoryId),
-        );
+        try {
+            $response = $this->apiClient->authenticatedGet(
+                sprintf(self::IFSC_WORLD_RANK_CATEGORY_INFO_ENDPOINT, $categoryId),
+            );
+        } catch (HttpException|IFSCApiClientException $e) {
+            throw new IFSCStartListException(
+                "Unable to fetch world rank category: {$e->getMessage()}"
+            );
+        }
 
         return $response->ranking;
     }

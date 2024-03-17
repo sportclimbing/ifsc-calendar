@@ -16,8 +16,11 @@ final readonly class IFSCStartListGenerator
     ) {
     }
 
-    /** @return IFSCStarter[] */
-    public function fetchAthletes(int $eventId): array
+    /**
+     * @return IFSCStarter[]
+     * @throws IFSCStartListException
+     */
+    public function buildStartList(int $eventId): array
     {
         $athletes = [];
         $scores = [];
@@ -80,16 +83,19 @@ final readonly class IFSCStartListGenerator
         return static fn (IFSCStarter $athlete1, IFSCStarter $athlete2): int => $athlete2->score <=> $athlete1->score;
     }
 
+    /** @throws IFSCStartListException */
     private function fetchRankForCategory(object $worldRankCategory): array
     {
         return $this->startListProvider->fetchWorldRankForCategory($worldRankCategory->dcat_id);
     }
 
+    /** @throws IFSCStartListException */
     private function getWorldRankCategories(): array
     {
         return $this->startListProvider->fetchWorldRankCategories();
     }
 
+    /** @throws IFSCStartListException */
     private function getStartListForEvent(int $eventId): array
     {
         return $this->startListProvider->fetchStartListForEvent($eventId);

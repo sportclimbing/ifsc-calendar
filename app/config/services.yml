@@ -30,8 +30,8 @@ services:
 
   Symfony\Component\EventDispatcher\EventDispatcher: ~
 
-  nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventInfoProvider:
-    class: nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventInfoProvider
+  nicoSWD\IfscCalendar\Infrastructure\Events\IFSCApiEventInfoProvider:
+    class: nicoSWD\IfscCalendar\Infrastructure\Events\IFSCApiEventInfoProvider
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient'
 
@@ -54,7 +54,7 @@ services:
     class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory'
-      - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher'
+      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventsFetcher'
       - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess'
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher'
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher'
@@ -108,7 +108,7 @@ services:
   nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcher:
     class: nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcher
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventInfoProvider'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCApiEventInfoProvider'
 
   nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess:
     class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess
@@ -129,13 +129,13 @@ services:
       - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper'
 
   # Events
-  nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher:
-    class: nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventsFetcher
+  nicoSWD\IfscCalendar\Domain\Event\IFSCEventsFetcher:
+    class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventsFetcher
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper'
       - '@nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator'
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
-      - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCGuzzleEventInfoProvider'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Events\IFSCApiEventInfoProvider'
       - '%site_event_url%'
 
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper:

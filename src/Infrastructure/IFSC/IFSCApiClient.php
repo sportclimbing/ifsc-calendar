@@ -7,11 +7,11 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\IFSC;
 
-use Exception;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\RequestOptions;
 use JsonException;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 
 readonly class IFSCApiClient
 {
@@ -21,7 +21,11 @@ readonly class IFSCApiClient
     ) {
     }
 
-    public function fetchAuth(string $url): object|array
+    /**
+     * @throws IFSCApiClientException
+     * @throws HttpException
+     */
+    public function authenticatedGet(string $url): object|array
     {
         return $this->request($url, [
             RequestOptions::HEADERS => [
@@ -35,6 +39,10 @@ readonly class IFSCApiClient
         ]);
     }
 
+    /**
+     * @throws IFSCApiClientException
+     * @throws HttpException
+     */
     public function request(string $url, array $options = []): object|array
     {
         try {
@@ -43,7 +51,7 @@ readonly class IFSCApiClient
                 flags: JSON_THROW_ON_ERROR,
             );
         } catch (JsonException $e) {
-            throw new Exception("Unable to parse JSON: {$e->getMessage()}");
+            throw new IFSCApiClientException("Unable to parse JSON: {$e->getMessage()}");
         }
     }
 }

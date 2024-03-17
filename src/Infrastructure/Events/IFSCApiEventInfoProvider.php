@@ -8,12 +8,14 @@
 namespace nicoSWD\IfscCalendar\Infrastructure\Events;
 
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventInfoProviderInterface;
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
+use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;
 
-final readonly class IFSCGuzzleEventInfoProvider implements IFSCEventInfoProviderInterface
+final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderInterface
 {
     private const string IFSC_EVENT_API_ENDPOINT = 'https://ifsc.results.info/api/v1/events/%d';
 
@@ -28,30 +30,52 @@ final readonly class IFSCGuzzleEventInfoProvider implements IFSCEventInfoProvide
     ) {
     }
 
+    /** @inheritdoc */
     #[Override]
     public function fetchInfo(int $eventId): object
     {
-        return $this->apiClient->fetchAuth(
-            sprintf(self::IFSC_EVENT_API_ENDPOINT, $eventId),
-        );
+        try {
+            return $this->apiClient->authenticatedGet(
+                sprintf(self::IFSC_EVENT_API_ENDPOINT, $eventId),
+            );
+        } catch (HttpException $e) {
+            throw new IFSCApiClientException(
+                "Unable to retrieve events for league: {$e->getMessage()}"
+            );
+        }
     }
 
+    /** @inheritdoc */
     #[Override]
     public function fetchEventsForLeague(int $leagueId): array
     {
-        $response = $this->apiClient->fetchAuth(
-            sprintf(self::IFSC_EVENTS_API_ENDPOINT, $leagueId),
-        );
+        try {
+            $response = $this->apiClient->authenticatedGet(
+                sprintf(self::IFSC_EVENTS_API_ENDPOINT, $leagueId),
+            );
+        } catch (HttpException $e) {
+            throw new IFSCApiClientException(
+                "Unable to retrieve events for league: {$e->getMessage()}"
+            );
+        }
 
         return $response->events;
     }
 
+
+    /** @inheritdoc */
     #[Override]
     public function fetchLeagueNameById(int $leagueId): string
     {
-        $response = $this->apiClient->fetchAuth(
-            sprintf(self::IFSC_LEAGUE_API_ENDPOINT, $leagueId),
-        );
+        try {
+            $response = $this->apiClient->authenticatedGet(
+                sprintf(self::IFSC_LEAGUE_API_ENDPOINT, $leagueId),
+            );
+        } catch (HttpException $e) {
+            throw new IFSCApiClientException(
+                "Unable to retrieve events for league: {$e->getMessage()}"
+            );
+        }
 
         return $response->league;
     }
@@ -60,9 +84,15 @@ final readonly class IFSCGuzzleEventInfoProvider implements IFSCEventInfoProvide
     #[Override]
     public function fetchSeasons(): array
     {
-        $response = $this->apiClient->request(
-            self::IFSC_SEASONS_API_URL
-        );
+        try {
+            $response = $this->apiClient->request(
+                self::IFSC_SEASONS_API_URL
+            );
+        } catch (HttpException $e) {
+            throw new IFSCApiClientException(
+                "Unable to retrieve events for league: {$e->getMessage()}"
+            );
+        }
 
         $seasons = [];
 
