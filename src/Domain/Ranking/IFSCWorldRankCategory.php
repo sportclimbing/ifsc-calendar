@@ -5,16 +5,13 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Domain\Starter;
+namespace nicoSWD\IfscCalendar\Domain\Ranking;
 
-final readonly class IFSCStarter
+final readonly class IFSCWorldRankCategory
 {
     public function __construct(
-        public string $firstName,
-        public string $lastName,
-        public string $country,
-        public float $score,
-        public ?string $photoUrl,
+        public int $id,
+        public string $name,
     ) {
     }
 }

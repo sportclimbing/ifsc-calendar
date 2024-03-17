@@ -10,7 +10,7 @@ namespace nicoSWD\IfscCalendar\Domain\Event;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidLeagueName;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
-use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
+use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
 
 final class IFSCEvent
 {

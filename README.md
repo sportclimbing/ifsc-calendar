@@ -26,6 +26,10 @@ then you're at the right place.
 This command line tool uses IFSC's API, plus some scraping (because some endpoints require 
 authentication) to generate an up-to-date calendar with all necessary info.
 
+<div align="center">
+    <img src="resources/images/calendar.png" alt="calendar" />
+</div>
+
 ### 🛠 Usage
 
 #### Docker
@@ -36,7 +40,7 @@ $ docker build --tag ifsc-calendar .
 Generate `.ics` calendar file
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
-    --season 2023 \
+    --season 2024 \
     --league "World Cups and World Championships" \
     --output "/calendar/ifsc-calendar.ics"
 ```
@@ -44,8 +48,19 @@ $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
 Generate `.json` calendar file
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
-    --season 2023 \
+    --season 2024 \
     --league "World Cups and World Championships" \
+    --output "/calendar/ifsc-calendar.json" \
+    --format json
+```
+
+Build for multiple leagues
+```shell
+$ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
+    --season 2024 \
+    --league "World Cups and World Championships" \
+    --league "Games" \
+    --league "IFSC Paraclimbing" \
     --output "/calendar/ifsc-calendar.json" \
     --format json
 ```
@@ -59,7 +74,7 @@ $ make
 Generate `.ics` calendar file
 ```
 $ ./build/ifsc-calendar.phar \
-  --season 2023 \
+  --season 2024 \
   --league "World Cups and World Championships" \
   --output "ifsc-calendar.ics"
 ```
@@ -83,14 +98,8 @@ $ ./build/ifsc-calendar.phar \
  - [x] Fetch stream links from YouTube API if none can be scraped
  - [x] Automatically regenerate calendar and update release
 
-### IFSC API Endpoints
- - https://ifsc.results.info/api/v1/events/1291 (auth required)
- - https://components.ifsc-climbing.org/results-api.php?api=event_top3&event_id=1291
- - https://components.ifsc-climbing.org/results-api.php?api=season_leagues_calendar&league=418
- - https://components.ifsc-climbing.org/results-api.php?api=index
-
 ### Requirements
-- PHP 8.2
+- PHP 8.3
 - ext-dom
 - ext-libxml
 

@@ -5,23 +5,23 @@
     "authors": [
         {
             "name": "Nico Oelgart",
-            "email": "nico@oelgart.com"
+            "email": "nico@ifsc.stream"
         }
     ],
     "require": {
-        "php": ">=8.2",
+        "eluceo/ical": "^2.13",
         "ext-dom": "*",
         "ext-libxml": "*",
-        "symfony/console": "^6.0",
-        "symfony/config": "^6.0",
-        "symfony/yaml": "^6.0",
-        "symfony/dependency-injection": "^6.0",
-        "eluceo/ical": "^2.12",
-        "guzzlehttp/guzzle": "^7.5",
-        "symfony/filesystem": "^6.0",
-        "symfony/finder": "^6.0",
+        "guzzlehttp/guzzle": "^7.8",
+        "php": ">=8.3",
         "sportclimbing/ifsc-youtube-videos": "dev-main",
-        "symfony/event-dispatcher": "^7.0"
+        "symfony/config": "^7.0",
+        "symfony/console": "^7.0",
+        "symfony/dependency-injection": "^7.0",
+        "symfony/event-dispatcher": "^7.0",
+        "symfony/filesystem": "^7.0",
+        "symfony/finder": "^7.0",
+        "symfony/yaml": "^7.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.1"

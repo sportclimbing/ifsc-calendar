@@ -1,0 +1,60 @@
+<?php declare(strict_types=1);
+
+/**
+ * @license  http://opensource.org/licenses/mit-license.php MIT
+ * @link     https://github.com/nicoSWD
+ * @author   Nicolas Oelgart <nico@oelgart.com>
+ */
+namespace nicoSWD\IfscCalendar\Infrastructure\IFSC;
+
+use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\FetchingSessionIdCookieEvent;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
+
+final readonly class IFSCApiClientAuthenticator
+{
+    public const string IFSC_SESSION_COOKIE_NAME = '_verticallife_resultservice_session';
+
+    public const string IFSC_RESULTS_INFO_PAGE = 'https://ifsc.results.info/';
+
+    public function __construct(
+        private HttpClientInterface $httpClient,
+        private EventDispatcherInterface $eventDispatcher,
+    ) {
+    }
+
+    /** @throws IFSCApiClientException */
+    public function fetchSessionId(): string
+    {
+        $this->eventDispatcher->dispatch(new FetchingSessionIdCookieEvent());
+
+        foreach ($this->getCookies() as $cookie) {
+            $parsedCookie = $this->parseCookie($cookie);
+
+            if (isset($parsedCookie[self::IFSC_SESSION_COOKIE_NAME])) {
+                return $this->extractSessionId($parsedCookie);
+            }
+        }
+
+        throw new IFSCApiClientException('Could not retrieve session cookie');
+    }
+
+    private function getCookies(): array
+    {
+        $headers = $this->httpClient->getHeaders(self::IFSC_RESULTS_INFO_PAGE);
+
+        return $headers['set-cookie'] ?? [];
+    }
+
+    private function parseCookie(string $cookie): array
+    {
+        parse_str($cookie, $result);
+
+        return $result;
+    }
+
+    private function extractSessionId(array $result): string
+    {
+        return sscanf($result[self::IFSC_SESSION_COOKIE_NAME], '%[^;]s')[0];
+    }
+}
