@@ -23,7 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Filesystem\Filesystem;
 
-final class BuildCommand extends Command
+class BuildCommand extends Command
 {
     public function __construct(
         private readonly FetchSeasonsUseCase $fetchSeasonsUseCase,

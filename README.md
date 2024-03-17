@@ -26,6 +26,10 @@ then you're at the right place.
 This command line tool uses IFSC's API, plus some scraping (because some endpoints require 
 authentication) to generate an up-to-date calendar with all necessary info.
 
+<div align="center">
+    <img src="resources/images/calendar.png" alt="calendar" />
+</div>
+
 ### 🛠 Usage
 
 #### Docker

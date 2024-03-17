@@ -7,19 +7,16 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Season;
 
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCEventInfoProviderInterface;
 
 final readonly class IFSCSeasonFetcher
 {
     public function __construct(
-        private IFSCSeasonFetcherInterface $seasonFetcher,
+        private IFSCEventInfoProviderInterface $seasonFetcher,
     ) {
     }
 
-    /**
-     * @return IFSCSeason[]
-     * @throws HttpException
-     */
+    /** @return IFSCSeason[] */
     public function fetchSeasons(): array
     {
         return $this->seasonFetcher->fetchSeasons();

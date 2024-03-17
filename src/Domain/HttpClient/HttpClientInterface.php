@@ -11,4 +11,6 @@ interface HttpClientInterface
 {
     /** @throws HttpException */
     public function getRetry(string $url): string;
+
+    public function getHeaders(string $url): array;
 }

@@ -16,7 +16,7 @@ use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundCategory;
-use nicoSWD\IfscCalendar\Domain\Starter\IFSCStarter;
+use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
 use Override;
 
 final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
