@@ -51,7 +51,9 @@ readonly class IFSCApiClient
                 flags: JSON_THROW_ON_ERROR,
             );
         } catch (JsonException $e) {
-            throw new IFSCApiClientException("Unable to parse JSON: {$e->getMessage()}");
+            throw new IFSCApiClientException(
+                "Unable to parse JSON: {$e->getMessage()}"
+            );
         }
     }
 }
