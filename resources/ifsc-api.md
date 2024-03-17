@@ -10,7 +10,7 @@ Some endpoints require authorization. Here's how to do that:
  - Add a `Referer` header with the value `https://ifsc.results.info/`
 
 
-### League Information
+### Leagues
 ```http request
 GET https://components.ifsc-climbing.org/results-api.php?api=season_leagues_calendar&league=184
 ```
@@ -543,10 +543,11 @@ GET https://components.ifsc-climbing.org/results-api.php?api=season_leagues_cale
 
 </details>
 
-### Event Information
+### Events
 ```http request
 GET https://components.ifsc-climbing.org/results-api.php?api=event_top3&event_id=1291
 ```
+
 <details>
   <summary>Show Response</summary>
 
@@ -682,6 +683,7 @@ GET https://components.ifsc-climbing.org/results-api.php?api=event_top3&event_id
 ```http request
 GET https://components.ifsc-climbing.org/results-api.php?api=season_leagues_calendar&league=418
 ```
+
 <details>
   <summary>Show Response</summary>
 
@@ -3302,6 +3304,7 @@ GET https://components.ifsc-climbing.org/results-api.php?api=season_leagues_cale
 ```http request
 GET https://ifsc.results.info/api/v1/events/1291
 ```
+
 <details>
   <summary>Show Response</summary>
 
@@ -10589,6 +10592,1507 @@ GET https://components.ifsc-climbing.org/results-api.php?api=index
 }
 ```
 </details>
+
+```http request
+GET https://ifsc.results.info/api/v1/seasons/36
+```
+
+<details>
+  <summary>Show Response</summary>
+
+```json
+{
+    "name": "2024",
+    "leagues": [
+        {
+            "name": "World Cups and World Championships",
+            "url": "/api/v1/season_leagues/431"
+        },
+        {
+            "name": "IFSC Youth",
+            "url": "/api/v1/season_leagues/432"
+        },
+        {
+            "name": "IFSC Paraclimbing",
+            "url": "/api/v1/season_leagues/433"
+        },
+        {
+            "name": "IFSC Asia Adults",
+            "url": "/api/v1/season_leagues/434"
+        },
+        {
+            "name": "IFSC Asia Youth",
+            "url": "/api/v1/season_leagues/435"
+        },
+        {
+            "name": "IFSC Europe Adults",
+            "url": "/api/v1/season_leagues/436"
+        },
+        {
+            "name": "IFSC Europe Youth",
+            "url": "/api/v1/season_leagues/437"
+        },
+        {
+            "name": "Games",
+            "url": "/api/v1/season_leagues/438"
+        },
+        {
+            "name": "Other events",
+            "url": "/api/v1/season_leagues/439"
+        },
+        {
+            "name": "Masters and Promotional Events",
+            "url": "/api/v1/season_leagues/440"
+        },
+        {
+            "name": "IFSC Pan America Adults",
+            "url": "/api/v1/season_leagues/441"
+        }
+    ],
+    "events": [
+        {
+            "event": "Studio Bloc Master 2024",
+            "league_season_id": 440,
+            "location": "Pfungstadt",
+            "country": "GER",
+            "registration_deadline": "2022-10-26T00:00:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1389,
+            "cup_name": "",
+            "cup_id": null,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1389",
+            "registration_url": "/api/v1/events/1389/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-03-08 23:00:00 UTC",
+            "ends_at": "2024-03-10 22:59:00 UTC",
+            "local_start_date": "2024-03-09",
+            "local_end_date": "2024-03-10",
+            "timezone": {
+                "value": "Europe/Berlin"
+            },
+            "disciplines": [
+                {
+                    "id": 1682,
+                    "kind": "boulder",
+                    "event_id": 1389,
+                    "created_at": "2024-01-10T08:02:08.000Z",
+                    "updated_at": "2024-01-10T08:02:08.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC European Cup Lublin 2024",
+            "league_season_id": 436,
+            "location": "Lublin",
+            "country": "POL",
+            "registration_deadline": "2024-03-06T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1376,
+            "cup_name": "IFSC-Europe Climbing European Cup 2024",
+            "cup_id": 97,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1376",
+            "registration_url": "/api/v1/events/1376/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1376/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-03-15 23:00:00 UTC",
+            "ends_at": "2024-03-16 22:59:00 UTC",
+            "local_start_date": "2024-03-16",
+            "local_end_date": "2024-03-16",
+            "timezone": {
+                "value": "Europe/Warsaw"
+            },
+            "disciplines": [
+                {
+                    "id": 1663,
+                    "kind": "speed",
+                    "event_id": 1376,
+                    "created_at": "2023-10-19T14:19:44.000Z",
+                    "updated_at": "2023-10-19T14:19:44.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC Youth European Cup Lublin 2024",
+            "league_season_id": 437,
+            "location": "Lublin",
+            "country": "POL",
+            "registration_deadline": "2024-03-06T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1363,
+            "cup_name": "IFSC-Europe Climbing European Youth Cup 2024",
+            "cup_id": 95,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1363",
+            "registration_url": "/api/v1/events/1363/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1363/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-03-16 23:00:00 UTC",
+            "ends_at": "2024-03-17 22:59:00 UTC",
+            "local_start_date": "2024-03-17",
+            "local_end_date": "2024-03-17",
+            "timezone": {
+                "value": "Europe/Warsaw"
+            },
+            "disciplines": [
+                {
+                    "id": 1645,
+                    "kind": "speed",
+                    "event_id": 1363,
+                    "created_at": "2023-10-19T13:41:27.000Z",
+                    "updated_at": "2023-10-19T13:41:27.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "Delfts Bleau International Youth Open 2024",
+            "league_season_id": 440,
+            "location": "Delft",
+            "country": "NED",
+            "registration_deadline": "2022-11-09T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1352,
+            "cup_name": "",
+            "cup_id": null,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1352",
+            "registration_url": "/api/v1/events/1352/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-03-22 23:00:00 UTC",
+            "ends_at": "2024-03-24 22:59:00 UTC",
+            "local_start_date": "2024-03-23",
+            "local_end_date": "2024-03-24",
+            "timezone": {
+                "value": "Europe/Amsterdam"
+            },
+            "disciplines": []
+        },
+        {
+            "event": "IFSC Youth European Cup Curno 2024",
+            "league_season_id": 437,
+            "location": "Curno",
+            "country": "ITA",
+            "registration_deadline": "2024-03-21T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1377,
+            "cup_name": "IFSC-Europe Climbing European Youth Cup 2024",
+            "cup_id": 95,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1377",
+            "registration_url": "/api/v1/events/1377/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1377/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-04-04 22:00:00 UTC",
+            "ends_at": "2024-04-07 21:59:00 UTC",
+            "local_start_date": "2024-04-05",
+            "local_end_date": "2024-04-07",
+            "timezone": {
+                "value": "Europe/Rome"
+            },
+            "disciplines": [
+                {
+                    "id": 1665,
+                    "kind": "boulder",
+                    "event_id": 1377,
+                    "created_at": "2023-10-24T11:14:00.000Z",
+                    "updated_at": "2023-10-24T11:14:00.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC World Cup Keqiao 2024",
+            "league_season_id": 431,
+            "location": "Keqiao",
+            "country": "CHN",
+            "registration_deadline": "2024-03-24T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": "https://d1n1qj9geboqnb.cloudfront.net/ifsc/public/w3umqoe79r9xru6557z0yg00a4yz",
+            "series_logo": null,
+            "event_id": 1353,
+            "cup_name": "IFSC Climbing World Cup 2024",
+            "cup_id": 94,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1353",
+            "registration_url": "/api/v1/events/1353/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1353/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-04-07 16:00:00 UTC",
+            "ends_at": "2024-04-10 15:59:00 UTC",
+            "local_start_date": "2024-04-08",
+            "local_end_date": "2024-04-10",
+            "timezone": {
+                "value": "Asia/Shanghai"
+            },
+            "disciplines": [
+                {
+                    "id": 1630,
+                    "kind": "boulder",
+                    "event_id": 1353,
+                    "created_at": "2023-10-16T13:02:21.000Z",
+                    "updated_at": "2024-01-22T16:45:42.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC World Cup Wujiang 2024",
+            "league_season_id": 431,
+            "location": "Wujiang",
+            "country": "CHN",
+            "registration_deadline": "2024-03-28T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": "https://d1n1qj9geboqnb.cloudfront.net/ifsc/public/ph1lmehgkcegyo4gchegvr2yk9rj",
+            "series_logo": null,
+            "event_id": 1354,
+            "cup_name": "IFSC Climbing World Cup 2024",
+            "cup_id": 94,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1354",
+            "registration_url": "/api/v1/events/1354/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1354/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-04-11 16:00:00 UTC",
+            "ends_at": "2024-04-14 15:59:00 UTC",
+            "local_start_date": "2024-04-12",
+            "local_end_date": "2024-04-14",
+            "timezone": {
+                "value": "Asia/Shanghai"
+            },
+            "disciplines": [
+                {
+                    "id": 1628,
+                    "kind": "lead",
+                    "event_id": 1354,
+                    "created_at": "2023-10-16T13:01:47.000Z",
+                    "updated_at": "2024-01-22T16:44:50.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1629,
+                    "kind": "speed",
+                    "event_id": 1354,
+                    "created_at": "2023-10-16T13:01:56.000Z",
+                    "updated_at": "2024-01-22T16:44:58.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC Youth European Cup Soure 2024",
+            "league_season_id": 437,
+            "location": "Soure",
+            "country": "POR",
+            "registration_deadline": "2024-04-07T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1365,
+            "cup_name": "IFSC-Europe Climbing European Youth Cup 2024",
+            "cup_id": 95,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1365",
+            "registration_url": "/api/v1/events/1365/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1365/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-04-19 23:00:00 UTC",
+            "ends_at": "2024-04-21 22:59:00 UTC",
+            "local_start_date": "2024-04-20",
+            "local_end_date": "2024-04-21",
+            "timezone": {
+                "value": "Europe/Lisbon"
+            },
+            "disciplines": [
+                {
+                    "id": 1647,
+                    "kind": "boulder",
+                    "event_id": 1365,
+                    "created_at": "2023-10-19T13:46:29.000Z",
+                    "updated_at": "2023-10-19T13:46:29.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC European Cup Klagenfurt 2024",
+            "league_season_id": 436,
+            "location": "Klagenfurt",
+            "country": "AUT",
+            "registration_deadline": "2022-12-13T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1366,
+            "cup_name": "IFSC-Europe Climbing European Cup 2024",
+            "cup_id": 97,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1366",
+            "registration_url": "/api/v1/events/1366/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-04-25 22:00:00 UTC",
+            "ends_at": "2024-04-27 21:59:00 UTC",
+            "local_start_date": "2024-04-26",
+            "local_end_date": "2024-04-27",
+            "timezone": {
+                "value": "Europe/Vienna"
+            },
+            "disciplines": [
+                {
+                    "id": 1648,
+                    "kind": "boulder",
+                    "event_id": 1366,
+                    "created_at": "2023-10-19T13:47:48.000Z",
+                    "updated_at": "2023-10-19T13:47:48.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC Youth European Cup Graz 2024",
+            "league_season_id": 437,
+            "location": "Graz",
+            "country": "AUT",
+            "registration_deadline": "2022-12-20T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1367,
+            "cup_name": "IFSC-Europe Climbing European Youth Cup 2024",
+            "cup_id": 95,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1367",
+            "registration_url": "/api/v1/events/1367/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-05-02 22:00:00 UTC",
+            "ends_at": "2024-05-05 21:59:00 UTC",
+            "local_start_date": "2024-05-03",
+            "local_end_date": "2024-05-05",
+            "timezone": {
+                "value": "Europe/Vienna"
+            },
+            "disciplines": [
+                {
+                    "id": 1649,
+                    "kind": "boulder",
+                    "event_id": 1367,
+                    "created_at": "2023-10-19T13:49:31.000Z",
+                    "updated_at": "2023-10-19T13:49:31.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC World Cup Salt Lake City 2024",
+            "league_season_id": 431,
+            "location": "Salt Lake CIty",
+            "country": "USA",
+            "registration_deadline": "2024-04-18T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": "https://d1n1qj9geboqnb.cloudfront.net/ifsc/public/isez2uqwrd5hpbb65bi3q9g6tw1k",
+            "series_logo": null,
+            "event_id": 1355,
+            "cup_name": "IFSC Climbing World Cup 2024",
+            "cup_id": 94,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1355",
+            "registration_url": "/api/v1/events/1355/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1355/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-05-03 07:00:00 UTC",
+            "ends_at": "2024-05-06 06:59:00 UTC",
+            "local_start_date": "2024-05-03",
+            "local_end_date": "2024-05-05",
+            "timezone": {
+                "value": "America/Phoenix"
+            },
+            "disciplines": [
+                {
+                    "id": 1631,
+                    "kind": "speed",
+                    "event_id": 1355,
+                    "created_at": "2023-10-16T13:06:28.000Z",
+                    "updated_at": "2024-01-23T13:52:37.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1632,
+                    "kind": "boulder",
+                    "event_id": 1355,
+                    "created_at": "2023-10-16T13:06:32.000Z",
+                    "updated_at": "2024-01-23T13:52:40.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC Paraclimbing World Cup Salt Lake City 2024",
+            "league_season_id": 433,
+            "location": "Salt Lake City",
+            "country": "USA",
+            "registration_deadline": "2024-03-26T00:00:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1388,
+            "cup_name": "",
+            "cup_id": null,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1388",
+            "registration_url": "/api/v1/events/1388/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1388/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-05-07 06:00:00 UTC",
+            "ends_at": "2024-05-09 05:59:00 UTC",
+            "local_start_date": "2024-05-07",
+            "local_end_date": "2024-05-08",
+            "timezone": {
+                "value": "America/Denver"
+            },
+            "disciplines": [
+                {
+                    "id": 1681,
+                    "kind": "lead",
+                    "event_id": 1388,
+                    "created_at": "2023-12-20T16:13:11.000Z",
+                    "updated_at": "2024-01-30T12:14:12.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "Olympic Qualifier Series Shanghai 2024",
+            "league_season_id": 438,
+            "location": "Shanghai",
+            "country": "CHN",
+            "registration_deadline": "2023-01-02T00:00:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1384,
+            "cup_name": "",
+            "cup_id": null,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1384",
+            "registration_url": "/api/v1/events/1384/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-05-15 16:00:00 UTC",
+            "ends_at": "2024-05-19 15:59:00 UTC",
+            "local_start_date": "2024-05-16",
+            "local_end_date": "2024-05-19",
+            "timezone": {
+                "value": "Asia/Shanghai"
+            },
+            "disciplines": [
+                {
+                    "id": 1674,
+                    "kind": "boulder&lead",
+                    "event_id": 1384,
+                    "created_at": "2023-12-20T11:05:32.000Z",
+                    "updated_at": "2023-12-20T11:05:32.000Z",
+                    "settings": {
+                        "lead": {
+                            "points": [
+                                100,
+                                96,
+                                92,
+                                88,
+                                84,
+                                80,
+                                76,
+                                72,
+                                68,
+                                64,
+                                60,
+                                57,
+                                54,
+                                51,
+                                48,
+                                45,
+                                42,
+                                39,
+                                36,
+                                33,
+                                30,
+                                28,
+                                26,
+                                24,
+                                22,
+                                20,
+                                18,
+                                16,
+                                14,
+                                12,
+                                10,
+                                9,
+                                8,
+                                7,
+                                6,
+                                5,
+                                4,
+                                3,
+                                2,
+                                1
+                            ],
+                            "plus": 0.1
+                        },
+                        "boulder": {
+                            "low_zone": 5,
+                            "high_zone": 10,
+                            "top": 25,
+                            "fall_deduction": 0.1
+                        }
+                    }
+                },
+                {
+                    "id": 1675,
+                    "kind": "speed",
+                    "event_id": 1384,
+                    "created_at": "2023-12-20T11:05:32.000Z",
+                    "updated_at": "2023-12-20T11:05:32.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC Youth European Cup Mezzolombardo 2024",
+            "league_season_id": 437,
+            "location": "Mezzolombardo",
+            "country": "ITA",
+            "registration_deadline": "2024-05-09T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1368,
+            "cup_name": "IFSC-Europe Climbing European Youth Cup 2024",
+            "cup_id": 95,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1368",
+            "registration_url": "/api/v1/events/1368/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1368/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-05-23 22:00:00 UTC",
+            "ends_at": "2024-05-25 21:59:00 UTC",
+            "local_start_date": "2024-05-24",
+            "local_end_date": "2024-05-25",
+            "timezone": {
+                "value": "Europe/Rome"
+            },
+            "disciplines": [
+                {
+                    "id": 1650,
+                    "kind": "speed",
+                    "event_id": 1368,
+                    "created_at": "2023-10-19T13:51:31.000Z",
+                    "updated_at": "2023-10-19T13:51:31.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC European Cup Mezzolombardo 2024",
+            "league_season_id": 436,
+            "location": "Mezzolombardo",
+            "country": "ITA",
+            "registration_deadline": "2024-05-10T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1369,
+            "cup_name": "IFSC-Europe Climbing European Cup 2024",
+            "cup_id": 97,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1369",
+            "registration_url": "/api/v1/events/1369/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1369/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-05-24 22:00:00 UTC",
+            "ends_at": "2024-05-25 21:59:00 UTC",
+            "local_start_date": "2024-05-25",
+            "local_end_date": "2024-05-25",
+            "timezone": {
+                "value": "Europe/Rome"
+            },
+            "disciplines": [
+                {
+                    "id": 1651,
+                    "kind": "speed",
+                    "event_id": 1369,
+                    "created_at": "2023-10-19T13:53:23.000Z",
+                    "updated_at": "2023-10-19T13:53:23.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "Olympic Qualifier Series Budapest 2024",
+            "league_season_id": 438,
+            "location": "Budapest",
+            "country": "HUN",
+            "registration_deadline": "2023-02-06T00:00:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1385,
+            "cup_name": "",
+            "cup_id": null,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1385",
+            "registration_url": "/api/v1/events/1385/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-06-19 22:00:00 UTC",
+            "ends_at": "2024-06-23 21:59:00 UTC",
+            "local_start_date": "2024-06-20",
+            "local_end_date": "2024-06-23",
+            "timezone": {
+                "value": "Europe/Budapest"
+            },
+            "disciplines": [
+                {
+                    "id": 1676,
+                    "kind": "boulder&lead",
+                    "event_id": 1385,
+                    "created_at": "2023-12-20T11:20:15.000Z",
+                    "updated_at": "2023-12-20T11:20:15.000Z",
+                    "settings": {
+                        "lead": {
+                            "points": [
+                                100,
+                                96,
+                                92,
+                                88,
+                                84,
+                                80,
+                                76,
+                                72,
+                                68,
+                                64,
+                                60,
+                                57,
+                                54,
+                                51,
+                                48,
+                                45,
+                                42,
+                                39,
+                                36,
+                                33,
+                                30,
+                                28,
+                                26,
+                                24,
+                                22,
+                                20,
+                                18,
+                                16,
+                                14,
+                                12,
+                                10,
+                                9,
+                                8,
+                                7,
+                                6,
+                                5,
+                                4,
+                                3,
+                                2,
+                                1
+                            ],
+                            "plus": 0.1
+                        },
+                        "boulder": {
+                            "low_zone": 5,
+                            "high_zone": 10,
+                            "top": 25,
+                            "fall_deduction": 0.1
+                        }
+                    }
+                },
+                {
+                    "id": 1677,
+                    "kind": "speed",
+                    "event_id": 1385,
+                    "created_at": "2023-12-20T11:20:15.000Z",
+                    "updated_at": "2023-12-20T11:20:15.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC European Cup Augsburg 2024",
+            "league_season_id": 436,
+            "location": "Augsburg",
+            "country": "GER",
+            "registration_deadline": "2023-02-07T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1378,
+            "cup_name": "IFSC-Europe Climbing European Cup 2024",
+            "cup_id": 97,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1378",
+            "registration_url": "/api/v1/events/1378/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-06-20 22:00:00 UTC",
+            "ends_at": "2024-06-22 21:59:00 UTC",
+            "local_start_date": "2024-06-21",
+            "local_end_date": "2024-06-22",
+            "timezone": {
+                "value": "Europe/Berlin"
+            },
+            "disciplines": [
+                {
+                    "id": 1666,
+                    "kind": "lead",
+                    "event_id": 1378,
+                    "created_at": "2023-10-24T17:25:36.000Z",
+                    "updated_at": "2023-10-24T17:25:36.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1667,
+                    "kind": "speed",
+                    "event_id": 1378,
+                    "created_at": "2023-10-24T17:25:40.000Z",
+                    "updated_at": "2023-10-24T17:25:40.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC European Cup Innsbruck 2024",
+            "league_season_id": 436,
+            "location": "Innsbruck",
+            "country": "AUT",
+            "registration_deadline": "2023-02-10T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1383,
+            "cup_name": "IFSC-Europe Climbing European Cup 2024",
+            "cup_id": 97,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1383",
+            "registration_url": "/api/v1/events/1383/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-06-23 22:00:00 UTC",
+            "ends_at": "2024-06-24 21:59:00 UTC",
+            "local_start_date": "2024-06-24",
+            "local_end_date": "2024-06-24",
+            "timezone": {
+                "value": "Europe/Vienna"
+            },
+            "disciplines": [
+                {
+                    "id": 1673,
+                    "kind": "speed",
+                    "event_id": 1383,
+                    "created_at": "2023-11-23T07:42:03.000Z",
+                    "updated_at": "2023-11-23T07:42:03.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC Paraclimbing World Cup Innsbruck 2024",
+            "league_season_id": 433,
+            "location": "Innsbruck",
+            "country": "AUT",
+            "registration_deadline": "2024-05-13T00:00:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1387,
+            "cup_name": "",
+            "cup_id": null,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1387",
+            "registration_url": "/api/v1/events/1387/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1387/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-06-23 22:00:00 UTC",
+            "ends_at": "2024-06-25 21:59:00 UTC",
+            "local_start_date": "2024-06-24",
+            "local_end_date": "2024-06-25",
+            "timezone": {
+                "value": "Europe/Rome"
+            },
+            "disciplines": [
+                {
+                    "id": 1680,
+                    "kind": "lead",
+                    "event_id": 1387,
+                    "created_at": "2023-12-20T16:09:58.000Z",
+                    "updated_at": "2024-01-29T11:04:46.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC World Cup Innsbruck 2024",
+            "league_season_id": 431,
+            "location": "Innsbruck",
+            "country": "AUT",
+            "registration_deadline": "2024-06-11T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": "https://d1n1qj9geboqnb.cloudfront.net/ifsc/public/btf5gc4qaqvjhe0r0pus1nh66jgq",
+            "series_logo": null,
+            "event_id": 1356,
+            "cup_name": "IFSC Climbing World Cup 2024",
+            "cup_id": 94,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1356",
+            "registration_url": "/api/v1/events/1356/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1356/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-06-25 22:00:00 UTC",
+            "ends_at": "2024-06-30 21:59:00 UTC",
+            "local_start_date": "2024-06-26",
+            "local_end_date": "2024-06-30",
+            "timezone": {
+                "value": "Europe/Rome"
+            },
+            "disciplines": [
+                {
+                    "id": 1633,
+                    "kind": "lead",
+                    "event_id": 1356,
+                    "created_at": "2023-10-16T13:08:42.000Z",
+                    "updated_at": "2024-01-23T14:30:01.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1634,
+                    "kind": "boulder",
+                    "event_id": 1356,
+                    "created_at": "2023-10-16T13:08:47.000Z",
+                    "updated_at": "2024-01-23T14:30:04.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC World Cup Chamonix 2024",
+            "league_season_id": 431,
+            "location": "Chamonix",
+            "country": "FRA",
+            "registration_deadline": "2024-06-27T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": "https://d1n1qj9geboqnb.cloudfront.net/ifsc/public/rx6aazsszsvusvk0jjof543hf26x",
+            "series_logo": null,
+            "event_id": 1357,
+            "cup_name": "IFSC Climbing World Cup 2024",
+            "cup_id": 94,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1357",
+            "registration_url": "/api/v1/events/1357/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1357/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-07-11 22:00:00 UTC",
+            "ends_at": "2024-07-14 21:59:00 UTC",
+            "local_start_date": "2024-07-12",
+            "local_end_date": "2024-07-14",
+            "timezone": {
+                "value": "Europe/Paris"
+            },
+            "disciplines": [
+                {
+                    "id": 1635,
+                    "kind": "lead",
+                    "event_id": 1357,
+                    "created_at": "2023-10-16T13:10:39.000Z",
+                    "updated_at": "2024-01-25T10:58:35.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1636,
+                    "kind": "speed",
+                    "event_id": 1357,
+                    "created_at": "2023-10-16T13:10:41.000Z",
+                    "updated_at": "2024-01-25T10:58:39.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC Youth European Cup Dornbirn 2024",
+            "league_season_id": 437,
+            "location": "Dornbirn",
+            "country": "AUT",
+            "registration_deadline": "2023-03-01T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1371,
+            "cup_name": "IFSC-Europe Climbing European Youth Cup 2024",
+            "cup_id": 95,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1371",
+            "registration_url": "/api/v1/events/1371/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-07-12 22:00:00 UTC",
+            "ends_at": "2024-07-14 21:59:00 UTC",
+            "local_start_date": "2024-07-13",
+            "local_end_date": "2024-07-14",
+            "timezone": {
+                "value": "Europe/Vienna"
+            },
+            "disciplines": [
+                {
+                    "id": 1654,
+                    "kind": "lead",
+                    "event_id": 1371,
+                    "created_at": "2023-10-19T13:56:41.000Z",
+                    "updated_at": "2023-10-19T13:56:41.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC World Cup Briançon 2024",
+            "league_season_id": 431,
+            "location": "Briancon",
+            "country": "FRA",
+            "registration_deadline": "2024-07-02T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": "https://d1n1qj9geboqnb.cloudfront.net/ifsc/public/3prc87xa5shii3re6gkhm43ghasw",
+            "series_logo": null,
+            "event_id": 1358,
+            "cup_name": "IFSC Climbing World Cup 2024",
+            "cup_id": 94,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1358",
+            "registration_url": "/api/v1/events/1358/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1358/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-07-16 22:00:00 UTC",
+            "ends_at": "2024-07-19 21:59:00 UTC",
+            "local_start_date": "2024-07-17",
+            "local_end_date": "2024-07-19",
+            "timezone": {
+                "value": "Europe/Paris"
+            },
+            "disciplines": [
+                {
+                    "id": 1637,
+                    "kind": "lead",
+                    "event_id": 1358,
+                    "created_at": "2023-10-16T13:12:24.000Z",
+                    "updated_at": "2024-01-25T11:10:31.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1638,
+                    "kind": "speed",
+                    "event_id": 1358,
+                    "created_at": "2023-10-16T13:12:26.000Z",
+                    "updated_at": "2024-01-25T11:10:36.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC Youth European Cup Žilina 2024",
+            "league_season_id": 437,
+            "location": "Žilina",
+            "country": "SVK",
+            "registration_deadline": "2023-03-07T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1372,
+            "cup_name": "IFSC-Europe Climbing European Youth Cup 2024",
+            "cup_id": 95,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1372",
+            "registration_url": "/api/v1/events/1372/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-07-18 22:00:00 UTC",
+            "ends_at": "2024-07-21 21:59:00 UTC",
+            "local_start_date": "2024-07-19",
+            "local_end_date": "2024-07-21",
+            "timezone": {
+                "value": "Europe/Bratislava"
+            },
+            "disciplines": [
+                {
+                    "id": 1655,
+                    "kind": "lead",
+                    "event_id": 1372,
+                    "created_at": "2023-10-19T13:59:58.000Z",
+                    "updated_at": "2023-10-19T13:59:58.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1656,
+                    "kind": "speed",
+                    "event_id": 1372,
+                    "created_at": "2023-10-19T14:00:00.000Z",
+                    "updated_at": "2023-10-19T14:00:00.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "Olympic Games Paris 2024",
+            "league_season_id": 438,
+            "location": "Paris",
+            "country": "FRA",
+            "registration_deadline": "2023-03-14T00:00:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1386,
+            "cup_name": "",
+            "cup_id": null,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1386",
+            "registration_url": "/api/v1/events/1386/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-07-25 22:00:00 UTC",
+            "ends_at": "2024-08-11 21:59:00 UTC",
+            "local_start_date": "2024-07-26",
+            "local_end_date": "2024-08-11",
+            "timezone": {
+                "value": "Europe/Paris"
+            },
+            "disciplines": [
+                {
+                    "id": 1678,
+                    "kind": "boulder&lead",
+                    "event_id": 1386,
+                    "created_at": "2023-12-20T13:26:23.000Z",
+                    "updated_at": "2023-12-20T13:26:23.000Z",
+                    "settings": {
+                        "lead": {
+                            "points": [
+                                100,
+                                96,
+                                92,
+                                88,
+                                84,
+                                80,
+                                76,
+                                72,
+                                68,
+                                64,
+                                60,
+                                57,
+                                54,
+                                51,
+                                48,
+                                45,
+                                42,
+                                39,
+                                36,
+                                33,
+                                30,
+                                28,
+                                26,
+                                24,
+                                22,
+                                20,
+                                18,
+                                16,
+                                14,
+                                12,
+                                10,
+                                9,
+                                8,
+                                7,
+                                6,
+                                5,
+                                4,
+                                3,
+                                2,
+                                1
+                            ],
+                            "plus": 0.1
+                        },
+                        "boulder": {
+                            "low_zone": 5,
+                            "high_zone": 10,
+                            "top": 25,
+                            "fall_deduction": 0.1
+                        }
+                    }
+                },
+                {
+                    "id": 1679,
+                    "kind": "speed",
+                    "event_id": 1386,
+                    "created_at": "2023-12-20T13:26:23.000Z",
+                    "updated_at": "2023-12-20T13:26:23.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC European Championships Villars 2024",
+            "league_season_id": 436,
+            "location": "Villars",
+            "country": "SUI",
+            "registration_deadline": "2023-04-12T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1381,
+            "cup_name": "IFSC-Europe Climbing European Cup 2024",
+            "cup_id": 97,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1381",
+            "registration_url": "/api/v1/events/1381/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-08-23 22:00:00 UTC",
+            "ends_at": "2024-09-01 21:59:00 UTC",
+            "local_start_date": "2024-08-24",
+            "local_end_date": "2024-09-01",
+            "timezone": {
+                "value": "Europe/Zurich"
+            },
+            "disciplines": [
+                {
+                    "id": 1670,
+                    "kind": "lead",
+                    "event_id": 1381,
+                    "created_at": "2023-11-03T07:20:42.000Z",
+                    "updated_at": "2023-11-03T07:20:42.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1671,
+                    "kind": "speed",
+                    "event_id": 1381,
+                    "created_at": "2023-11-03T07:20:42.000Z",
+                    "updated_at": "2023-11-03T07:20:42.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1672,
+                    "kind": "boulder",
+                    "event_id": 1381,
+                    "created_at": "2023-11-03T07:20:42.000Z",
+                    "updated_at": "2023-11-03T07:20:42.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC World Cup Koper 2024",
+            "league_season_id": 431,
+            "location": "Koper",
+            "country": "SLO",
+            "registration_deadline": "2024-08-22T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": "https://d1n1qj9geboqnb.cloudfront.net/ifsc/public/jo0r9zm4omp3nzaylqnwr63fqqih",
+            "series_logo": null,
+            "event_id": 1359,
+            "cup_name": "IFSC Climbing World Cup 2024",
+            "cup_id": 94,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1359",
+            "registration_url": "/api/v1/events/1359/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1359/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-09-05 22:00:00 UTC",
+            "ends_at": "2024-09-07 21:59:00 UTC",
+            "local_start_date": "2024-09-06",
+            "local_end_date": "2024-09-07",
+            "timezone": {
+                "value": "Europe/Rome"
+            },
+            "disciplines": [
+                {
+                    "id": 1639,
+                    "kind": "lead",
+                    "event_id": 1359,
+                    "created_at": "2023-10-16T13:14:02.000Z",
+                    "updated_at": "2024-01-25T11:45:52.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC European Cup Bologna 2024",
+            "league_season_id": 436,
+            "location": "Bologna",
+            "country": "ITA",
+            "registration_deadline": "2023-05-02T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1373,
+            "cup_name": "IFSC-Europe Climbing European Cup 2024",
+            "cup_id": 97,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1373",
+            "registration_url": "/api/v1/events/1373/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-09-12 22:00:00 UTC",
+            "ends_at": "2024-09-15 21:59:00 UTC",
+            "local_start_date": "2024-09-13",
+            "local_end_date": "2024-09-15",
+            "timezone": {
+                "value": "Europe/Rome"
+            },
+            "disciplines": [
+                {
+                    "id": 1657,
+                    "kind": "lead",
+                    "event_id": 1373,
+                    "created_at": "2023-10-19T14:04:36.000Z",
+                    "updated_at": "2023-10-19T14:04:36.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1658,
+                    "kind": "speed",
+                    "event_id": 1373,
+                    "created_at": "2023-10-19T14:04:38.000Z",
+                    "updated_at": "2023-10-19T14:04:38.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC World Cup Prague 2024",
+            "league_season_id": 431,
+            "location": "Prague",
+            "country": "CZE",
+            "registration_deadline": "2024-09-05T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": "https://d1n1qj9geboqnb.cloudfront.net/ifsc/public/bif9aaljjwppx1m52nt9id5kyr1g",
+            "series_logo": null,
+            "event_id": 1360,
+            "cup_name": "IFSC Climbing World Cup 2024",
+            "cup_id": 94,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1360",
+            "registration_url": "/api/v1/events/1360/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1360/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-09-19 22:00:00 UTC",
+            "ends_at": "2024-09-22 21:59:00 UTC",
+            "local_start_date": "2024-09-20",
+            "local_end_date": "2024-09-22",
+            "timezone": {
+                "value": "Europe/Prague"
+            },
+            "disciplines": [
+                {
+                    "id": 1640,
+                    "kind": "boulder",
+                    "event_id": 1360,
+                    "created_at": "2023-10-16T13:17:48.000Z",
+                    "updated_at": "2024-01-25T12:07:35.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC Youth European Cup Ostermundigen 2024",
+            "league_season_id": 437,
+            "location": "Ostermundigen",
+            "country": "SUI",
+            "registration_deadline": "2023-05-10T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1379,
+            "cup_name": "IFSC-Europe Climbing European Youth Cup 2024",
+            "cup_id": 95,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1379",
+            "registration_url": "/api/v1/events/1379/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-09-20 22:00:00 UTC",
+            "ends_at": "2024-09-22 21:59:00 UTC",
+            "local_start_date": "2024-09-21",
+            "local_end_date": "2024-09-22",
+            "timezone": {
+                "value": "Europe/Zurich"
+            },
+            "disciplines": [
+                {
+                    "id": 1668,
+                    "kind": "lead",
+                    "event_id": 1379,
+                    "created_at": "2023-10-25T10:01:38.000Z",
+                    "updated_at": "2023-10-25T10:01:38.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC Youth European Championships Troyes 2024",
+            "league_season_id": 437,
+            "location": "Troyes",
+            "country": "FRA",
+            "registration_deadline": "2023-05-14T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1375,
+            "cup_name": "IFSC-Europe Climbing European Youth Cup 2024",
+            "cup_id": 95,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1375",
+            "registration_url": "/api/v1/events/1375/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-09-24 22:00:00 UTC",
+            "ends_at": "2024-09-29 21:59:00 UTC",
+            "local_start_date": "2024-09-25",
+            "local_end_date": "2024-09-29",
+            "timezone": {
+                "value": "Europe/Paris"
+            },
+            "disciplines": [
+                {
+                    "id": 1660,
+                    "kind": "lead",
+                    "event_id": 1375,
+                    "created_at": "2023-10-19T14:11:20.000Z",
+                    "updated_at": "2023-10-19T14:11:20.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1661,
+                    "kind": "boulder",
+                    "event_id": 1375,
+                    "created_at": "2023-10-19T14:11:24.000Z",
+                    "updated_at": "2023-10-19T14:11:24.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1662,
+                    "kind": "speed",
+                    "event_id": 1375,
+                    "created_at": "2023-10-19T14:11:26.000Z",
+                    "updated_at": "2023-10-19T14:11:26.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC World Cup Seoul 2024",
+            "league_season_id": 431,
+            "location": "Seoul",
+            "country": "KOR",
+            "registration_deadline": "2024-09-17T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1361,
+            "cup_name": "IFSC Climbing World Cup 2024",
+            "cup_id": 94,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1361",
+            "registration_url": "/api/v1/events/1361/registrations",
+            "infosheet_url": null,
+            "additional_info_url": null,
+            "starts_at": "2024-10-01 15:00:00 UTC",
+            "ends_at": "2024-10-06 14:59:00 UTC",
+            "local_start_date": "2024-10-02",
+            "local_end_date": "2024-10-06",
+            "timezone": {
+                "value": "Asia/Seoul"
+            },
+            "disciplines": [
+                {
+                    "id": 1641,
+                    "kind": "lead",
+                    "event_id": 1361,
+                    "created_at": "2023-10-16T13:21:59.000Z",
+                    "updated_at": "2023-10-16T13:21:59.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1642,
+                    "kind": "speed",
+                    "event_id": 1361,
+                    "created_at": "2023-10-16T13:22:00.000Z",
+                    "updated_at": "2023-10-16T13:22:00.000Z",
+                    "settings": null
+                },
+                {
+                    "id": 1643,
+                    "kind": "boulder",
+                    "event_id": 1361,
+                    "created_at": "2023-10-16T13:22:02.000Z",
+                    "updated_at": "2023-10-16T13:22:02.000Z",
+                    "settings": null
+                }
+            ]
+        },
+        {
+            "event": "IFSC European Cup Genova 2024",
+            "league_season_id": 436,
+            "location": "Genova",
+            "country": "ITA",
+            "registration_deadline": "2023-05-24T23:59:00.000Z",
+            "athlete_self_registration": false,
+            "event_logo": null,
+            "series_logo": null,
+            "event_id": 1390,
+            "cup_name": "IFSC-Europe Climbing European Cup 2024",
+            "cup_id": 97,
+            "custom_cup_ids": [],
+            "url": "/api/v1/events/1390",
+            "registration_url": "/api/v1/events/1390/registrations",
+            "infosheet_url": "https://ifsc.results.info/events/1390/infosheet",
+            "additional_info_url": null,
+            "starts_at": "2024-10-04 22:00:00 UTC",
+            "ends_at": "2024-10-06 21:59:00 UTC",
+            "local_start_date": "2024-10-05",
+            "local_end_date": "2024-10-06",
+            "timezone": {
+                "value": "Europe/Rome"
+            },
+            "disciplines": [
+                {
+                    "id": 1683,
+                    "kind": "boulder",
+                    "event_id": 1390,
+                    "created_at": "2024-02-07T12:40:27.000Z",
+                    "updated_at": "2024-02-07T12:40:27.000Z",
+                    "settings": null
+                }
+            ]
+        }
+    ]
+}
+```
+</details>
+
 
 ### Live
 ```http request
