@@ -9,7 +9,10 @@ namespace nicoSWD\IfscCalendar\Domain\Ranking;
 
 interface IFSCWorldRankingProviderInterface
 {
-    /** @throws IFSCWorldRankingException */
+    /**
+     * @return IFSCWorldRankCategory[]
+     * @throws IFSCWorldRankingException
+     */
     public function fetchWorldRankCategories(): array;
 
     /** @throws IFSCWorldRankingException */

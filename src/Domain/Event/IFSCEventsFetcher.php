@@ -13,6 +13,7 @@ use DateTimeZone;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
+use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRankingException;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
@@ -40,6 +41,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
      * @throws IFSCEventsScraperException
      * @throws IFSCStartListException
      * @throws IFSCApiClientException
+     * @throws IFSCWorldRankingException
      */
     #[Override]
     public function fetchEventsForLeague(IFSCSeasonYear $season, int $leagueId): array
@@ -157,6 +159,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         return ucwords(sprintf("%s's %s %s", $round->category, $kind, $round->name));
     }
 
+    /** @throws IFSCApiClientException */
     private function fetchLeagueName(object $eventInfo): string
     {
         return $this->eventInfoProvider->fetchLeagueNameById($eventInfo->league_season_id);
@@ -165,6 +168,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
     /**
      * @return IFSCStarter[]
      * @throws IFSCStartListException
+     * @throws IFSCWorldRankingException
      */
     private function buildStartList(int $eventId): array
     {

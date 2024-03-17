@@ -17,4 +17,12 @@ final class IFSCStarter
         public ?string $photoUrl = null,
     ) {
     }
+
+    public function equals(self $starter): bool
+    {
+        return
+            $this->firstName === $starter->firstName &&
+            $this->lastName === $starter->lastName &&
+            $this->country === $starter->country;
+    }
 }

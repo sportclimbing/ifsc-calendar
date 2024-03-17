@@ -8,6 +8,7 @@
 namespace nicoSWD\IfscCalendar\Infrastructure\Ranking;
 
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
+use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRankCategory;
 use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRankingException;
 use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRankingProviderInterface;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
@@ -30,7 +31,7 @@ final readonly class IFSCApiWorldRankingProvider implements IFSCWorldRankingProv
     public function fetchWorldRankCategories(): array
     {
         try {
-            return $this->apiClient->authenticatedGet(
+            $response = $this->apiClient->authenticatedGet(
                 self::IFSC_WORLD_RANK_CATEGORIES_ENDPOINT
             );
         } catch (HttpException|IFSCApiClientException $e) {
@@ -38,6 +39,17 @@ final readonly class IFSCApiWorldRankingProvider implements IFSCWorldRankingProv
                 "Unable to fetch world rank categories: {$e->getMessage()}"
             );
         }
+
+        $categories = [];
+
+        foreach ($response as $category) {
+            $categories[] = new IFSCWorldRankCategory(
+                id: $category->dcat_id,
+                name: $category->name,
+            );
+        }
+
+        return $categories;
     }
 
     /** @inheritdoc */

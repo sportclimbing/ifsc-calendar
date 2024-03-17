@@ -38,16 +38,12 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
             );
         }
 
-        $startList = [];
+        $convertToStarter = static fn (object $athlete): IFSCStarter => new IFSCStarter(
+            firstName: $athlete->firstname,
+            lastName: $athlete->lastname,
+            country: $athlete->country,
+        );
 
-        foreach ($athletes as $athlete) {
-            $startList[] = new IFSCStarter(
-                firstName: $athlete->firstname,
-                lastName: $athlete->lastname,
-                country: $athlete->country,
-            );
-        }
-
-        return $startList;
+        return array_map($convertToStarter, $athletes);
     }
 }

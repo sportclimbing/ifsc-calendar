@@ -7,6 +7,8 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Ranking;
 
+use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
+
 final readonly class IFSCWorldRanking
 {
     public function __construct(
@@ -14,39 +16,45 @@ final readonly class IFSCWorldRanking
     ) {
     }
 
+    /**
+     * @return IFSCStarter[]
+     * @throws IFSCWorldRankingException
+     */
     public function getAthletesByScore(): array
     {
         $scores = [];
         $athletes = [];
 
         foreach ($this->fetchWorldRankCategories() as $worldRankCategory) {
-            foreach ($this->fetchWorldRankForCategory($worldRankCategory->dcat_id) as $athlete) {
+            foreach ($this->fetchWorldRankForCategory($worldRankCategory->id) as $athlete) {
                 if (!isset($scores[$athlete->athlete_id])) {
                     $scores[$athlete->athlete_id] = 0;
                 }
 
                 $scores[$athlete->athlete_id] += $athlete->score;
 
-                $athletes[$athlete->athlete_id] = [
-                    'id' => $athlete->athlete_id,
-                    'firstname' => $athlete->firstname,
-                    'lastname' => $athlete->lastname,
-                    'country' => $athlete->country,
-                    'photo_url' => $athlete->photo_url ?? null,
-                ];
+                $athletes[$athlete->athlete_id] = new IFSCStarter(
+                    firstName: $athlete->firstname,
+                    lastName: $athlete->lastname,
+                    country: $athlete->country,
+                    photoUrl: $athlete->photo_url ?? null,
+                );
             }
         }
 
         foreach ($scores as $athleteId => $score) {
-            $athletes[$athleteId]['score'] = $score;
+            $athletes[$athleteId]->score = $score;
         }
 
-        usort($athletes, static fn (array $athlete1, array $athlete2): int => $athlete2['score'] <=> $athlete1['score']);
+        usort($athletes, static fn (IFSCStarter $athlete1, IFSCStarter $athlete2): int => $athlete2->score <=> $athlete1->score);
 
         return $athletes;
     }
 
-    /** @throws IFSCWorldRankingException */
+    /**
+     * @return IFSCWorldRankCategory[]
+     * @throws IFSCWorldRankingException
+     */
     private function fetchWorldRankCategories(): array
     {
         return $this->rankProvider->fetchWorldRankCategories();
