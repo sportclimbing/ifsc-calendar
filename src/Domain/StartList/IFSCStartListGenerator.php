@@ -30,15 +30,17 @@ final readonly class IFSCStartListGenerator
 
         foreach ($this->getStartListForEvent($eventId) as $starter) {
             foreach ($this->worldRanking->getAthletesByScore() as $athlete) {
-                if ($starter->equals($athlete)) {
-                    $starter->score = $athlete->score;
-                    $starter->photoUrl = $athlete->photoUrl;
+                if (!$starter->equals($athlete)) {
+                    continue;
+                }
 
-                    $startList[] = $starter;
+                $starter->score = $athlete->score;
+                $starter->photoUrl = $athlete->photoUrl;
 
-                    if (count($startList) === 20) {
-                        break 2;
-                    }
+                $startList[] = $starter;
+
+                if (count($startList) === 20) {
+                    break 2;
                 }
             }
         }
