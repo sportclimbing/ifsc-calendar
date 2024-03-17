@@ -19,10 +19,6 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
 {
     private const string IFSC_STARTERS_API_ENDPOINT = 'https://components.ifsc-climbing.org/results-api.php?api=starters&event_id=%d';
 
-    private const string IFSC_WORLD_RANK_CATEGORIES_ENDPOINT = 'https://ifsc.results.info/api/v1/cuwr';
-
-    private const string IFSC_WORLD_RANK_CATEGORY_INFO_ENDPOINT = 'https://ifsc.results.info/api/v1/cuwr/%d';
-
     public function __construct(
         private IFSCApiClient $apiClient,
     ) {
@@ -53,35 +49,5 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
         }
 
         return $startList;
-    }
-
-    /** @throws IFSCStartListException */
-    public function fetchWorldRankCategories(): array
-    {
-        try {
-            return $this->apiClient->authenticatedGet(
-                self::IFSC_WORLD_RANK_CATEGORIES_ENDPOINT
-            );
-        } catch (HttpException|IFSCApiClientException $e) {
-            throw new IFSCStartListException(
-                "Unable to fetch world rank categories: {$e->getMessage()}"
-            );
-        }
-    }
-
-    /** @throws IFSCStartListException */
-    public function fetchWorldRankForCategory(int $categoryId): array
-    {
-        try {
-            $response = $this->apiClient->authenticatedGet(
-                sprintf(self::IFSC_WORLD_RANK_CATEGORY_INFO_ENDPOINT, $categoryId),
-            );
-        } catch (HttpException|IFSCApiClientException $e) {
-            throw new IFSCStartListException(
-                "Unable to fetch world rank category: {$e->getMessage()}"
-            );
-        }
-
-        return $response->ranking;
     }
 }

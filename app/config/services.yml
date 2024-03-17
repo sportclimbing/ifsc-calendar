@@ -73,6 +73,16 @@ services:
 
   Eluceo\iCal\Presentation\Factory\CalendarFactory: ~
 
+  nicoSWD\IfscCalendar\Infrastructure\Ranking\IFSCApiWorldRankingProvider:
+    class: nicoSWD\IfscCalendar\Infrastructure\Ranking\IFSCApiWorldRankingProvider
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient'
+
+  nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRanking:
+    class: nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRanking
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\Ranking\IFSCApiWorldRankingProvider'
+
   nicoSWD\IfscCalendar\Infrastructure\StartList\ApiStartListProvider:
     class: nicoSWD\IfscCalendar\Infrastructure\StartList\ApiStartListProvider
     arguments:
@@ -82,6 +92,7 @@ services:
     class: nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\StartList\ApiStartListProvider'
+      - '@nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRanking'
 
   # YouTube
   nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher:

@@ -8,11 +8,13 @@
 namespace nicoSWD\IfscCalendar\Domain\StartList;
 
 use Closure;
+use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRanking;
 
 final readonly class IFSCStartListGenerator
 {
     public function __construct(
         private IFSCStartListProviderInterface $startListProvider,
+        private IFSCWorldRanking $worldRanking,
     ) {
     }
 
@@ -22,36 +24,10 @@ final readonly class IFSCStartListGenerator
      */
     public function buildStartList(int $eventId): array
     {
-        $athletes = [];
-        $scores = [];
         $startList = [];
 
-        foreach ($this->getWorldRankCategories() as $worldRankCategory) {
-            foreach ($this->fetchRankForCategory($worldRankCategory) as $athlete) {
-                if (!isset($scores[$athlete->athlete_id])) {
-                    $scores[$athlete->athlete_id] = 0;
-                }
-
-                $scores[$athlete->athlete_id] += $athlete->score;
-
-                $athletes[$athlete->athlete_id] = [
-                    'id' => $athlete->athlete_id,
-                    'firstname' => $athlete->firstname,
-                    'lastname' => $athlete->lastname,
-                    'country' => $athlete->country,
-                    'photo_url' => $athlete->photo_url ?? null,
-                ];
-            }
-        }
-
-        foreach ($scores as $athleteId => $score) {
-            $athletes[$athleteId]['score'] = $score;
-        }
-
-        usort($athletes, static fn (array $athlete1, array $athlete2): int => $athlete2['score'] <=> $athlete1['score']);
-
         foreach ($this->getStartListForEvent($eventId) as $starter) {
-            foreach ($athletes as $athlete) {
+            foreach ($this->worldRanking->getAthletesByScore() as $athlete) {
                 if ($this->starterMatchesAthlete($starter, $athlete)) {
                     $starter->score = $athlete['score'];
                     $starter->photoUrl = $athlete['photo_url'];
@@ -81,18 +57,6 @@ final readonly class IFSCStartListGenerator
     private function sortByScore(): Closure
     {
         return static fn (IFSCStarter $athlete1, IFSCStarter $athlete2): int => $athlete2->score <=> $athlete1->score;
-    }
-
-    /** @throws IFSCStartListException */
-    private function fetchRankForCategory(object $worldRankCategory): array
-    {
-        return $this->startListProvider->fetchWorldRankForCategory($worldRankCategory->dcat_id);
-    }
-
-    /** @throws IFSCStartListException */
-    private function getWorldRankCategories(): array
-    {
-        return $this->startListProvider->fetchWorldRankCategories();
     }
 
     /** @throws IFSCStartListException */
