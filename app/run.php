@@ -16,12 +16,12 @@ require __DIR__ . '/../vendor/autoload.php';
 $container = new ContainerBuilder();
 $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/config'));
 $loader->load('services.yml');
-$container->compile(true);
+$container->compile(resolveEnvPlaceholders: true);
 
 /** @var BuildCommand $command */
 $command = $container->get(BuildCommand::class);
 
 $application = new Application();
 $application->add($command);
-$application->setDefaultCommand($command->getName(), true);
+$application->setDefaultCommand($command->getName(), isSingleCommand: true);
 $application->run();
