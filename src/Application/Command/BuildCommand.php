@@ -8,6 +8,7 @@
 namespace nicoSWD\IfscCalendar\Application\Command;
 
 use Closure;
+use Exception;
 use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarRequest;
 use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarResponse;
 use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase;
@@ -82,7 +83,16 @@ class BuildCommand extends Command
         $season = IFSCSeasonYear::from($selectedSeason);
 
         $pathInfo = pathinfo($fileName);
-        $response = $this->buildCalendar($season, $leagueIds, $formats, $output);
+
+        try {
+            $response = $this->buildCalendar($season, $leagueIds, $formats, $output);
+        } catch (Exception $e) {
+            $output->writeln(
+                messages: "[+] Fatal error: {$e->getMessage()} in {$e->getFile()} on line {$e->getLine()}",
+            );
+
+            return self::FAILURE;
+        }
 
         foreach ($formats as $format) {
             $fileName = "{$pathInfo['dirname']}/{$pathInfo['filename']}.{$format->value}";
