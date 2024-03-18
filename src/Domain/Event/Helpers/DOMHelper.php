@@ -8,6 +8,7 @@
 namespace nicoSWD\IfscCalendar\Domain\Event\Helpers;
 
 use DOMDocument;
+use DOMElement;
 use DOMNodeList;
 use DOMXPath;
 
@@ -40,8 +41,7 @@ final readonly class DOMHelper
 
     public function getPoster(DOMXPath $xpath): ?string
     {
-        $sideBar = $xpath->query(self::XPATH_SIDEBAR)->item(0);
-        $images = $sideBar?->getElementsByTagName('img') ?? [];
+        $images = $this->getSidebar($xpath)?->getElementsByTagName('img') ?? [];
 
         foreach ($images as $image) {
             foreach ($image->attributes as $name => $attribute) {
@@ -80,7 +80,7 @@ final readonly class DOMHelper
 
     private function hasPosterPrefix(string $textContent, ?array &$match): bool
     {
-        if (preg_match(self::REGEX_EVENT_POSTER, $textContent, $match) === 1) {
+        if (preg_match(self::REGEX_EVENT_POSTER, $textContent, $match)) {
             return true;
         }
 
@@ -90,5 +90,13 @@ final readonly class DOMHelper
         }
 
         return false;
+    }
+
+    private function getSidebar(DOMXPath $xpath): ?DOMElement
+    {
+        /** @var ?DOMElement $sideBar */
+        $sideBar = $xpath->query(self::XPATH_SIDEBAR)->item(0);
+
+        return $sideBar;
     }
 }
