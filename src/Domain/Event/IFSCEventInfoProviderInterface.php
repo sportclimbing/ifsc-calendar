@@ -7,13 +7,14 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
+use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 
 interface IFSCEventInfoProviderInterface
 {
     /** @throws IFSCApiClientException */
-    public function fetchInfo(int $eventId): object;
+    public function fetchEventInfo(int $eventId): IFSCEventInfo;
 
     /** @throws IFSCApiClientException */
     public function fetchEventsForLeague(int $leagueId): array;

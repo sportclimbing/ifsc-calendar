@@ -11,10 +11,11 @@ use Closure;
 use DateTimeImmutable;
 use DateTimeZone;
 use Exception;
-use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\EventScrapingStartedEvent;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
+use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
+use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventRound;
 use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRankingException;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
@@ -55,7 +56,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
             $this->emitScrapingStartedEvent($event);
 
             $scrapedRounds = $this->fetchScrapedRounds($season, $event);
-            $eventInfo = $this->eventInfoProvider->fetchInfo($event->event_id);
+            $eventInfo = $this->eventInfoProvider->fetchEventInfo($event->event_id);
 
             if (!empty($scrapedRounds->rounds)) {
                 $rounds = $scrapedRounds->rounds;
@@ -76,7 +77,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
                 siteUrl: $this->getSiteUrl($season, $event),
                 startsAt: $this->formatDate($scrapedRounds->startDate),
                 endsAt: $this->formatDate($scrapedRounds->endDate),
-                disciplines: $this->getDisciplines($eventInfo),
+                disciplines: $eventInfo->disciplines,
                 rounds: $rounds,
                 starters: $this->buildStartList($event->event_id),
             );
@@ -98,28 +99,12 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         );
     }
 
-    private function getDisciplines(object $info): array
-    {
-        $disciplines = [];
-
-        foreach ($info->disciplines as $discipline) {
-            if ($discipline->kind === IFSCDiscipline::COMBINED->value) {
-                $disciplines[] = IFSCDiscipline::BOULDER->value;
-                $disciplines[] = IFSCDiscipline::LEAD->value;
-            } else {
-                $disciplines = array_merge($disciplines, explode('&', $discipline->kind));
-            }
-        }
-
-        return array_unique($disciplines);
-    }
-
-    private function generateRounds(object $eventInfo, IFSCScrapedEventsResult $scrapedRounds): array
+    private function generateRounds(IFSCEventInfo $eventInfo, IFSCScrapedEventsResult $scrapedRounds): array
     {
         $rounds = [];
 
-        foreach ($eventInfo->d_cats as $category) {
-            foreach ($category->category_rounds as $round) {
+        foreach ($eventInfo->categories as $category) {
+            foreach ($category->rounds as $round) {
                 $rounds[] = $this->roundFactory->create(
                     name: $this->getRoundName($round),
                     streamUrl: new StreamUrl(),
@@ -153,21 +138,21 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         return $scrapedRounds->format('Y-m-d\TH:i:s');
     }
 
-    private function getRoundName(object $round): string
+    private function getRoundName(IFSCEventRound $round): string
     {
-        $kind = preg_replace_callback(
+        $discipline = preg_replace_callback(
             pattern: '~(\w)&(\w)~',
             callback: static fn (array $match): string => $match[1] . ' & ' . $match[2],
-            subject: $round->kind,
+            subject: $round->discipline,
         );
 
-        return ucwords(sprintf("%s's %s %s", $round->category, $kind, $round->name));
+        return ucwords(sprintf("%s's %s %s", $round->category, $discipline, $round->kind->value));
     }
 
     /** @throws IFSCApiClientException */
-    private function fetchLeagueName(object $eventInfo): string
+    private function fetchLeagueName(IFSCEventInfo $eventInfo): string
     {
-        return $this->eventInfoProvider->fetchLeagueNameById($eventInfo->league_season_id);
+        return $this->eventInfoProvider->fetchLeagueNameById($eventInfo->leagueSeasonId);
     }
 
     /**

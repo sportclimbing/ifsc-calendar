@@ -7,9 +7,14 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\Event;
 
+use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventInfoProviderInterface;
+use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventCategory;
+use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
+use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventRound;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundKind;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
@@ -32,10 +37,10 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
 
     /** @inheritdoc */
     #[Override]
-    public function fetchInfo(int $eventId): object
+    public function fetchEventInfo(int $eventId): IFSCEventInfo
     {
         try {
-            return $this->apiClient->authenticatedGet(
+            $response = $this->apiClient->authenticatedGet(
                 sprintf(self::IFSC_EVENT_API_ENDPOINT, $eventId),
             );
         } catch (HttpException $e) {
@@ -43,6 +48,34 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
                 "Unable to retrieve events info: {$e->getMessage()}"
             );
         }
+
+        $categories = [];
+
+        foreach ($response->d_cats as $category) {
+            $rounds = [];
+
+            foreach ($category->category_rounds as $round) {
+                $rounds[] = new IFSCEventRound(
+                    discipline: $round->kind,
+                    kind: IFSCRoundKind::from(strtolower($round->name)),
+                    category: $round->category,
+                );
+            }
+
+            $categories[] = new IFSCEventCategory($rounds);
+        }
+
+        return new IFSCEventInfo(
+            eventId: $response->id,
+            eventName: $response->name,
+            leagueId: $response->league_id,
+            leagueSeasonId: $response->league_season_id,
+            timeZone: $response->timezone->value,
+            location: $response->location,
+            country: $response->country,
+            disciplines: $this->getDisciplines($response->disciplines),
+            categories: $categories,
+        );
     }
 
     /** @inheritdoc */
@@ -120,5 +153,27 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
         }
 
         return $leagues;
+    }
+
+    /** @return IFSCDiscipline[] */
+    private function getDisciplines(array $disciplines): array
+    {
+        $parsedDisciplines = [];
+
+        foreach ($disciplines as $discipline) {
+            if ($discipline === IFSCDiscipline::COMBINED->value) {
+                $parsedDisciplines[] = IFSCDiscipline::BOULDER->value;
+                $parsedDisciplines[] = IFSCDiscipline::LEAD->value;
+            } else {
+                foreach (explode('&', $discipline->kind) as $kind) {
+                    $parsedDisciplines[] = IFSCDiscipline::from($kind)->value;
+                }
+            }
+        }
+
+        return array_map(
+            static fn (string $discipline): IFSCDiscipline => IFSCDiscipline::from($discipline),
+            array_unique($parsedDisciplines),
+        );
     }
 }

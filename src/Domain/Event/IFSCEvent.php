@@ -7,6 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
+use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidLeagueName;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
@@ -20,6 +21,7 @@ final class IFSCEvent
     /**
      * @param IFSCRound[] $rounds
      * @param IFSCStarter[] $starters
+     * @param IFSCDiscipline[] $disciplines
      */
     public function __construct(
         public readonly IFSCSeasonYear $season,
