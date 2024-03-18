@@ -9,6 +9,8 @@ namespace nicoSWD\IfscCalendar\Infrastructure\HttpClient;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\HTTPRequestFailedEvent;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use Override;
@@ -17,6 +19,7 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
 {
     public function __construct(
         private Client $client,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -35,6 +38,7 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
                     throw new $e;
                 }
 
+                $this->emitRequestFailedEvent($url, $e->getCode(), $retryCount);
                 sleep(2);
             }
         } while (!$html);
@@ -61,5 +65,10 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
         } catch (GuzzleException $e) {
             throw new HttpException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    private function emitRequestFailedEvent(string $url, int $errorCode, int $retryCount): void
+    {
+        $this->eventDispatcher->dispatch(new HTTPRequestFailedEvent($url, $errorCode, $retryCount));
     }
 }

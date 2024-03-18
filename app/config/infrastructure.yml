@@ -59,6 +59,7 @@ services:
     class: nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient
     arguments:
       - '@GuzzleHttp\Client'
+      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
 
   # Vendor services
   Symfony\Component\EventDispatcher\EventDispatcher: ~
