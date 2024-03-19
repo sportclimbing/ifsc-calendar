@@ -16,6 +16,7 @@ final readonly class YouTubeVideo
         public int $duration,
         public string $videoId,
         public DateTimeImmutable $publishedAt,
+        public array $restrictedRegions,
     ) {
     }
 }

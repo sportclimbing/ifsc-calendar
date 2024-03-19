@@ -172,6 +172,7 @@ final class YouTubeLinkMatcherTest extends TestCase
                 duration: 10,
                 videoId: $videoId,
                 publishedAt: new DateTimeImmutable(),
+                restrictedRegions: [],
             ));
         }
 
@@ -209,7 +210,6 @@ final class YouTubeLinkMatcherTest extends TestCase
         );
     }
 
-    /** @throws InvalidURLException */
     private function findStreamUrlForEvent(IFSCEvent $event): ?string
     {
         return $this->linkMatcher->findStreamUrlForRound($event->rounds[0], $event, $this->createVideoCollection())->url;

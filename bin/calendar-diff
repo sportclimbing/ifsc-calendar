@@ -92,10 +92,16 @@ function generate_round_diff(array $oldRounds, array $newRounds): string
         } else {
             $roundDiff = '';
             foreach ($newRound as $key => $newValue) {
-                $oldValue = $oldRound[$key];
+                if (isset($oldRound[$key])) {
+                    $oldValue = $oldRound[$key];
 
-                if ($newValue !== $oldValue) {
-                    $roundDiff .= "|{$key}  |" . normalize_value($oldValue) . "|" . normalize_value($newValue) . "|" . PHP_EOL;
+                    if ($newValue !== $oldValue) {
+                        $roundDiff .= "|{$key}  |" . normalize_value($oldValue) . "|" . normalize_value($newValue) . "|" . PHP_EOL;
+                    }
+                } else {
+                    if (normalize_value($newValue) !== 'null') {
+                        $roundDiff .= "|{$key}  |null|" . normalize_value($newValue) . "|" . PHP_EOL;
+                    }
                 }
             }
 
@@ -217,6 +223,12 @@ foreach ($newEvents as $newEvent) {
             $startListDiff .= generate_start_list_diff($oldEvent[$key], $value);
         } elseif (normalize_value($value) !== normalize_value($oldEvent[$key])) {
             $newDiff .= "|$key|" . normalize_value($oldEvent[$key]) ."|" . normalize_value($value) . "|" . PHP_EOL;
+        } elseif ($key === 'stream_blocked_regions') {
+            if (!isset($oldEvent[$key])) {
+                $newDiff .= "|$key|null|" . normalize_value($value) . "|" . PHP_EOL;
+            } else {
+                $newDiff .= "|$key|" . normalize_value($oldEvent[$key]) ."|" . normalize_value($value) . "|" . PHP_EOL;
+            }
         }
     }
 

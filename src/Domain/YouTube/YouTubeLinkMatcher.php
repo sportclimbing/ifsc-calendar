@@ -7,7 +7,6 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\YouTube;
 
-use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
@@ -23,12 +22,15 @@ final readonly class YouTubeLinkMatcher
 
     private const string YOUTUBE_BASE_URL = 'https://youtu.be/';
 
-    /** @throws InvalidURLException */
     public function findStreamUrlForRound(IFSCRound $round, IFSCEvent $event, YouTubeVideoCollection $videoCollection): StreamUrl
     {
         foreach ($videoCollection->getIterator() as $video) {
+            /** @var YouTubeVideo $video */
             if ($this->videoTitleMatchesRoundName($video, $round, $event)) {
-                return new StreamUrl(self::YOUTUBE_BASE_URL . $video->videoId);
+                return new StreamUrl(
+                    url: self::YOUTUBE_BASE_URL . $video->videoId,
+                    restrictedRegions: $video->restrictedRegions,
+                );
             }
         }
 
