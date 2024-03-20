@@ -15,6 +15,9 @@ dev: install-composer
 	bin/create-phar build/ifsc-calendar.phar
 	chmod u+x build/ifsc-calendar.phar
 
+docker:
+	docker build -t ifsc-calendar .
+
 test: install-composer
 	build/composer.phar install --dev --ignore-platform-req=ext-gd
 	vendor/bin/phpunit
