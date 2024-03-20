@@ -19,6 +19,7 @@ use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;
+use Symfony\Component\Serializer\SerializerInterface;
 
 final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderInterface
 {
@@ -32,6 +33,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
 
     public function __construct(
         private IFSCApiClient $apiClient,
+        private SerializerInterface $serializer,
     ) {
     }
 
@@ -49,15 +51,21 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
             );
         }
 
+        //return $this->serializer->deserialize($response, IFSCEventInfo::class, 'json');
+
         $categories = [];
 
         foreach ($response->d_cats as $category) {
             $rounds = [];
 
             foreach ($category->category_rounds as $round) {
+                $normalizedRoundName = strtolower(
+                    str_replace(' ', '-', $round->name)
+                );
+
                 $rounds[] = new IFSCEventRound(
                     discipline: $round->kind,
-                    kind: IFSCRoundKind::from(strtolower($round->name)),
+                    kind: IFSCRoundKind::from($normalizedRoundName),
                     category: $round->category,
                 );
             }
