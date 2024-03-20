@@ -6,7 +6,6 @@
 /pages/events/events.json
 .DS_Store
 *.ics
-/.env
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php

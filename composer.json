@@ -19,7 +19,6 @@
         "guzzlehttp/guzzle": "^7.8",
         "sportclimbing/ifsc-youtube-videos": "dev-main",
         "symfony/console": "7.0.*",
-        "symfony/dotenv": "7.0.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.0.*",
         "symfony/property-access": "7.0.*",
@@ -76,6 +75,9 @@
         "symfony": {
             "allow-contrib": false,
             "require": "7.0.*"
+        },
+        "runtime": {
+            "autoload_template": "autoload_runtime.template"
         }
     }
 }
