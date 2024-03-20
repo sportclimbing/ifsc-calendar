@@ -1,0 +1,37 @@
+nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo:
+  attributes:
+    eventName:
+      serialized_name: name
+    leagueId:
+      serialized_name: league_id
+      type: int
+    leagueSeasonId:
+      serialized_name: league_season_id
+      type: int
+    timeZone:
+      serialized_path: '[timezone][value]'
+    location:
+      serialized_name: location
+    country:
+      serialized_name: country
+    disciplines:
+      serialized_path: '[disciplines][kind]'
+      type: array
+    categories:
+      serialized_name: d_cats
+      type: array<nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventCategory>
+
+nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventCategory:
+  attributes:
+    rounds:
+      type: array<nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventRound>
+      serialized_name: category_rounds
+
+nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventRound:
+  attributes:
+    discipline:
+      serialized_name: kind
+    kind:
+      serialized_name: name
+    category:
+      serialized_name: category
