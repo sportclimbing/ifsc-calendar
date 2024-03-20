@@ -94,7 +94,7 @@ final readonly class IFSCRoundsScraper
     {
         $regex = '~^
             (?<time>(\d{1,2}:\d{1,2}(?:\s+(?:AM|PM))?|TBC|TBD))\s+
-            (?<name>[\w\'\-&\s]+)
+            (?<name>[\w\'\-&\s,]+)
             (?<url>\s*(http[^\s]+\s*)*)
             $~x';
 
