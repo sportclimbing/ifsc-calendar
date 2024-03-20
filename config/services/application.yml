@@ -11,8 +11,10 @@ services:
   nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase:
     class: nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase
     autowire: true
+    public: true
 
   nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase:
     class: nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase
+    public: true
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcher'

@@ -6,22 +6,21 @@
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
 use nicoSWD\IfscCalendar\Application\Command\BuildCommand;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Console\Application;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use nicoSWD\IfscCalendar\Kernel;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 
-require __DIR__ . '/../vendor/autoload.php';
+require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
-$container = new ContainerBuilder();
-$loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/config'));
-$loader->load('services.yml');
-$container->compile(resolveEnvPlaceholders: true);
+return function (array $context) {
+    $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
+    $kernel->boot();
 
-/** @var BuildCommand $command */
-$command = $container->get(BuildCommand::class);
+    /** @var BuildCommand $command */
+    $command = $kernel->getContainer()->get(BuildCommand::class);
 
-$application = new Application();
-$application->add($command);
-$application->setDefaultCommand($command->getName(), isSingleCommand: true);
-$application->run();
+    $application = new Application($kernel);
+    $application->add($command);
+    $application->setDefaultCommand($command->getName(), isSingleCommand: true);
+
+    return $application;
+};

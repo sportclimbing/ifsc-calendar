@@ -1,0 +1,10 @@
+imports:
+    - { resource: services/application.yml }
+    - { resource: services/domain.yml }
+    - { resource: services/infrastructure.yml }
+
+parameters:
+    ifsc_youtube_channel_id: 'UC2MGuhIaOP6YLpUx106kTQw'
+    calendar_product_identifier: '-//ifsc/ical//2.0/EN'
+    calendar_published_ttl: 'PT1H'
+    site_event_url: 'https://calendar.ifsc.stream/view/{season}/{event_id}'
