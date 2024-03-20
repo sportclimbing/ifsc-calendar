@@ -83,16 +83,7 @@ class BuildCommand extends Command
         $season = IFSCSeasonYear::from($selectedSeason);
 
         $pathInfo = pathinfo($fileName);
-
-        try {
-            $response = $this->buildCalendar($season, $leagueIds, $formats, $output);
-        } catch (Exception $e) {
-            $output->writeln(
-                messages: "[+] Fatal error: {$e->getMessage()} in {$e->getFile()} on line {$e->getLine()}",
-            );
-
-            return self::FAILURE;
-        }
+        $response = $this->buildCalendar($season, $leagueIds, $formats, $output);
 
         foreach ($formats as $format) {
             $fileName = "{$pathInfo['dirname']}/{$pathInfo['filename']}.{$format->value}";
