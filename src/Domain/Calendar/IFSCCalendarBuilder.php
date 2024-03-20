@@ -82,7 +82,6 @@ final readonly class IFSCCalendarBuilder
         return $this->eventFetcher->fetchEventsForLeague($season, $leagueId);
     }
 
-    /** @throws InvalidURLException */
     private function searchStreamUrl(
         IFSCRound $round,
         IFSCEvent $event,
