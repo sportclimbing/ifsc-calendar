@@ -8,7 +8,6 @@
 namespace nicoSWD\IfscCalendar\Application\Command;
 
 use Closure;
-use Exception;
 use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarRequest;
 use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarResponse;
 use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase;
@@ -18,7 +17,6 @@ use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -48,65 +46,33 @@ class BuildCommand extends Command
     /** @throws InvalidURLException */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $helper = $this->getHelper('question');
         $seasons = $this->getSeasons();
+        $selectedSeason = $this->getSelectedSeason($seasons, $input, $output);
+        $formats = $this->getFormats($input);
 
-        $selectedSeason = $input->getOption('season');
-        $selectedLeagues = $input->getOption('league');
-        $fileName = $input->getOption('output');
-        $format = $input->getOption('format');
+        $calendar = $this->buildCalendar($selectedSeason, $seasons, $formats, $input, $output);
+        $this->saveCalendarToFile($calendar, $formats, $input, $output);
 
-        if (!$selectedSeason) {
-            $selectedSeason = $this->getSelectedSeason($seasons, $helper, $input, $output);
-        } elseif ($selectedSeason === 'current') {
-            $selectedSeason = key($seasons);
-        }
-
-        $selectedSeason = (int) $selectedSeason;
-        $leaguesByName = [];
-
-        foreach ($seasons[$selectedSeason]->leagues as $league) {
-            $leaguesByName[$league->name] = $league->id;
-        }
-
-        if (!$selectedLeagues) {
-            $selectedLeagues = $this->getSelectedLeague($leaguesByName, $helper, $input, $output);
-        }
-
-        $leagueIds = [];
-
-        foreach ($selectedLeagues as $name) {
-            $leagueIds[] = $leaguesByName[$name];
-        }
-
-        $formats = array_map($this->createFormats(), explode(',', $format));
-        $season = IFSCSeasonYear::from($selectedSeason);
-
-        $pathInfo = pathinfo($fileName);
-        $response = $this->buildCalendar($season, $leagueIds, $formats, $output);
-
-        foreach ($formats as $format) {
-            $fileName = "{$pathInfo['dirname']}/{$pathInfo['filename']}.{$format->value}";
-            $this->saveCalendar($fileName, $response->calendarContents[$format->value], $output);
-        }
-
-        $output->writeln("[+] Done!");
+        $output->writeln('[+] Done!');
 
         return self::SUCCESS;
     }
 
     /**
-     * @param int[] $leagueIds
+     * @param IFSCSeason[] $seasons
      * @param IFSCCalendarFormat[] $formats
      * @throws InvalidURLException
      */
-    public function buildCalendar(
+    private function buildCalendar(
         IFSCSeasonYear $selectedSeason,
-        array $leagueIds,
+        array $seasons,
         array $formats,
+        InputInterface $input,
         OutputInterface $output,
     ): BuildCalendarResponse {
-        $output->writeln("[+] Fetching event info...");
+        $leagueIds = $this->buildLeagueIds($seasons[$selectedSeason->value], $input, $output);
+
+        $output->writeln('[+] Started building calendar...');
 
         return $this->buildCalendarUseCase->execute(
             new BuildCalendarRequest(
@@ -129,7 +95,7 @@ class BuildCommand extends Command
         return $seasons;
     }
 
-    public function getSelectedSeason(array $seasons, Helper $helper, InputInterface $input, OutputInterface $output): int
+    private function askForSeason(array $seasons, InputInterface $input, OutputInterface $output): int
     {
         $seasonNames = array_keys($seasons);
         $seasonNames = array_slice($seasonNames, 0, 3);
@@ -141,10 +107,65 @@ class BuildCommand extends Command
         );
         $question->setErrorMessage('Season %s is invalid.');
 
-        return (int) $helper->ask($input, $output, $question);
+        return (int) $this->getHelper('question')->ask($input, $output, $question);
     }
 
-    public function getSelectedLeague(array $leaguesByName, Helper $helper, InputInterface $input, OutputInterface $output): array
+    private function getSelectedSeason(array $seasons, InputInterface $input, OutputInterface $output): IFSCSeasonYear
+    {
+        $selectedSeason = $input->getOption('season');
+
+        if (!$selectedSeason) {
+            $selectedSeason = $this->askForSeason($seasons, $input, $output);
+        } elseif ($selectedSeason === 'current') {
+            $selectedSeason = key($seasons);
+        }
+
+        return IFSCSeasonYear::from((int) $selectedSeason);
+    }
+
+    private function buildLeagueIds(IFSCSeason $season, InputInterface $input, OutputInterface $output): array
+    {
+        $leaguesByName = [];
+
+        foreach ($season->leagues as $league) {
+            $leaguesByName[$league->name] = $league->id;
+        }
+
+        $selectedLeagues = $input->getOption('league');
+
+        if (!$selectedLeagues) {
+            $selectedLeagues = $this->getSelectedLeague($leaguesByName, $input, $output);
+        }
+
+        $leagueIds = [];
+
+        foreach ($selectedLeagues as $name) {
+            $leagueIds[] = $leaguesByName[$name];
+        }
+
+        return $leagueIds;
+    }
+
+    /** @param IFSCCalendarFormat[] $formats */
+    private function saveCalendarToFile(
+        BuildCalendarResponse $response,
+        array $formats,
+        InputInterface $input,
+        OutputInterface $output,
+    ): void {
+        $pathInfo = pathinfo($input->getOption('output'));
+
+        foreach ($formats as $format) {
+            $fileName = sprintf('%s/%s.%s', $pathInfo['dirname'], $pathInfo['filename'], $format->value);
+
+            $filesystem = new Filesystem();
+            $filesystem->dumpFile($fileName, $response->calendarContents[$format->value]);
+
+            $output->writeln("[+] Saved file as {$fileName}");
+        }
+    }
+
+    private function getSelectedLeague(array $leaguesByName, InputInterface $input, OutputInterface $output): array
     {
         $question = new ChoiceQuestion(
             'Please select a league (defaults to "' . key($leaguesByName) . '")',
@@ -152,17 +173,14 @@ class BuildCommand extends Command
             0
         );
         $question->setMultiselect(true);
-        $question->setErrorMessage('League %s is invalid.');
+        $question->setErrorMessage('League "%s" is invalid.');
 
-        return $helper->ask($input, $output, $question);
+        return $this->getHelper('question')->ask($input, $output, $question);
     }
 
-    private function saveCalendar(string $fileName, string $calendarContents, OutputInterface $output): void
+    private function getFormats(InputInterface $input): array
     {
-        $output->writeln("[+] Saved file as {$fileName}");
-
-        $filesystem = new Filesystem();
-        $filesystem->dumpFile($fileName, $calendarContents);
+        return array_map($this->createFormats(), explode(',', $input->getOption('format')));
     }
 
     private function createFormats(): Closure
