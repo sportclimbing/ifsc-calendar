@@ -266,12 +266,11 @@ if ($changedEvents) {
     $diff .= PHP_EOL;
     $diff .= "## ✏️ Changed Events:" . PHP_EOL;
     $diff .= $changedEvents . PHP_EOL;
-    $diff .= '<hr />' . PHP_EOL;
 }
 
 if (!$diff && $oldEvents !== $newEvents) {
     echo "Untracked changes", PHP_EOL;
-    exit(1);
+    exit(0);
 }
 
 echo $diff;
