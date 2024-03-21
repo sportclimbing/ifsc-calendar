@@ -139,9 +139,7 @@ $ ./build/ifsc-calendar.phar \
   --output "ifsc-calendar.ics"
 ```
 
-<hr />
-
-### 🔧 Todo
+## 🔧 Todo
 - [ ] Use Symfony serializer to build response object from IFSC API
 - [ ] Add BuyMeACoffee link to `.ics` calendar events
 - [ ] Add season-specific schedule parsers
