@@ -131,13 +131,15 @@ Build executable
 $ make
 ```
 
-Generate `.ics` calendar file
-```
+Generate `.ics` calendar file using the generated `.phar`
+```shell
 $ ./build/ifsc-calendar.phar \
   --season 2024 \
   --league "World Cups and World Championships" \
   --output "ifsc-calendar.ics"
 ```
+
+<hr />
 
 ### 🔧 Todo
 - [ ] Use Symfony serializer to build response object from IFSC API
