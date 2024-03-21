@@ -1,0 +1,10 @@
+# see https://symfony.com/doc/current/reference/configuration/framework.html
+framework:
+    session: false
+
+    serializer:
+        enabled: true
+        enable_attributes: true
+        mapping:
+            paths:
+                - '%kernel.project_dir%/config/serializer'

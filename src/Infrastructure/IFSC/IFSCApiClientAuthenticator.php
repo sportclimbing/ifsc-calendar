@@ -7,8 +7,6 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\IFSC;
 
-use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\FetchingSessionIdCookieEvent;
-use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 
 final readonly class IFSCApiClientAuthenticator
@@ -19,15 +17,12 @@ final readonly class IFSCApiClientAuthenticator
 
     public function __construct(
         private HttpClientInterface $httpClient,
-        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
     /** @throws IFSCApiClientException */
     public function fetchSessionId(): string
     {
-        $this->eventDispatcher->dispatch(new FetchingSessionIdCookieEvent());
-
         foreach ($this->getCookies() as $cookie) {
             $parsedCookie = $this->parseCookie($cookie);
 

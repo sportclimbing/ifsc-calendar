@@ -92,10 +92,16 @@ function generate_round_diff(array $oldRounds, array $newRounds): string
         } else {
             $roundDiff = '';
             foreach ($newRound as $key => $newValue) {
-                $oldValue = $oldRound[$key];
+                if (isset($oldRound[$key])) {
+                    $oldValue = $oldRound[$key];
 
-                if ($newValue !== $oldValue) {
-                    $roundDiff .= "|{$key}  |" . normalize_value($oldValue) . "|" . normalize_value($newValue) . "|" . PHP_EOL;
+                    if ($newValue !== $oldValue) {
+                        $roundDiff .= "|{$key}  |" . normalize_value($oldValue) . "|" . normalize_value($newValue) . "|" . PHP_EOL;
+                    }
+                } else {
+                    if (normalize_value($newValue) !== 'null') {
+                        $roundDiff .= "|{$key}  |null|" . normalize_value($newValue) . "|" . PHP_EOL;
+                    }
                 }
             }
 
@@ -158,15 +164,18 @@ foreach ($newEvents as $newEvent) {
         }
 
         $addedEvents .= PHP_EOL;
-        $addedEvents .= "#### 📋 Start List:" . PHP_EOL;
-        $addedEvents .= "|" . implode('|', array_keys($newEvent['start_list'][0])) . "|" . PHP_EOL;
-        $addedEvents .= "|" . str_repeat('-------------|', count($newEvent['start_list'][0])) . PHP_EOL;
 
-        foreach ($newEvent['start_list'] as $startList) {
-            foreach ($startList as $value) {
-                $addedEvents .= "|" . normalize_value($value);
+        if (count($newEvent['start_list']) > 0) {
+            $addedEvents .= "#### 📋 Start List:" . PHP_EOL;
+            $addedEvents .= "|" . implode('|', array_keys($newEvent['start_list'][0])) . "|" . PHP_EOL;
+            $addedEvents .= "|" . str_repeat('-------------|', count($newEvent['start_list'][0])) . PHP_EOL;
+
+            foreach ($newEvent['start_list'] as $startList) {
+                foreach ($startList as $value) {
+                    $addedEvents .= "|" . normalize_value($value);
+                }
+                $addedEvents .= "|" . PHP_EOL;
             }
-            $addedEvents .= "|" . PHP_EOL;
         }
     }
 }
@@ -186,15 +195,15 @@ foreach ($oldEvents as $oldEvent) {
 }
 
 if ($addedEvents) {
-    $diff .= "🎉 Added Events:" . PHP_EOL;
-    $diff .= "===============" . PHP_EOL;
+    $diff .= "## 🎉 Added Events:" . PHP_EOL;
     $diff .= $addedEvents . PHP_EOL;
+    $diff .= '<hr />' . PHP_EOL;
 }
 
 if ($removedEvents) {
-    $diff .= "🗑️ Removed Events:" . PHP_EOL;
-    $diff .= "===============" . PHP_EOL;
+    $diff .= "## 🗑️ Removed Events:" . PHP_EOL;
     $diff .= $removedEvents . PHP_EOL;
+    $diff .= '<hr />' . PHP_EOL;
 }
 
 $changedEvents = '';
@@ -217,26 +226,30 @@ foreach ($newEvents as $newEvent) {
             $startListDiff .= generate_start_list_diff($oldEvent[$key], $value);
         } elseif (normalize_value($value) !== normalize_value($oldEvent[$key])) {
             $newDiff .= "|$key|" . normalize_value($oldEvent[$key]) ."|" . normalize_value($value) . "|" . PHP_EOL;
+        } elseif ($key === 'stream_blocked_regions') {
+            if (!isset($oldEvent[$key])) {
+                $newDiff .= "|$key|null|" . normalize_value($value) . "|" . PHP_EOL;
+            } else {
+                $newDiff .= "|$key|" . normalize_value($oldEvent[$key]) ."|" . normalize_value($value) . "|" . PHP_EOL;
+            }
         }
     }
 
     if ($newDiff || $roundDiff || $startListDiff) {
-        $changedEvents .= "#### 🏆 {$newEvent['name']}" . PHP_EOL;
+        $changedEvents .= "### 🏆 {$newEvent['name']}" . PHP_EOL;
 
         if ($newDiff) {
             $changedEvents .= "| ℹ️ Event Details          | ---           | ---            |" . PHP_EOL;
             $changedEvents .= "|------------------------|---------------|----------------|" . PHP_EOL;
             $changedEvents .= "| **Key**                | **Old Value** | **New Value**  |" . PHP_EOL;
-            $changedEvents .= $newDiff;
+            $changedEvents .= $newDiff . PHP_EOL;
         }
 
         if ($roundDiff) {
-            $changedEvents .= PHP_EOL;
             $changedEvents .= $roundDiff;
         }
 
         if ($startListDiff) {
-            $changedEvents .= PHP_EOL;
             $changedEvents .= "| 📋 Start List | ---             | ---           | ---                | ---               |" . PHP_EOL;
             $changedEvents .= "|---------------|-----------------|---------------|--------------------|-------------------|" . PHP_EOL;
             $changedEvents .= "| **Status**    | **First Name**  | **Last Name** | **New First Name** | **New Last Name** |" . PHP_EOL;
@@ -244,18 +257,20 @@ foreach ($newEvents as $newEvent) {
         }
 
         $changedEvents .= PHP_EOL;
+        $changedEvents .= '<hr />' . PHP_EOL;
+        $changedEvents .= PHP_EOL;
     }
 }
 
 if ($changedEvents) {
-    $diff .= "✏️ Changed Events:" . PHP_EOL;
-    $diff .= "==================" . PHP_EOL;
-    $diff .= $changedEvents;
+    $diff .= PHP_EOL;
+    $diff .= "## ✏️ Changed Events:" . PHP_EOL;
+    $diff .= $changedEvents . PHP_EOL;
 }
 
 if (!$diff && $oldEvents !== $newEvents) {
     echo "Untracked changes", PHP_EOL;
-    exit(1);
+    exit(0);
 }
 
 echo $diff;

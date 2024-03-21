@@ -14,8 +14,12 @@ use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrlFactory;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
+use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeApiClient;
+use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
 use nicoSWD\IfscCalendar\tests\Helpers\MockHttpClient;
+use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -270,6 +274,21 @@ final class IFSCEventsScraperTest extends TestCase
             new IFSCRoundFactory(new IFSCTagsParser()),
             new DOMHelper(),
             new Normalizer(),
+            new StreamUrlFactory(
+                new class implements YouTubeApiClient {
+                    #[Override]
+                    public function fetchRecentVideos(IFSCSeasonYear $season): YouTubeVideoCollection
+                    {
+                        return new YouTubeVideoCollection();
+                    }
+
+                    #[Override]
+                    public function fetchRestrictedRegionsForVideo(string $videoId): array
+                    {
+                        return [];
+                    }
+                }
+            ),
         );
 
         return $eventScraper->fetchRoundsAndPosterForEvent(

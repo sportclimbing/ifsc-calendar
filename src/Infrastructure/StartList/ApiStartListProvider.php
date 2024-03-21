@@ -7,6 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\StartList;
 
+use Closure;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
 use nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListException;
@@ -38,12 +39,15 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
             );
         }
 
-        $convertToStarter = static fn (object $athlete): IFSCStarter => new IFSCStarter(
+        return array_map($this->convertToStarterObject(), $athletes);
+    }
+
+    private function convertToStarterObject(): Closure
+    {
+        return static fn (object $athlete): IFSCStarter => new IFSCStarter(
             firstName: $athlete->firstname,
             lastName: $athlete->lastname,
             country: $athlete->country,
         );
-
-        return array_map($convertToStarter, $athletes);
     }
 }

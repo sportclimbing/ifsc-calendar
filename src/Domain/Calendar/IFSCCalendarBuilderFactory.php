@@ -17,9 +17,7 @@ final readonly class IFSCCalendarBuilderFactory
     ) {
     }
 
-    /**
-     * @param IFSCEvent[] $events
-     */
+    /** @param IFSCEvent[] $events */
     public function generateForFormat(IFSCCalendarFormat $format, array $events): string
     {
         return $this->getGeneratorForFormat($format)->generateForEvents($events);

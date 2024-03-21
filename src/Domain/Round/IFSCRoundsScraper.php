@@ -23,7 +23,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Event\Month;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
-use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
+use nicoSWD\IfscCalendar\Domain\Stream\StreamUrlFactory;
 
 final readonly class IFSCRoundsScraper
 {
@@ -34,6 +34,7 @@ final readonly class IFSCRoundsScraper
         private IFSCRoundFactory $roundFactory,
         private DOMHelper $domHelper,
         private Normalizer $normalizer,
+        private StreamUrlFactory $streamUrlFactory,
     ) {
     }
 
@@ -93,7 +94,7 @@ final readonly class IFSCRoundsScraper
     {
         $regex = '~^
             (?<time>(\d{1,2}:\d{1,2}(?:\s+(?:AM|PM))?|TBC|TBD))\s+
-            (?<name>[\w\'\-&\s]+)
+            (?<name>[\w\'\-&\s,]+)
             (?<url>\s*(http[^\s]+\s*)*)
             $~x';
 
@@ -105,7 +106,11 @@ final readonly class IFSCRoundsScraper
         $startTime = $this->normalizer->normalizeTime($match['time']);
         $streamUrl = $this->normalizer->firstUrl($match['url'] ?? null);
 
-        return new IFSCRoundsScrapedResult($roundName, $startTime, new StreamUrl($streamUrl));
+        return new IFSCRoundsScrapedResult(
+            roundName: $roundName,
+            startTime: $startTime,
+            streamUrl: $this->streamUrlFactory->create($streamUrl),
+        );
     }
 
     /**

@@ -13,6 +13,8 @@ use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRankingException;
 
 final readonly class IFSCStartListGenerator
 {
+    private const int LIST_MAX_SIZE = 20;
+
     public function __construct(
         private IFSCStartListProviderInterface $startListProvider,
         private IFSCWorldRanking $worldRanking,
@@ -26,10 +28,11 @@ final readonly class IFSCStartListGenerator
      */
     public function buildStartList(int $eventId): array
     {
+        $athletesByScore = $this->worldRanking->getAthletesByScore();
         $startList = [];
 
         foreach ($this->getStartListForEvent($eventId) as $starter) {
-            foreach ($this->worldRanking->getAthletesByScore() as $athlete) {
+            foreach ($athletesByScore as $athlete) {
                 if (!$starter->equals($athlete)) {
                     continue;
                 }
@@ -39,7 +42,7 @@ final readonly class IFSCStartListGenerator
 
                 $startList[] = $starter;
 
-                if (count($startList) === 20) {
+                if (count($startList) === self::LIST_MAX_SIZE) {
                     break 2;
                 }
             }

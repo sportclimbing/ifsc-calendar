@@ -7,19 +7,19 @@
  */
 namespace nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons;
 
-use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcher;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonProvider;
 
 final readonly class FetchSeasonsUseCase
 {
     public function __construct(
-        private IFSCSeasonFetcher $seasonFetcher,
+        private IFSCSeasonProvider $seasonProvider,
     ) {
     }
 
     public function execute(): FetchSeasonsResponse
     {
         return new FetchSeasonsResponse(
-            $this->seasonFetcher->fetchSeasons(),
+            $this->seasonProvider->fetchSeasons(),
         );
     }
 }

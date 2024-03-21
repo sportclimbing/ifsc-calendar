@@ -10,11 +10,18 @@ namespace nicoSWD\IfscCalendar\Domain\DomainEvent\Event;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\Event;
 use Override;
 
-final class FetchingSessionIdCookieEvent extends Event
+final class HTTPRequestFailedEvent extends Event
 {
+    public function __construct(
+        private readonly string $url,
+        private readonly int $errorCode,
+        private readonly int $retryCount,
+    ) {
+    }
+
     #[Override]
     public function getMessage(): string
     {
-        return "[+] Fetching session ID...";
+        return "[!] HTTP request to '{$this->url}' failed with code '{$this->errorCode}'. Retrying #{$this->retryCount}...";
     }
 }

@@ -3,7 +3,7 @@
 
 use Symfony\Component\Finder\Finder;
 
-require __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 if (!isset($argv[1])) {
     echo 'No output filename supplied', PHP_EOL;
@@ -17,17 +17,27 @@ if (is_file($pharFile)) {
     unlink($pharFile);
 }
 
-$dirs = [
-    $baseDir . '/app',
-    $baseDir . '/src',
-    $baseDir . '/vendor'
-];
-
 $finder = (new Finder())
     ->files()
-    ->in($dirs)
-    ->name('/\.(php|yml|json|bash|zsh|fish)$/')
-    ->notPath('Tests');
+    ->in([
+        $baseDir . '/',
+    ])
+    ->exclude([
+        $baseDir . '/.github',
+        $baseDir . '/bin',
+        $baseDir . '/build',
+        $baseDir . '/resources',
+        $baseDir . '/tests',
+        $baseDir . '/var',
+    ])
+    ->notName([
+        $baseDir . '/.*',
+        $baseDir . '/Dockerfile',
+        $baseDir . '/Makefile',
+        $baseDir . '/symfony.lock',
+        $baseDir . '/*phpunit*',
+    ])
+    ->notPath('tests');
 
 $stub = "#!/usr/bin/env php\n";
 $stub .= "<?php Phar::mapPhar('ifsc-calendar.phar');\n";

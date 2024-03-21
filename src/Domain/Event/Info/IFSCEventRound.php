@@ -5,13 +5,16 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar;
+namespace nicoSWD\IfscCalendar\Domain\Event\Info;
 
-final readonly class BuildCalendarResponse
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundKind;
+
+final readonly class IFSCEventRound
 {
-    /** @param string[] $calendarContents */
     public function __construct(
-        public array $calendarContents,
+        public string $discipline,
+        public IFSCRoundKind $kind,
+        public string $category,
     ) {
     }
 }

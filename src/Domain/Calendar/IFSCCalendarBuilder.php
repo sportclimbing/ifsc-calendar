@@ -36,9 +36,11 @@ final readonly class IFSCCalendarBuilder
 
     /**
      * @param int[] $leagueIds
+     * @param IFSCCalendarFormat[] $formats
+     * @throws InvalidURLException
      * @throws Exception
      */
-    public function generateForLeague(IFSCSeasonYear $season, array $leagueIds, IFSCCalendarFormat $format): string
+    public function generateForLeague(IFSCSeasonYear $season, array $leagueIds, array $formats): array
     {
         $events = [];
 
@@ -54,13 +56,10 @@ final readonly class IFSCCalendarBuilder
 
         $this->eventSorter->sortByDate($events);
 
-        return $this->calendarBuilderFactory->generateForFormat($format, $events);
+        return $this->buildCalendars($formats, $events);
     }
 
-    /**
-     * @param IFSCEvent[] $events
-     * @throws InvalidURLException
-     */
+    /** @param IFSCEvent[] $events */
     private function fetchEventStreamUrls(array &$events, IFSCSeasonYear $season): void
     {
         $videoCollection = $this->linkFetcher->fetchRecentVideos($season);
@@ -80,7 +79,6 @@ final readonly class IFSCCalendarBuilder
         return $this->eventFetcher->fetchEventsForLeague($season, $leagueId);
     }
 
-    /** @throws InvalidURLException */
     private function searchStreamUrl(
         IFSCRound $round,
         IFSCEvent $event,
@@ -106,6 +104,21 @@ final readonly class IFSCCalendarBuilder
         }
 
         $events = array_merge($events, $filteredEvents);
+    }
+
+    /**
+     * @param IFSCCalendarFormat[] $formats
+     * @param IFSCEvent[] $events
+     */
+    private function buildCalendars(array $formats, array $events): array
+    {
+        $results = [];
+
+        foreach ($formats as $format) {
+            $results[$format->value] = $this->calendarBuilderFactory->generateForFormat($format, $events);
+        }
+
+        return $results;
     }
 
     private function emitNoRoundsFoundWarning(IFSCEvent $event): void

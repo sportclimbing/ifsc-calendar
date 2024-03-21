@@ -47,7 +47,7 @@ final readonly class IFSCCalendarPostProcess
                 break;
         }
 
-       $this->orderEventsByDate($events);
+        $this->orderEventsByDate($events);
 
         return $events;
     }

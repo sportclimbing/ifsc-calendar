@@ -13,6 +13,7 @@ use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideo;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
 use nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideo as IfscYouTubeVideo;
 use nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideoCollection as IfscYouTubeVideoCollection;
+use Override;
 
 final readonly class YouTubeVideoProvider implements YouTubeApiClient
 {
@@ -21,6 +22,7 @@ final readonly class YouTubeVideoProvider implements YouTubeApiClient
     ) {
     }
 
+    #[Override]
     public function fetchRecentVideos(IFSCSeasonYear $season): YouTubeVideoCollection
     {
         $videoCollection = new YouTubeVideoCollection();
@@ -32,19 +34,27 @@ final readonly class YouTubeVideoProvider implements YouTubeApiClient
         return $videoCollection;
     }
 
+    /** @inheritdoc  */
+    #[Override]
+    public function fetchRestrictedRegionsForVideo(string $videoId): array
+    {
+        return $this->youTubeVideoCollection->fetchRestrictedRegionsForVideo($videoId);
+    }
+
     /** @return IfscYouTubeVideo[] */
     private function fetchLatestVideos(IFSCSeasonYear $season): array
     {
         return $this->youTubeVideoCollection->getVideosForSeason($season->value);
     }
 
-    public function createVideo(IfscYouTubeVideo $item): YouTubeVideo
+    private function createVideo(IfscYouTubeVideo $video): YouTubeVideo
     {
         return new YouTubeVideo(
-            title: $item->title,
-            duration: $item->duration,
-            videoId: $item->videoId,
-            publishedAt: $item->publishedAt,
+            title: $video->title,
+            duration: $video->duration,
+            videoId: $video->videoId,
+            publishedAt: $video->publishedAt,
+            restrictedRegions: $video->restrictedRegions,
         );
     }
 }

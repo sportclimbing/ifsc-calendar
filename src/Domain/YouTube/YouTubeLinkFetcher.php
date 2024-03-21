@@ -12,12 +12,12 @@ use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 final readonly class YouTubeLinkFetcher
 {
     public function __construct(
-        private YouTubeApiClient $api,
+        private YouTubeApiClient $apiClient,
     ) {
     }
 
     public function fetchRecentVideos(IFSCSeasonYear $season): YouTubeVideoCollection
     {
-        return $this->api->fetchRecentVideos($season);
+        return $this->apiClient->fetchRecentVideos($season);
     }
 }

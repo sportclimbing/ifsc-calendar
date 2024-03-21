@@ -12,4 +12,7 @@ use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 interface YouTubeApiClient
 {
     public function fetchRecentVideos(IFSCSeasonYear $season): YouTubeVideoCollection;
+
+    /** @return string[] */
+    public function fetchRestrictedRegionsForVideo(string $videoId): array;
 }

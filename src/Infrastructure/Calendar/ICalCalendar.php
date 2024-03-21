@@ -147,7 +147,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
             }
         } else {
             foreach ($event->disciplines as $discipline) {
-                $description .= " - " . ucfirst($discipline) ."\n";
+                $description .= " - " . ucfirst($discipline->value) ."\n";
             }
         }
 
