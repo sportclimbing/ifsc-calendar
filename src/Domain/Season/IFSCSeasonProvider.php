@@ -10,10 +10,10 @@ namespace nicoSWD\IfscCalendar\Domain\Season;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventInfoProviderInterface;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 
-final readonly class IFSCSeasonFetcher
+final readonly class IFSCSeasonProvider
 {
     public function __construct(
-        private IFSCEventInfoProviderInterface $seasonFetcher,
+        private IFSCEventInfoProviderInterface $eventInfoProvider,
     ) {
     }
 
@@ -23,6 +23,6 @@ final readonly class IFSCSeasonFetcher
      */
     public function fetchSeasons(): array
     {
-        return $this->seasonFetcher->fetchSeasons();
+        return $this->eventInfoProvider->fetchSeasons();
     }
 }

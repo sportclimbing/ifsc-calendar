@@ -17,4 +17,4 @@ services:
     class: nicoSWD\IfscCalendar\Application\UseCase\FetchSeasons\FetchSeasonsUseCase
     public: true
     arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonFetcher'
+      - '@nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonProvider'
