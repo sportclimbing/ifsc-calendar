@@ -59,10 +59,7 @@ final readonly class IFSCCalendarBuilder
         return $this->buildCalendars($formats, $events);
     }
 
-    /**
-     * @param IFSCEvent[] $events
-     * @throws InvalidURLException
-     */
+    /** @param IFSCEvent[] $events */
     private function fetchEventStreamUrls(array &$events, IFSCSeasonYear $season): void
     {
         $videoCollection = $this->linkFetcher->fetchRecentVideos($season);

@@ -17,7 +17,7 @@ final readonly class StreamUrlFactory
     private const string REGEX_YOUTUBE_ID = '~youtu(\.be|be\.com)/(live/|watch\?v=)?(?<video_id>[a-zA-Z0-9_-]{10,})~';
 
     public function __construct(
-        private YouTubeApiClient $apiClient,
+        private YouTubeApiClient $youTubeApiClient,
     ) {
     }
 
@@ -31,8 +31,8 @@ final readonly class StreamUrlFactory
                 $videoId = $this->getVideoId($streamUrl);
 
                 if ($videoId) {
-                    $streamUrl = sprintf(self::YOUTUBE_BASE_URL, $videoId);
-                    $restrictedRegions = $this->apiClient->fetchRestrictedRegionsForVideo($videoId);
+                    $streamUrl = $this->buildStreamUrl($videoId);
+                    $restrictedRegions = $this->getRestrictedRegionsForVideo($videoId);
                 }
             }
         }
@@ -52,11 +52,21 @@ final readonly class StreamUrlFactory
         return null;
     }
 
+    private function getRestrictedRegionsForVideo(string $videoId): array
+    {
+        return $this->youTubeApiClient->fetchRestrictedRegionsForVideo($videoId);
+    }
+
     /** @throws InvalidURLException */
     private function assertValidUrl(string $streamUrl): void
     {
         if (!filter_var($streamUrl, FILTER_VALIDATE_URL)) {
             throw new InvalidURLException("Invalid URL: {$streamUrl}");
         }
+    }
+
+    private function buildStreamUrl(string $videoId): string
+    {
+        return sprintf(self::YOUTUBE_BASE_URL, $videoId);
     }
 }

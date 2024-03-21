@@ -7,6 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Ranking;
 
+use Closure;
 use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
 
 final readonly class IFSCWorldRanking
@@ -46,7 +47,7 @@ final readonly class IFSCWorldRanking
             $athletes[$athleteId]->score = $score;
         }
 
-        usort($athletes, static fn (IFSCStarter $athlete1, IFSCStarter $athlete2): int => $athlete2->score <=> $athlete1->score);
+        usort($athletes, $this->sortByScore());
 
         return $athletes;
     }
@@ -64,5 +65,10 @@ final readonly class IFSCWorldRanking
     private function fetchWorldRankForCategory(int $categoryId): array
     {
         return $this->rankProvider->fetchWorldRankForCategory($categoryId);
+    }
+
+    private function sortByScore(): Closure
+    {
+        return static fn (IFSCStarter $athlete1, IFSCStarter $athlete2): int =>  $athlete2->score <=> $athlete1->score;
     }
 }
