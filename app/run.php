@@ -9,14 +9,14 @@ use nicoSWD\IfscCalendar\Application\Command\BuildCommand;
 use nicoSWD\IfscCalendar\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 
-require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
+require_once dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
-return function (array $context) {
+return function (array $context): Application {
     $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
     $kernel->boot();
 
     /** @var BuildCommand $command */
-    $command = $kernel->getContainer()->get(BuildCommand::class);
+    $command = $kernel->getContainer()->get(id: BuildCommand::class);
 
     $application = new Application($kernel);
     $application->add($command);
