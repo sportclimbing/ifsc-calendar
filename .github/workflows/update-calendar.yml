@@ -30,9 +30,6 @@ jobs:
           composer install --no-dev --optimize-autoloader
           php app/run.php \
               --season 2024 \
-              --league "World Cups and World Championships" \
-              --league "IFSC Paraclimbing" \
-              --league "Games" \
               --output "${{ env.CALENDAR_FILE_ICS }}" \
               --format "ics,json" \
 
