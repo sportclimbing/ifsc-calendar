@@ -72,11 +72,11 @@ Using the pre-built Docker image
 $ docker run -it --volume "$PWD:/calendar" \
     ghcr.io/sportclimbing/ifsc-calendar:latest \ 
     --season 2024 \
-    --league "World Cups and World Championships" \
     --output "/calendar/ifsc-calendar.ics"
 ```
 
-ℹ️ Note: All Docker images can be [found here](https://github.com/sportclimbing/ifsc-calendar/pkgs/container/ifsc-calendar).
+> [!NOTE]
+> All Docker images can be [found here](https://github.com/sportclimbing/ifsc-calendar/pkgs/container/ifsc-calendar).
 
 <hr />
 
@@ -90,7 +90,6 @@ Generate `.ics` calendar file
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
     --season 2024 \
-    --league "World Cups and World Championships" \
     --output "/calendar/ifsc-calendar.ics"
 ```
 
@@ -98,18 +97,6 @@ Generate `.json` calendar file
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
     --season 2024 \
-    --league "World Cups and World Championships" \
-    --output "/calendar/ifsc-calendar.json" \
-    --format json
-```
-
-Build for multiple leagues
-```shell
-$ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
-    --season 2024 \
-    --league "World Cups and World Championships" \
-    --league "Games" \
-    --league "IFSC Paraclimbing" \
     --output "/calendar/ifsc-calendar.json" \
     --format json
 ```
@@ -118,7 +105,6 @@ Export multiple formats
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
     --season 2024 \
-    --league "World Cups and World Championships" \
     --output "/calendar/ifsc-calendar.json" \
     --format json,ics
 ```
@@ -135,11 +121,11 @@ Generate `.ics` calendar file using the generated `.phar`
 ```shell
 $ ./build/ifsc-calendar.phar \
   --season 2024 \
-  --league "World Cups and World Championships" \
   --output "ifsc-calendar.ics"
 ```
 
 ## 🔧 Todo
+- [ ] Push Docker image to Docker Hub
 - [ ] Use Symfony serializer to build response object from IFSC API
 - [ ] Add BuyMeACoffee link to `.ics` calendar events
 - [ ] Add season-specific schedule parsers
