@@ -16,6 +16,7 @@ use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundKind;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
+use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;
@@ -25,7 +26,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
 {
     private const string IFSC_EVENT_API_ENDPOINT = 'https://ifsc.results.info/api/v1/events/%d';
 
-    private const string IFSC_EVENTS_API_ENDPOINT = 'https://components.ifsc-climbing.org/results-api.php?api=season_leagues_calendar&league=%d';
+    private const string IFSC_EVENTS_API_ENDPOINT = 'https://www.ifsc-climbing.org/api/dapi/events/all?dateFrom=$range(%d-01-01,%d-12-31)&$limit=100';
 
     private const string IFSC_LEAGUE_API_ENDPOINT = 'https://ifsc.results.info/api/v1/season_leagues/%d';
 
@@ -88,19 +89,19 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
 
     /** @inheritdoc */
     #[Override]
-    public function fetchEventsForLeague(int $leagueId): array
+    public function fetchEventsForSeason(IFSCSeasonYear $season): array
     {
         try {
-            $response = $this->apiClient->authenticatedGet(
-                sprintf(self::IFSC_EVENTS_API_ENDPOINT, $leagueId),
+            $response = $this->apiClient->request(
+                sprintf(self::IFSC_EVENTS_API_ENDPOINT, $season->value, $season->value)
             );
         } catch (HttpException $e) {
             throw new IFSCApiClientException(
-                "Unable to retrieve events for league: {$e->getMessage()}"
+                "Unable to retrieve events for season: {$e->getMessage()}"
             );
         }
 
-        return $response->events;
+        return $response->items;
     }
 
 

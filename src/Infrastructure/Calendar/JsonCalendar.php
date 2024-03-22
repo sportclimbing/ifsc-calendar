@@ -21,7 +21,7 @@ use Override;
 
 final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
 {
-    private const string IFSC_EVENT_INFO_URL = 'https://www.ifsc-climbing.org/component/ifsc/?view=event&WetId=%d';
+    private const string IFSC_EVENT_INFO_URL = 'https://www.ifsc-climbing.org/events/%s';
 
     private const string GENERATED_BY_URL = 'https://github.com/sportclimbing/ifsc-calendar';
 
@@ -43,7 +43,6 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
         foreach ($events as $event) {
             $jsonEvents['events'][] = [
                 'id' => $event->eventId,
-                'league_id' => $event->leagueId,
                 'league_name' => $event->leagueName,
                 'season' => $event->season->value,
                 'name' => $event->normalizedName(),
@@ -96,7 +95,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
 
     private function buildUrl(IFSCEvent $event): string
     {
-        return sprintf(self::IFSC_EVENT_INFO_URL, $event->eventId);
+        return sprintf(self::IFSC_EVENT_INFO_URL, $event->slug);
     }
 
     /** @return string[] */

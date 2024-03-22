@@ -48,15 +48,16 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
      * @throws IFSCWorldRankingException
      */
     #[Override]
-    public function fetchEventsForLeague(IFSCSeasonYear $season, int $leagueId): array
+    public function fetchEventsForSeason(IFSCSeasonYear $season): array
     {
         $events = [];
 
-        foreach ($this->eventInfoProvider->fetchEventsForLeague($leagueId) as $event) {
+        foreach ($this->eventInfoProvider->fetchEventsForSeason($season) as $event) {
             $this->emitScrapingStartedEvent($event);
+            $eventId = $this->getEventId($event);
 
-            $scrapedRounds = $this->fetchScrapedRounds($season, $event);
-            $eventInfo = $this->eventInfoProvider->fetchEventInfo($event->event_id);
+            $eventInfo = $this->eventInfoProvider->fetchEventInfo($eventId);
+            $scrapedRounds = $this->fetchScrapedRounds($event, $eventInfo);
 
             if (!empty($scrapedRounds->rounds)) {
                 $rounds = $scrapedRounds->rounds;
@@ -66,20 +67,20 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
 
             $events[] = new IFSCEvent(
                 season: $season,
-                eventId: $event->event_id,
-                leagueId: $leagueId,
+                eventId: $eventId,
+                slug: $event->slug,
                 leagueName: $this->fetchLeagueName($eventInfo),
-                timeZone: $event->timezone->value,
-                eventName: $event->event,
+                timeZone: $eventInfo->timeZone,
+                eventName: $event->title,
                 location: $this->fixFatFinger($eventInfo->location),
                 country: $eventInfo->country,
                 poster: $scrapedRounds->poster,
-                siteUrl: $this->getSiteUrl($season, $event),
+                siteUrl: $this->getSiteUrl($season, $eventId),
                 startsAt: $this->formatDate($scrapedRounds->startDate),
                 endsAt: $this->formatDate($scrapedRounds->endDate),
                 disciplines: $eventInfo->disciplines,
                 rounds: $rounds,
-                starters: $this->buildStartList($event->event_id),
+                starters: $this->buildStartList($eventId),
             );
         }
 
@@ -90,12 +91,11 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
      * @throws IFSCEventsScraperException
      * @throws Exception
      */
-    private function fetchScrapedRounds(IFSCSeasonYear $season, object $event): IFSCScrapedEventsResult
+    private function fetchScrapedRounds(object $event, IFSCEventInfo $eventInfo): IFSCScrapedEventsResult
     {
         return $this->roundsScraper->fetchRoundsAndPosterForEvent(
-            season: $season,
-            eventId: $event->event_id,
-            timeZone: new DateTimeZone($event->timezone->value),
+            slug: $event->slug,
+            timeZone: new DateTimeZone($eventInfo->timeZone),
         );
     }
 
@@ -118,11 +118,11 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         return $rounds;
     }
 
-    private function getSiteUrl(IFSCSeasonYear $season, object $event): string
+    private function getSiteUrl(IFSCSeasonYear $season, int $eventId): string
     {
         $params = [
             'season' => $season->value,
-            'event_id' => $event->event_id,
+            'event_id' => $eventId,
         ];
 
         return preg_replace_callback('~{(?<var_name>season|event_id)}~', $this->replaceVariables($params), $this->siteUrl);
@@ -170,8 +170,13 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         return str_replace('CIty', 'City', $location);
     }
 
+    private function getEventId(object $event): int
+    {
+        return (int) $event->fields->verticalLifeEventId;
+    }
+
     private function emitScrapingStartedEvent(object $event): void
     {
-        $this->eventDispatcher->dispatch(new EventScrapingStartedEvent($event->event));
+        $this->eventDispatcher->dispatch(new EventScrapingStartedEvent($event->title));
     }
 }

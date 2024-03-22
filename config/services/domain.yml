@@ -18,24 +18,15 @@ services:
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher'
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher'
       - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter'
-      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
 
   nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess:
     class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor'
-      - '@nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2024PostProcessor'
 
   nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor:
     class: nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor
     autowire: true
-
-  nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2024PostProcessor:
-    class: nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2024PostProcessor
-    arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
-      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
-      - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper'
 
   # Raking
   nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRanking:
@@ -98,8 +89,6 @@ services:
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
       - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper'
-      - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer'
-      - '@nicoSWD\IfscCalendar\Domain\Stream\StreamUrlFactory'
 
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory:
     class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory
