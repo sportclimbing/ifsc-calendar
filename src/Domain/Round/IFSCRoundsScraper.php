@@ -12,11 +12,11 @@ use DateTimeImmutable;
 use DateTimeZone;
 use DOMXPath;
 use Exception;
-use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCSchedule;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
+use SebastianBergmann\CodeCoverage\ParserException;
 
 final readonly class IFSCRoundsScraper
 {
@@ -29,18 +29,15 @@ final readonly class IFSCRoundsScraper
     ) {
     }
 
-    /**
-     * @throws IFSCEventsScraperException
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function fetchRoundsAndPosterForEvent(string $slug, DateTimeZone $timeZone): IFSCScrapedEventsResult
     {
         $xpath = $this->getXPathForEventWithSlug($slug);
-        [$startDate, $endDate] = $this->getDateRage($xpath);
+        [$startDate, $endDate] = $this->getDateRage($xpath, $timeZone);
 
         return new IFSCScrapedEventsResult(
-            startDate: $this->dateWithTimezone($startDate, $timeZone),
-            endDate: $this->dateWithTimezone($endDate, $timeZone),
+            startDate: $this->immutableDateTime($startDate),
+            endDate: $this->immutableDateTime($endDate),
             poster: null,
             rounds: $this->createRounds([]),
         );
@@ -76,7 +73,7 @@ final readonly class IFSCRoundsScraper
     }
 
     /** @return DateTime[] */
-    private function getDateRage(DOMXPath $xpath): array
+    private function getDateRage(DOMXPath $xpath, DateTimeZone $timeZone): array
     {
         $patterns = [
             // 08-10April 2024
@@ -98,9 +95,13 @@ final readonly class IFSCRoundsScraper
             }
         }
 
+        if (empty($dateRange)) {
+            throw new ParserException('Unable to parse date range');
+        }
+
         return [
-            $this->createStartDate($dateRange['start_day'], $dateRange['start_month'], $dateRange['start_year']),
-            $this->createStartDate($dateRange['end_day'], $dateRange['end_month'], $dateRange['start_year']),
+            $this->createStartDate($dateRange['start_day'], $dateRange['start_month'], $dateRange['start_year'], $timeZone),
+            $this->createStartDate($dateRange['end_day'], $dateRange['end_month'], $dateRange['start_year'], $timeZone),
         ];
     }
 
@@ -109,14 +110,20 @@ final readonly class IFSCRoundsScraper
         return sprintf(self::IFSC_EVENT_PAGE_URL, $slug);
     }
 
-    private function createStartDate(string $day, string $month, string $year): DateTime
+    private function createStartDate(string $day, string $month, string $year, DateTimeZone $timeZone): DateTime
     {
-        return DateTime::createFromFormat('d F Y H:i:s', "{$day} {$month} {$year} 08:00:00");
+        $dateTime = DateTime::createFromFormat('d F Y H:i:s', "{$day} {$month} {$year} 08:00:00", $timeZone);
+
+        if (!$dateTime) {
+            throw new ParserException('Unable to create start date');
+        }
+
+        return $dateTime;
     }
 
     /** @throws Exception */
-    private function dateWithTimezone(DateTime $date, DateTimeZone $timeZone): DateTimeImmutable
+    private function immutableDateTime(DateTime $date): DateTimeImmutable
     {
-        return DateTimeImmutable::createFromMutable($date)->setTimezone($timeZone);
+        return DateTimeImmutable::createFromMutable($date);
     }
 }
