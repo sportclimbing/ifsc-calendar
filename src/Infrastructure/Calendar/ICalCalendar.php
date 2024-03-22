@@ -86,14 +86,23 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     /** @throws InvalidLeagueName */
     private function createEvent(IFSCEvent $event, IFSCRound $round): Event
     {
-        return (new Event())
+        $calendarEvent = (new Event())
             ->setSummary(sprintf("IFSC: %s - %s (%s)", $round->name, $event->eventName, $event->country))
             ->setDescription($this->buildDescription($event, $round))
             ->setUrl(new Uri($event->siteUrl))
             ->setStatus($this->getEventStatus($round))
             ->setLocation(new Location("{$event->location} ({$event->country})"))
-            ->addAlarm($this->createAlarm($event, $round))
             ->setOccurrence($this->buildTimeSpan($round));
+
+        if ($round->status->isConfirmed()) {
+            $alarm = $this->createAlarmOneHourBefore($event, $round);
+        } else {
+            $alarm = $this->createAlarmOneDayBefore($event, $round);
+        }
+
+        $calendarEvent->addAlarm($alarm);
+
+        return $calendarEvent;
     }
 
     /** @throws Exception */
@@ -180,15 +189,25 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         return array_filter($event->rounds, static fn (IFSCRound $round): bool => !$round->kind->isQualification());
     }
 
-    private function createAlarm(IFSCEvent $event, IFSCRound $round): Alarm
+    private function createAlarmOneHourBefore(IFSCEvent $event, IFSCRound $round): Alarm
+    {
+        return $this->createAlarm($event, $round, timeBefore: '1 hour');
+    }
+
+    private function createAlarmOneDayBefore(IFSCEvent $event, IFSCRound $round): Alarm
+    {
+        return $this->createAlarm($event, $round, timeBefore: '1 day');
+    }
+
+    private function createAlarm(IFSCEvent $event, IFSCRound $round, string $timeBefore): Alarm
     {
         $trigger = new RelativeTrigger(
-            DateInterval::createFromDateString('-1 hour'),
+            DateInterval::createFromDateString(datetime: "-{$timeBefore}"),
         );
 
         return new Alarm(
             new DisplayAction(
-                description: "Reminder: IFSC: {$round->name} - {$event->location} ({$event->country}) starts in 1 hour!"
+                description: "Reminder: IFSC: {$round->name} - {$event->location} ({$event->country}) starts in {$timeBefore}!"
             ),
             $trigger->withRelationToEnd(),
         );
