@@ -26,7 +26,7 @@ final class IFSCEvent
     public function __construct(
         public readonly IFSCSeasonYear $season,
         public readonly int $eventId,
-        public readonly int $leagueId,
+        public readonly string $slug,
         public readonly string $leagueName,
         public readonly string $timeZone,
         public readonly string $eventName,
@@ -56,7 +56,7 @@ final class IFSCEvent
             return $match['name'];
         }
 
-        if (preg_match('~(?<name>(?:Olympic|African|Oceania|European|(Pan|South) American)\s+(?:Games|Cup|(Qualifier(\sSeries)?)))~', $this->eventName, $match)) {
+        if (preg_match('~(?<name>(?:Olympic|African|Oceania|European|(Pan|South) American)\s+(?:Games|Cup|Championships|(Qualifier(\sSeries)?)))~', $this->eventName, $match)) {
             return $match['name'];
         }
 

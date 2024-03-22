@@ -8,7 +8,6 @@
 namespace nicoSWD\IfscCalendar\tests\Domain\YouTube;
 
 use DateTimeImmutable;
-use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundCategory;
@@ -184,7 +183,7 @@ final class YouTubeLinkMatcherTest extends TestCase
         return new IFSCEvent(
             season: IFSCSeasonYear::SEASON_2023,
             eventId: 1292,
-            leagueId: 431,
+            slug: 'ifsc-world-cup-salt-lake-city-2024',
             leagueName: 'World Cups and World Championships',
             timeZone: '',
             eventName: $description,

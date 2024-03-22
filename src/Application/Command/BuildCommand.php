@@ -37,7 +37,6 @@ class BuildCommand extends Command
         $this->setName('nicoswd:build-ifsc-calender')
             ->setDescription('Build a custom IFSC calender (.ics)')
             ->addOption('season', mode: InputOption::VALUE_OPTIONAL, description: 'IFSC Season')
-            ->addOption('league', mode: InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, description: 'IFSC Leagues')
             ->addOption('format', mode: InputOption::VALUE_OPTIONAL, description: 'Output format', default: 'ics')
             ->addOption('output', mode: InputOption::VALUE_OPTIONAL, description: '.ics output file name', default: 'ifsc-calendar.ics')
         ;
@@ -50,7 +49,7 @@ class BuildCommand extends Command
         $selectedSeason = $this->getSelectedSeason($seasons, $input, $output);
         $formats = $this->getFormats($input);
 
-        $calendar = $this->buildCalendar($selectedSeason, $seasons, $formats, $input, $output);
+        $calendar = $this->buildCalendar($selectedSeason, $formats, $output);
         $this->saveCalendarToFile($calendar, $formats, $input, $output);
 
         $output->writeln('[+] Done!');
@@ -59,24 +58,18 @@ class BuildCommand extends Command
     }
 
     /**
-     * @param IFSCSeason[] $seasons
      * @param IFSCCalendarFormat[] $formats
      * @throws InvalidURLException
      */
     private function buildCalendar(
         IFSCSeasonYear $selectedSeason,
-        array $seasons,
         array $formats,
-        InputInterface $input,
         OutputInterface $output,
     ): BuildCalendarResponse {
-        $leagueIds = $this->buildLeagueIds($seasons[$selectedSeason->value], $input, $output);
-
         $output->writeln('[+] Started building calendar...');
 
         return $this->buildCalendarUseCase->execute(
             new BuildCalendarRequest(
-                leagueIds: $leagueIds,
                 season: $selectedSeason,
                 formats: $formats,
             )
@@ -123,29 +116,6 @@ class BuildCommand extends Command
         return IFSCSeasonYear::from((int) $selectedSeason);
     }
 
-    private function buildLeagueIds(IFSCSeason $season, InputInterface $input, OutputInterface $output): array
-    {
-        $leaguesByName = [];
-
-        foreach ($season->leagues as $league) {
-            $leaguesByName[$league->name] = $league->id;
-        }
-
-        $selectedLeagues = $input->getOption('league');
-
-        if (!$selectedLeagues) {
-            $selectedLeagues = $this->getSelectedLeague($leaguesByName, $input, $output);
-        }
-
-        $leagueIds = [];
-
-        foreach ($selectedLeagues as $name) {
-            $leagueIds[] = $leaguesByName[$name];
-        }
-
-        return $leagueIds;
-    }
-
     /** @param IFSCCalendarFormat[] $formats */
     private function saveCalendarToFile(
         BuildCalendarResponse $response,
@@ -163,19 +133,6 @@ class BuildCommand extends Command
 
             $output->writeln("[+] Saved file as {$fileName}");
         }
-    }
-
-    private function getSelectedLeague(array $leaguesByName, InputInterface $input, OutputInterface $output): array
-    {
-        $question = new ChoiceQuestion(
-            'Please select a league (defaults to "' . key($leaguesByName) . '")',
-            array_keys($leaguesByName),
-            0
-        );
-        $question->setMultiselect(true);
-        $question->setErrorMessage('League "%s" is invalid.');
-
-        return $this->getHelper('question')->ask($input, $output, $question);
     }
 
     private function getFormats(InputInterface $input): array
