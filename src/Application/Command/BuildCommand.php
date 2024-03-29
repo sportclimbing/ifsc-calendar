@@ -71,6 +71,7 @@ class BuildCommand extends Command
         return $this->buildCalendarUseCase->execute(
             new BuildCalendarRequest(
                 season: $selectedSeason,
+                leagues: ['World Cups and World Championships', 'Games', 'IFSC Paraclimbing'],
                 formats: $formats,
             )
         );

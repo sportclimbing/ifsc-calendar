@@ -22,4 +22,5 @@ enum IFSCEventTagsRegex: string
     case HIGHLIGHTS = 'highlights';
     case PRESS_CONFERENCE = 'press';
     case REVIEW = 'review';
+    case PRE_ROUND = 'warm-?up|observation|practice|isolation';
 }

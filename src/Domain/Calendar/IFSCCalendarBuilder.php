@@ -36,11 +36,11 @@ final readonly class IFSCCalendarBuilder
      * @throws InvalidURLException
      * @throws Exception
      */
-    public function generateForLeague(IFSCSeasonYear $season, array $formats): array
+    public function generateForSeason(IFSCSeasonYear $season, array $leagues, array $formats): array
     {
         $events = $this->calendarPostProcess->process(
             season: $season,
-            events: $this->fetchEvents($season),
+            events: $this->fetchEvents($season, $leagues),
         );
 
         $this->fetchEventStreamUrls($events, $season);
@@ -64,9 +64,9 @@ final readonly class IFSCCalendarBuilder
     }
 
     /** @return IFSCEvent[] */
-    private function fetchEvents(IFSCSeasonYear $season): array
+    private function fetchEvents(IFSCSeasonYear $season, array $leagues): array
     {
-        return $this->eventFetcher->fetchEventsForSeason($season);
+        return $this->eventFetcher->fetchEventsForSeason($season, $leagues);
     }
 
     private function searchStreamUrl(

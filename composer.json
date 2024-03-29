@@ -78,7 +78,7 @@
             "require": "7.0.*"
         },
         "runtime": {
-            "autoload_template": "autoload_runtime.template"
+            "autoload_template": "config/autoload_runtime.template"
         }
     }
 }

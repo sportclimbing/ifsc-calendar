@@ -12,5 +12,5 @@ use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 interface IFSCEventFetcherInterface
 {
     /** @return IFSCEvent[] */
-    public function fetchEventsForSeason(IFSCSeasonYear $season): array;
+    public function fetchEventsForSeason(IFSCSeasonYear $season, array $selectedLeagues): array;
 }

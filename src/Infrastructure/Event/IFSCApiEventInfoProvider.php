@@ -16,7 +16,6 @@ use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundKind;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
-use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;
@@ -26,11 +25,9 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
 {
     private const string IFSC_EVENT_API_ENDPOINT = 'https://ifsc.results.info/api/v1/events/%d';
 
-    private const string IFSC_EVENTS_API_ENDPOINT = 'https://www.ifsc-climbing.org/api/dapi/events/all?dateFrom=$range(%d-01-01,%d-12-31)&$limit=100';
-
     private const string IFSC_LEAGUE_API_ENDPOINT = 'https://ifsc.results.info/api/v1/season_leagues/%d';
 
-    private const string IFSC_SEASONS_API_URL = 'https://components.ifsc-climbing.org/results-api.php?api=index';
+    private const string IFSC_SEASON_INFO_API_URL = 'https://ifsc.results.info/api/v1/seasons/36';
 
     public function __construct(
         private IFSCApiClient $apiClient,
@@ -39,8 +36,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
     }
 
     /** @inheritdoc */
-    #[Override]
-    public function fetchEventInfo(int $eventId): IFSCEventInfo
+    #[Override] public function fetchEventInfo(int $eventId): IFSCEventInfo
     {
         try {
             $response = $this->apiClient->authenticatedGet(
@@ -80,7 +76,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
             leagueId: $response->league_id,
             leagueSeasonId: $response->league_season_id,
             timeZone: $response->timezone->value,
-            location: $response->location,
+            location: $this->fixFatFinger($response->location),
             country: $response->country,
             disciplines: $this->getDisciplines($response->disciplines),
             categories: $categories,
@@ -88,47 +84,37 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
     }
 
     /** @inheritdoc */
-    #[Override]
-    public function fetchEventsForSeason(IFSCSeasonYear $season): array
+    #[Override] public function fetchEventsForLeagues(array $leagues): array
     {
-        try {
-            $response = $this->apiClient->request(
-                sprintf(self::IFSC_EVENTS_API_ENDPOINT, $season->value, $season->value)
-            );
-        } catch (HttpException $e) {
-            throw new IFSCApiClientException(
-                "Unable to retrieve events for season: {$e->getMessage()}"
-            );
+        $events = [];
+
+        foreach ($leagues as $league) {
+            try {
+                $response = $this->apiClient->authenticatedGet(
+                    sprintf(self::IFSC_LEAGUE_API_ENDPOINT, $league->id)
+                );
+
+                foreach ($response->events as $event) {
+                    $event->league_name = $league->name;
+                }
+
+                $events = array_merge($events, $response->events);
+            } catch (HttpException $e) {
+                throw new IFSCApiClientException(
+                    "Unable to retrieve events for season: {$e->getMessage()}"
+                );
+            }
         }
 
-        return $response->items;
+        return $events;
     }
 
-
     /** @inheritdoc */
-    #[Override]
-    public function fetchLeagueNameById(int $leagueId): string
+    #[Override] public function fetchSeasons(): array
     {
         try {
             $response = $this->apiClient->authenticatedGet(
-                sprintf(self::IFSC_LEAGUE_API_ENDPOINT, $leagueId),
-            );
-        } catch (HttpException $e) {
-            throw new IFSCApiClientException(
-                "Unable to retrieve league name: {$e->getMessage()}"
-            );
-        }
-
-        return $response->league;
-    }
-
-    /** @inheritdoc */
-    #[Override]
-    public function fetchSeasons(): array
-    {
-        try {
-            $response = $this->apiClient->request(
-                self::IFSC_SEASONS_API_URL
+                self::IFSC_SEASON_INFO_API_URL
             );
         } catch (HttpException $e) {
             throw new IFSCApiClientException(
@@ -138,11 +124,10 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
 
         $seasons = [];
 
-        foreach ($response->seasons as $season) {
-            $seasons[$season->name] = new IFSCSeason(
-                id: $season->id,
-                name: $season->name,
-                leagues: $this->buildLeagues($season),
+        foreach ($response->leagues as $league) {
+            $seasons[$response->name] = new IFSCSeason(
+                name: $league->name,
+                leagues: $this->buildLeagues($response),
             );
         }
 
@@ -156,7 +141,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
 
         foreach ($season->leagues as $league) {
             $leagues[] = new IFSCLeague(
-                id: $league->id,
+                id: $this->parseLeagueId($league),
                 name: $league->name,
             );
         }
@@ -184,5 +169,15 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
             static fn (string $discipline): IFSCDiscipline => IFSCDiscipline::from($discipline),
             array_unique($parsedDisciplines),
         );
+    }
+
+    private function parseLeagueId(object $league): int
+    {
+        return (int) pathinfo($league->url, PATHINFO_FILENAME);
+    }
+
+    private function fixFatFinger(string $location): string
+    {
+        return str_replace('CIty', 'City', $location);
     }
 }

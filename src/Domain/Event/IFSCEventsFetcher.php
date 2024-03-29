@@ -7,16 +7,19 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
-use Closure;
 use DateTimeImmutable;
+use DateTimeInterface;
 use DateTimeZone;
 use Exception;
+use nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\EventScrapingStartedEvent;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventRound;
+use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
 use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRankingException;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
@@ -36,7 +39,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         private IFSCRoundFactory $roundFactory,
         private IFSCEventInfoProviderInterface $eventInfoProvider,
         private EventDispatcherInterface $eventDispatcher,
-        private string $siteUrl,
+        private SiteURLBuilder $siteURLBuilder,
     ) {
     }
 
@@ -47,40 +50,40 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
      * @throws IFSCApiClientException
      * @throws IFSCWorldRankingException
      */
-    #[Override]
-    public function fetchEventsForSeason(IFSCSeasonYear $season): array
+    #[Override] public function fetchEventsForSeason(IFSCSeasonYear $season, array $selectedLeagues): array
     {
         $events = [];
 
-        foreach ($this->eventInfoProvider->fetchEventsForSeason($season) as $event) {
+        foreach ($this->fetchEventsForLeagues($season, $selectedLeagues) as $event) {
             $this->emitScrapingStartedEvent($event);
-            $eventId = $this->getEventId($event);
 
-            $eventInfo = $this->eventInfoProvider->fetchEventInfo($eventId);
+            $eventInfo = $this->eventInfoProvider->fetchEventInfo($event->event_id);
             $scrapedRounds = $this->fetchScrapedRounds($event, $eventInfo);
 
             if (!empty($scrapedRounds->rounds)) {
                 $rounds = $scrapedRounds->rounds;
             } else {
-                $rounds = $this->generateRounds($eventInfo, $scrapedRounds);
+                $rounds = $this->generateRounds($event, $eventInfo);
             }
+
+            [$startDate, $endDate] = $this->generateDateRangeFromRounds($rounds, $event);
 
             $events[] = new IFSCEvent(
                 season: $season,
-                eventId: $eventId,
-                slug: $event->slug,
-                leagueName: $this->fetchLeagueName($eventInfo),
+                eventId: $event->event_id,
+                slug: $this->buildSlug($event),
+                leagueName: $event->league_name,
                 timeZone: $eventInfo->timeZone,
-                eventName: $event->title,
-                location: $this->fixFatFinger($eventInfo->location),
+                eventName: $event->event,
+                location: $eventInfo->location,
                 country: $eventInfo->country,
                 poster: $scrapedRounds->poster,
-                siteUrl: $this->getSiteUrl($season, $eventId),
-                startsAt: $this->formatDate($scrapedRounds->startDate),
-                endsAt: $this->formatDate($scrapedRounds->endDate),
+                siteUrl: $this->siteURLBuilder->build($season, $event->event_id),
+                startsAt: $this->formatDate($startDate),
+                endsAt: $this->formatDate($endDate),
                 disciplines: $eventInfo->disciplines,
                 rounds: $rounds,
-                starters: $this->buildStartList($eventId),
+                starters: $this->buildStartList($event->event_id),
             );
         }
 
@@ -94,22 +97,24 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
     private function fetchScrapedRounds(object $event, IFSCEventInfo $eventInfo): IFSCScrapedEventsResult
     {
         return $this->roundsScraper->fetchRoundsAndPosterForEvent(
-            slug: $event->slug,
+            event: $event,
             timeZone: new DateTimeZone($eventInfo->timeZone),
         );
     }
 
-    private function generateRounds(IFSCEventInfo $eventInfo, IFSCScrapedEventsResult $scrapedRounds): array
+    private function generateRounds(object $event, IFSCEventInfo $eventInfo): array
     {
         $rounds = [];
 
         foreach ($eventInfo->categories as $category) {
             foreach ($category->rounds as $round) {
+                $startTime = $this->estimatedLocalStartDate($event);
+
                 $rounds[] = $this->roundFactory->create(
-                    name: $this->getRoundName($round),
+                    name: $this->normalizeRoundName($round),
                     streamUrl: new StreamUrl(),
-                    startTime: $scrapedRounds->startDate,
-                    endTime: $scrapedRounds->startDate->modify('+3 hours'),
+                    startTime: $startTime,
+                    endTime: $startTime->modify('90 minutes'),
                     status: IFSCRoundStatus::ESTIMATED,
                 );
             }
@@ -118,27 +123,12 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         return $rounds;
     }
 
-    private function getSiteUrl(IFSCSeasonYear $season, int $eventId): string
-    {
-        $params = [
-            'season' => $season->value,
-            'event_id' => $eventId,
-        ];
-
-        return preg_replace_callback('~{(?<var_name>season|event_id)}~', $this->replaceVariables($params), $this->siteUrl);
-    }
-
-    private function replaceVariables(array $params): Closure
-    {
-        return static fn (array $match): string => (string) $params[$match['var_name']];
-    }
-
     public function formatDate(DateTimeImmutable $scrapedRounds): string
     {
-        return $scrapedRounds->format('Y-m-d\TH:i:s');
+        return $scrapedRounds->format(DateTimeInterface::RFC3339);
     }
 
-    private function getRoundName(IFSCEventRound $round): string
+    private function normalizeRoundName(IFSCEventRound $round): string
     {
         $discipline = preg_replace_callback(
             pattern: '~(\w)&(\w)~',
@@ -147,12 +137,6 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         );
 
         return ucwords(sprintf("%s's %s %s", $round->category, $discipline, $round->kind->value));
-    }
-
-    /** @throws IFSCApiClientException */
-    private function fetchLeagueName(IFSCEventInfo $eventInfo): string
-    {
-        return $this->eventInfoProvider->fetchLeagueNameById($eventInfo->leagueSeasonId);
     }
 
     /**
@@ -165,18 +149,81 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         return $this->startListGenerator->buildStartList($eventId);
     }
 
-    private function fixFatFinger(string $location): string
+    /**
+     * @param IFSCSeasonYear $season
+     * @param IFSCLeague[] $selectedLeagues
+     * @return IFSCLeague[]
+     * @throws IFSCApiClientException
+     */
+    private function fetchLeaguesForSeason(IFSCSeasonYear $season, array $selectedLeagues): array
     {
-        return str_replace('CIty', 'City', $location);
+        $seasons = $this->eventInfoProvider->fetchSeasons();
+        $filteredLeagues = [];
+
+        foreach ($seasons[$season->value]->leagues as $league) {
+
+            if (in_array($league->name, $selectedLeagues, strict: true)) {
+                $filteredLeagues[] = $league;
+            }
+        }
+
+        return $filteredLeagues;
     }
 
-    private function getEventId(object $event): int
+    /** @param IFSCRound[] $rounds */
+    private function generateDateRangeFromRounds(array $rounds, object $event): array
     {
-        return (int) $event->fields->verticalLifeEventId;
+        $confirmedDates = [];
+
+        foreach ($rounds as $round) {
+            if ($round->status->isConfirmed()) {
+                $confirmedDates[] = $round->startTime;
+            }
+        }
+
+        if (count($confirmedDates) >= 2) {
+            return [min($confirmedDates), max($confirmedDates)];
+        }
+
+        return [
+            $this->estimatedLocalStartDate($event),
+            $this->estimatedLocalEndDate($event),
+        ];
+    }
+
+    /**
+     * @return object[]
+     * @throws IFSCApiClientException
+     */
+    private function fetchEventsForLeagues(IFSCSeasonYear $season, array $selectedLeagues): array
+    {
+        return $this->eventInfoProvider->fetchEventsForLeagues(
+            leagues: $this->fetchLeaguesForSeason($season, $selectedLeagues),
+        );
+    }
+
+    private function buildSlug(object $event): string
+    {
+        return preg_replace('~\W~', '-', mb_strtolower($event->event));
     }
 
     private function emitScrapingStartedEvent(object $event): void
     {
-        $this->eventDispatcher->dispatch(new EventScrapingStartedEvent($event->title));
+        $this->eventDispatcher->dispatch(new EventScrapingStartedEvent($event->event));
+    }
+
+    private function estimatedLocalStartDate(object $event): DateTimeImmutable
+    {
+        return $this->createLocalDate("{$event->local_start_date} 08:00", $event->timezone->value);
+    }
+
+    private function estimatedLocalEndDate(object $event): DateTimeImmutable
+    {
+        return $this->createLocalDate("{$event->local_end_date} 16:00", $event->timezone->value);
+    }
+
+    private function createLocalDate(string $date, string $timeZone): DateTimeImmutable
+    {
+        return (new DateTimeImmutable($date))->setTimezone(new DateTimeZone($timeZone));
     }
 }

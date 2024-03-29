@@ -15,6 +15,7 @@ final readonly class BuildCalendarRequest
     /** @param IFSCCalendarFormat[] $formats */
     public function __construct(
         public IFSCSeasonYear $season,
+        public array $leagues,
         public array $formats,
     ) {
     }

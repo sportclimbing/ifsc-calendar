@@ -18,7 +18,7 @@ use Override;
 
 final readonly class ApiStartListProvider implements IFSCStartListProviderInterface
 {
-    private const string IFSC_STARTERS_API_ENDPOINT = 'https://components.ifsc-climbing.org/results-api.php?api=starters&event_id=%d';
+    private const string IFSC_STARTERS_API_ENDPOINT = 'https://ifsc.results.info/api/v1/events/%d/registrations';
 
     public function __construct(
         private IFSCApiClient $apiClient,

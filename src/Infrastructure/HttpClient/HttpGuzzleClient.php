@@ -24,8 +24,7 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
     }
 
     /** @inheritDoc */
-    #[Override]
-    public function getRetry(string $url, array $options = []): string
+    #[Override] public function getRetry(string $url, array $options = []): string
     {
         $retryCount = 0;
         $html = '';
@@ -46,19 +45,18 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
         return $html;
     }
 
-    /** @throws HttpException */
-    #[Override]
-    public function getHeaders(string $url): array
+    /** @inheritdoc */
+    #[Override] public function getHeaders(string $url, array $options = []): array
     {
         try {
-            return $this->client->request('GET', $url)->getHeaders();
+            return $this->client->request('GET', $url, $options)->getHeaders();
         } catch (GuzzleException $e) {
             throw new HttpException("Unable to retrieve HTTP headers: {$e->getMessage()}", $e->getCode(), $e);
         }
     }
 
-    /** @throws HttpException */
-    private function get(string $url, array $options): string
+    /** @inheritdoc */
+    #[Override] public function get(string $url, array $options): string
     {
         try {
             return $this->client->request('GET', $url, $options)->getBody()->getContents();

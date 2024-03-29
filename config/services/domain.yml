@@ -28,6 +28,11 @@ services:
     class: nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor
     autowire: true
 
+  nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder:
+    class: nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder
+    arguments:
+      - '%site_event_url%'
+
   # Raking
   nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRanking:
     class: nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRanking
@@ -77,7 +82,7 @@ services:
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
       - '@nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider'
       - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
-      - '%site_event_url%'
+      - '@nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder'
 
   nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper: ~
   nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer: ~
@@ -86,13 +91,17 @@ services:
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper:
     class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
-      - '@nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Round\PDFRoundProvider'
 
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory:
     class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory
     autowire: true
+
+  nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer:
+    class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer
+    arguments:
+      - '@nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser'
 
   # Tags
   nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser: ~

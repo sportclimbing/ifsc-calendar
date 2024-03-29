@@ -41,6 +41,29 @@ services:
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient'
 
+  # Round
+  nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer:
+    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer
+
+  nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFScheduleProvider:
+    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFScheduleProvider
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer'
+      - '@nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser'
+      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer'
+
+  nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFDownloader:
+    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFDownloader
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
+      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
+
+  nicoSWD\IfscCalendar\Infrastructure\Round\PDFRoundProvider:
+    class: nicoSWD\IfscCalendar\Infrastructure\Round\PDFRoundProvider
+    arguments:
+      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFScheduleProvider'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFDownloader'
+
   # Start List
   nicoSWD\IfscCalendar\Infrastructure\StartList\ApiStartListProvider:
     class: nicoSWD\IfscCalendar\Infrastructure\StartList\ApiStartListProvider

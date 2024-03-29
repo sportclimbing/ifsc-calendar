@@ -5,18 +5,16 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Domain\Season;
+namespace nicoSWD\IfscCalendar\Domain\Schedule;
 
-use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
+use DateTimeImmutable;
 
-final readonly class IFSCSeason
+final readonly class IFSCSchedule
 {
-    /** @var IFSCLeague[] */
-    public array $leagues;
     public function __construct(
         public string $name,
-        array $leagues,
+        public DateTimeImmutable $startsAt,
+        public DateTimeImmutable $endsAt,
     ) {
-        $this->leagues = $leagues;
     }
 }
