@@ -7,10 +7,8 @@ COPY app/run.php app/
 COPY bin/console bin/
 COPY bin/create-phar bin/
 COPY build/*.sh build/
-COPY config/autoload_runtime.template config/
 COPY config/ config/
 COPY src/ src/
-COPY vendor/ vendor/
 COPY Makefile .
 COPY composer* .
 
