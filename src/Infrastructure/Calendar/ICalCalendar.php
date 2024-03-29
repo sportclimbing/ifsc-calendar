@@ -87,7 +87,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     private function createEvent(IFSCEvent $event, IFSCRound $round): Event
     {
         $calendarEvent = (new Event())
-            ->setSummary(sprintf("IFSC: %s - %s (%s)", $round->name, $event->eventName, $event->country))
+            ->setSummary(sprintf("IFSC: %s - %s (%s)", $round->name, $event->location, $event->country))
             ->setDescription($this->buildDescription($event, $round))
             ->setUrl(new Uri($event->siteUrl))
             ->setStatus($this->getEventStatus($round))
