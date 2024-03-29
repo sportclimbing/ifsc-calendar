@@ -21,4 +21,4 @@ RUN echo "phar.readonly=0" > /usr/local/etc/php/conf.d/phar.ini && \
     mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
     make clean && make && make install
 
-CMD /usr/local/bin/ifsc-calendar
+CMD ifsc-calendar
