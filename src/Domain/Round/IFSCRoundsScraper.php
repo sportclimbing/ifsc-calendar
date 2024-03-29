@@ -7,7 +7,6 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Round;
 
-use DateTimeZone;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
@@ -22,18 +21,18 @@ final readonly class IFSCRoundsScraper
     }
 
     /** @throws Exception */
-    public function fetchRoundsAndPosterForEvent(object $event, DateTimeZone $timeZone): IFSCScrapedEventsResult
+    public function fetchRoundsAndPosterForEvent(object $event): IFSCScrapedEventsResult
     {
         $rounds = $this->roundProvider->fetchRounds($event);
 
         return new IFSCScrapedEventsResult(
             poster: null,
-            rounds: $this->createRounds($rounds, $timeZone),
+            rounds: $this->createRounds($rounds),
         );
     }
 
     /** @param IFSCSchedule[] $schedules */
-    private function createRounds(array $schedules, DateTimeZone $timeZone): array
+    private function createRounds(array $schedules): array
     {
         $rounds = [];
 

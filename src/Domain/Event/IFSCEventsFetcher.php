@@ -79,8 +79,8 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
                 country: $eventInfo->country,
                 poster: $scrapedRounds->poster,
                 siteUrl: $this->siteURLBuilder->build($season, $event->event_id),
-                startsAt: $this->formatDate($startDate),
-                endsAt: $this->formatDate($endDate),
+                startsAt: $startDate,
+                endsAt: $endDate,
                 disciplines: $eventInfo->disciplines,
                 rounds: $rounds,
                 starters: $this->buildStartList($event->event_id),
@@ -98,7 +98,6 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
     {
         return $this->roundsScraper->fetchRoundsAndPosterForEvent(
             event: $event,
-            timeZone: new DateTimeZone($eventInfo->timeZone),
         );
     }
 
@@ -121,11 +120,6 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         }
 
         return $rounds;
-    }
-
-    public function formatDate(DateTimeImmutable $scrapedRounds): string
-    {
-        return $scrapedRounds->format(DateTimeInterface::RFC3339);
     }
 
     private function normalizeRoundName(IFSCEventRound $round): string

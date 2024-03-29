@@ -8,8 +8,6 @@
 namespace nicoSWD\IfscCalendar\Infrastructure\Calendar;
 
 use DateInterval;
-use DateTimeImmutable;
-use DateTimeZone;
 use Eluceo\iCal\Domain\Entity\Calendar;
 use Eluceo\iCal\Domain\Entity\Event;
 use Eluceo\iCal\Domain\Enum\EventStatus;
@@ -128,11 +126,9 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     /** @throws Exception */
     private function buildGenericTimeSpan(IFSCEvent $event): TimeSpan
     {
-        $timezone = new DateTimeZone($event->timeZone);
-
         return new TimeSpan(
-            new DateTime(new DateTimeImmutable($event->startsAt, $timezone), applyTimeZone: true),
-            new DateTime(new DateTimeImmutable($event->endsAt, $timezone), applyTimeZone: true),
+            new DateTime($event->startsAt, applyTimeZone: true),
+            new DateTime($event->endsAt, applyTimeZone: true),
         );
     }
 

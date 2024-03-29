@@ -9,7 +9,6 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Calendar;
 
 use DateTime;
 use DateTimeInterface;
-use DateTimeZone;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
@@ -52,8 +51,8 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
                 'site_url' => $event->siteUrl,
                 'event_url' => $this->buildUrl($event),
                 'disciplines' => $event->disciplines,
-                'starts_at' => $this->formatDateString($event->startsAt, $event->timeZone),
-                'ends_at' => $this->formatDateString($event->endsAt, $event->timeZone),
+                'starts_at' => $this->formatDate($event->startsAt),
+                'ends_at' => $this->formatDate($event->endsAt),
                 'timezone' => $event->timeZone,
                 'rounds' => $this->formatRound($event->rounds),
                 'start_list' => $this->formatStarters($event->starters),
@@ -108,15 +107,6 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
     private function buildCategories(IFSCRound $round): array
     {
         return array_map(static fn (IFSCRoundCategory $category): string => $category->value, $round->categories);
-    }
-
-    /** @throws Exception */
-    private function formatDateString(string $date, string $timeZone): string
-    {
-        $dateTime = new DateTime($date);
-        $dateTime->setTimezone(new DateTimeZone($timeZone));
-
-        return $this->formatDate($dateTime);
     }
 
     private function formatDate(DateTimeInterface $dateTime): string

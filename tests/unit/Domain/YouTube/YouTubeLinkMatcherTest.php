@@ -191,8 +191,8 @@ final class YouTubeLinkMatcherTest extends TestCase
             country: 'JPN',
             poster: 'https://cdn.ifsc-climbing.org/images/Events/2023/230506_Jakarta_WC/230415_Poster_JAK23.jpg',
             siteUrl: '',
-            startsAt: '2023-09-23T19:30:00+08:00',
-            endsAt: '2023-09-23T21:30:00+08:00',
+            startsAt: new DateTimeImmutable('2023-09-23T19:30:00+08:00'),
+            endsAt: new DateTimeImmutable('2023-09-23T21:30:00+08:00'),
             disciplines: [],
             rounds: [
                 new IFSCRound(
