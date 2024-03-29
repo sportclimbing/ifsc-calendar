@@ -41,8 +41,8 @@ final readonly class IFSCRoundsScraper
             $rounds[] = $this->roundFactory->create(
                 name: $schedule->name,
                 streamUrl: new StreamUrl(),
-                startTime: $schedule->startsAt->setTimezone($timeZone),
-                endTime: $schedule->endsAt->setTimezone($timeZone),
+                startTime: $schedule->startsAt,
+                endTime: $schedule->endsAt,
                 status: IFSCRoundStatus::CONFIRMED,
             );
         }

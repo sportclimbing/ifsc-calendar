@@ -67,6 +67,13 @@ services:
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider'
 
+  # Schedule
+  nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory:
+    class: nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory
+    arguments:
+      - '@nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser'
+      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer'
+
   # Stream URL
   nicoSWD\IfscCalendar\Domain\Stream\StreamUrlFactory:
     class: nicoSWD\IfscCalendar\Domain\Stream\StreamUrlFactory

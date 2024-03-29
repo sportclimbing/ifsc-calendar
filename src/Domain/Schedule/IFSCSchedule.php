@@ -15,6 +15,7 @@ final readonly class IFSCSchedule
         public string $name,
         public DateTimeImmutable $startsAt,
         public DateTimeImmutable $endsAt,
+        public bool $isPreRound,
     ) {
     }
 }

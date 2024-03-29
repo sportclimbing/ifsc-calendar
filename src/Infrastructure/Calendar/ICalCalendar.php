@@ -139,32 +139,18 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     /** @throws InvalidLeagueName */
     private function buildDescription(IFSCEvent $event, ?IFSCRound $round = null): string
     {
-        $description  = "{$event->normalizedName()} ({$event->country})\n\n";
+        $description  = "🏆 {$event->normalizedName()} ({$event->country})\n\n";
 
         if (!$round?->status->isConfirmed()) {
             $description .= "⚠️ Precise schedule has not been announced yet. ";
             $description .= "This calendar will update automatically once it's published!\n\n";
         }
 
-        $description.= "League: {$event->leagueName}\n\n";
-
-        $description .= "Disciplines:\n";
-
-        if ($round) {
-            foreach ($round->disciplines as $discipline) {
-                $description .= " - " . ucfirst($discipline->value) ."\n";
-            }
-        } else {
-            foreach ($event->disciplines as $discipline) {
-                $description .= " - " . ucfirst($discipline->value) ."\n";
-            }
-        }
-
-        $description .= "\n";
-        $description.= "Stream URL:\n{$event->siteUrl}\n";
+        $description.= "🧗 League:\n{$event->leagueName}\n\n";
+        $description.= "🍿 Stream URL:\n{$event->siteUrl}\n";
 
         if ($event->starters) {
-            $description .= "\nStart List:\n";
+            $description .= "\n📋 Start List:\n";
 
             foreach ($event->starters as $starter) {
                 $description .= " - {$starter->firstName} {$starter->lastName} ({$starter->country})\n";
@@ -172,6 +158,12 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
             $description .= " - ...\n";
         }
+
+        $description .= "\n☕️ If you find this useful, please consider buying me a coffee:\n";
+        $description .= "https://www.buymeacoffee.com/sportclimbing\n\n";
+
+        $description .= "🐛 Report a bug/problem:\n";
+        $description .= "https://github.com/sportclimbing/ifsc-calendar/issues\n";
 
         return $description;
     }

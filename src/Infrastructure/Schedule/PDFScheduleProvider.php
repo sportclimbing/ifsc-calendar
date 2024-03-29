@@ -8,11 +8,10 @@
 namespace nicoSWD\IfscCalendar\Infrastructure\Schedule;
 
 use DateTimeImmutable;
+use DateTimeZone;
 use Iterator;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer;
-use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
+use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleProvider;
-use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 
 final readonly class PDFScheduleProvider implements IFSCScheduleProvider
 {
@@ -30,21 +29,18 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
 
     public function __construct(
         private HTMLNormalizer $htmlNormalizer,
-        private IFSCTagsParser $tagsParser,
-        private IFSCRoundNameNormalizer $roundNameNormalizer,
+        private IFSCScheduleFactory $scheduleFactory,
     ) {
     }
 
     /** @inheritdoc */
-    public function parseSchedule(string $html): array
+    public function parseSchedule(string $html, string $timeZone): array
     {
         $schedules = [];
 
         foreach ($this->daySchedules($html) as $daySchedule) {
-            foreach ($this->parseDaySchedule($daySchedule) as $schedule) {
-                if ($this->isRound($schedule)) {
-                    $schedules[] = $schedule;
-                }
+            foreach ($this->parseDaySchedule($daySchedule, $timeZone) as $schedule) {
+                $schedules[] = $schedule;
             }
         }
 
@@ -62,7 +58,7 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
         return [];
     }
 
-    private function parseDaySchedule(string $schedule): Iterator
+    private function parseDaySchedule(string $schedule, string $timeZone): Iterator
     {
         [$dayName, $schedule] = $this->parseDayAndSchedule($schedule);
 
@@ -78,58 +74,49 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
                 if ($this->followsLastRound($match['start_time'][$key])) {
                     $startsAt = $lastStart->modify('+1 hour');
                 } else {
-                    $startsAt = $this->createStartDate($dayName, $match['start_time'][$key]);
+                    $startsAt = $this->createStartDate($dayName, $match['start_time'][$key], $timeZone);
                 }
 
-                $endsAt = $this->createEndDate($dayName, $match['end_time'][$key] ?? null, $startsAt);
+                $endsAt = $this->createEndDate($dayName, $match['end_time'][$key] ?? null, $startsAt, $timeZone);
                 $lastStart = $startsAt;
 
-                yield new IFSCSchedule(
-                    name: $this->roundNameNormalizer->normalize($match['name'][$key]),
+                $schedule = $this->scheduleFactory->create(
+                    name: $match['name'][$key],
                     startsAt: $startsAt,
                     endsAt: $endsAt,
                 );
+
+                if (!$schedule->isPreRound) {
+                    yield $schedule;
+                }
             }
         }
     }
 
-    private function createStartDate(string $day, string $time): DateTimeImmutable
+    private function createStartDate(string $day, string $time, string $timeZone): DateTimeImmutable
     {
         // Year is missing!!
 
         $day = preg_replace('~(\d{1,2})(?:st|nd|rd|th|ve)~', '$1', $day);
 
         return DateTimeImmutable::createFromFormat(
-            'l j M H:i',
+            'l j M Y H:i',
             sprintf(
-                '%s %s',
+                '%s 2024 %s',
                 trim($day),
                 trim($time),
-            )
+            ),
+            new DateTimeZone($timeZone),
         );
     }
 
-    private function createEndDate(string $dayName, ?string $time, DateTimeImmutable $startsAt): DateTimeImmutable
+    private function createEndDate(string $dayName, ?string $time, DateTimeImmutable $startsAt, string $timeZone): DateTimeImmutable
     {
         if ($time !== null && trim($time) !== '') {
-            return $this->createStartDate($dayName, $time);
+            return $this->createStartDate($dayName, $time, $timeZone);
         }
 
         return $startsAt->modify('+2 hours');
-    }
-
-    private function isRound(IFSCSchedule $schedule): bool
-    {
-        $tags = $this->tagsParser->fromString($schedule->name);
-
-        if (!$tags->getDisciplines() ||
-            !$tags->getRoundKind() ||
-            $tags->isPreRound()
-        ) {
-            return false;
-        }
-
-        return true;
     }
 
     private function parseDayAndSchedule(string $schedule): array

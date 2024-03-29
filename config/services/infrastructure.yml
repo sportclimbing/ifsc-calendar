@@ -49,8 +49,7 @@ services:
     class: nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFScheduleProvider
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer'
-      - '@nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser'
-      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer'
+      - '@nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory'
 
   nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFDownloader:
     class: nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFDownloader

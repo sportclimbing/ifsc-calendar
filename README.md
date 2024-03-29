@@ -127,8 +127,6 @@ $ ./build/ifsc-calendar.phar \
 ## 🔧 Todo
 - [ ] Push Docker image to Docker Hub
 - [ ] Use Symfony serializer to build response object from IFSC API
-- [ ] Add BuyMeACoffee link to `.ics` calendar events
-- [ ] Add season-specific schedule parsers
 - [ ] Calculate average event duration and add it to `events.json` and to the calendar as the official web
   does not tell when an event finishes.
 - [ ] Finish writing calendar setup guides
@@ -138,6 +136,7 @@ $ ./build/ifsc-calendar.phar \
 - [ ] Fix scraper for older seasons (formatting changes drastically)
 - [ ] Add more domain events to improve output log
 - [ ] Add automated tests to PRs (unit tests, coverage, etc)
+- [x] Add BuyMeACoffee link to `.ics` calendar events
 - [x] Show activity and warnings in console (domain events)
 - [x] Validate newly generated calendar before publishing site
 - [x] Search all YouTube API results (not only the first 50 results)

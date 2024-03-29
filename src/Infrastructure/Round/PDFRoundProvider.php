@@ -33,7 +33,7 @@ final readonly class PDFRoundProvider implements IFSCRoundProviderInterface
             $html = $this->convertPdfToHtml($pdfPath);
             $this->deleteTempFile($pdfPath);
 
-            return $this->scheduleProvider->parseSchedule($html);
+            return $this->scheduleProvider->parseSchedule($html, $event->timezone->value);
         }
 
         return [];

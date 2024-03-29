@@ -10,5 +10,5 @@ namespace nicoSWD\IfscCalendar\Domain\Schedule;
 interface IFSCScheduleProvider
 {
     /** @return IFSCSchedule[] */
-    public function parseSchedule(string $html): array;
+    public function parseSchedule(string $html, string $timeZone): array;
 }

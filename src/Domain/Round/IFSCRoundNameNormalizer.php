@@ -8,46 +8,27 @@
 namespace nicoSWD\IfscCalendar\Domain\Round;
 
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
-use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
+use nicoSWD\IfscCalendar\Domain\Tags\IFSCParsedTags;
 
 final readonly class IFSCRoundNameNormalizer
 {
-    public function __construct(
-        private IFSCTagsParser $tagsParser,
-    ) {
-    }
-
-    public function normalize(string $name): string
+    public function normalize(IFSCParsedTags $tags, string $originalName): string
     {
-        $name = trim($name);
-        $tags = $this->tagsParser->fromString($name);
+        $originalName = trim($originalName);
 
         $categories = $tags->getCategories();
         $disciplines = $tags->getDisciplines();
         $kind = $tags->getRoundKind();
 
-        if (!$tags->isPreRound() && $categories && $disciplines && $kind) {
-            $roundName = '';
-
-            if (count($categories) === 2) {
-                $roundName .= "Men's & Women's";
-            } else {
-                $roundName .= "{$categories[0]->value}'s";
-            }
-
-            if (count($disciplines) > 1) {
-                $lastDiscipline = array_pop($disciplines);
-                $disciplines = $this->disciplineNames($disciplines);
-                $roundName .= " " . implode(', ', $disciplines) . ' & ' . $lastDiscipline->value;
-            } else {
-                $roundName .= " {$disciplines[0]->value}";
-            }
-
+        if (!$tags->isPreRound() && $disciplines && $kind) {
+            $roundName = $this->buildCategories($categories);
+            $roundName .= $this->buildDisciplines($disciplines);
             $roundName .= " {$kind->value}";
-            $name = $roundName;
+
+            $originalName = $roundName;
         }
 
-        return $this->upperCaseWords($name);
+        return $this->upperCaseWords($originalName);
     }
 
     private function upperCaseWords(string $name): string
@@ -62,5 +43,26 @@ final readonly class IFSCRoundNameNormalizer
     private function disciplineNames(array $disciplines): array
     {
         return array_map(static fn (IFSCDiscipline $discipline): string => $discipline->value, $disciplines);
+    }
+
+    private function buildCategories(array $categories): string
+    {
+        if (count($categories) === 2) {
+            return "Men's & Women's";
+        } else {
+            return "{$categories[0]->value}'s";
+        }
+    }
+
+    private function buildDisciplines(array $disciplines): string
+    {
+        if (count($disciplines) > 1) {
+            $lastDiscipline = array_pop($disciplines);
+            $disciplines = $this->disciplineNames($disciplines);
+
+            return " " . implode(', ', $disciplines) . ' & ' . $lastDiscipline->value;
+        } else {
+            return " {$disciplines[0]->value}";
+        }
     }
 }

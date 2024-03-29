@@ -204,7 +204,12 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
 
     private function buildSlug(object $event): string
     {
-        return preg_replace('~\W~', '-', mb_strtolower($event->event));
+        $eventName = $event->event;
+        $eventName = mb_convert_encoding($eventName, mb_detect_encoding($eventName, strict: true), 'UTF-8');
+        $eventName = strtr($eventName, ['ç' => 'c']);
+        $eventName = preg_replace('~\W+~u', '-', mb_strtolower($eventName));
+
+        return $eventName;
     }
 
     private function emitScrapingStartedEvent(object $event): void

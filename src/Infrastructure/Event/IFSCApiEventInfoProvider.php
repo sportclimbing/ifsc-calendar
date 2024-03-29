@@ -75,7 +75,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
             eventName: $response->name,
             leagueId: $response->league_id,
             leagueSeasonId: $response->league_season_id,
-            timeZone: $response->timezone->value,
+            timeZone: $this->fixTimeZone($response),
             location: $this->fixFatFinger($response->location),
             country: $response->country,
             disciplines: $this->getDisciplines($response->disciplines),
@@ -179,5 +179,15 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
     private function fixFatFinger(string $location): string
     {
         return str_replace('CIty', 'City', $location);
+    }
+
+    private function fixTimeZone(object $response): string
+    {
+        // ffs ifsc
+        return match ($response->location) {
+            'Innsbruck' => 'Europe/Vienna',
+            'Koper' => 'Europe/Ljubljana',
+            default => $response->timezone->value,
+        };
     }
 }
