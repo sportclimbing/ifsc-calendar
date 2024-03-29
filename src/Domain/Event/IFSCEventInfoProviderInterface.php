@@ -8,6 +8,7 @@
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
+use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 
@@ -16,11 +17,11 @@ interface IFSCEventInfoProviderInterface
     /** @throws IFSCApiClientException */
     public function fetchEventInfo(int $eventId): IFSCEventInfo;
 
-    /** @throws IFSCApiClientException */
-    public function fetchEventsForLeague(int $leagueId): array;
-
-    /** @throws IFSCApiClientException */
-    public function fetchLeagueNameById(int $leagueId): string;
+    /**
+     * @param IFSCLeague[] $leagues
+     * @throws IFSCApiClientException
+     */
+    public function fetchEventsForLeagues(array $leagues): array;
 
     /**
      * @throws IFSCApiClientException

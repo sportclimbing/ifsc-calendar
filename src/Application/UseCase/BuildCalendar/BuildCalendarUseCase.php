@@ -28,9 +28,9 @@ final readonly class BuildCalendarUseCase
     /** @throws InvalidURLException */
     private function buildCalendar(BuildCalendarRequest $buildCalendarRequest): array
     {
-        return $this->calendarBuilder->generateForLeague(
+        return $this->calendarBuilder->generateForSeason(
             season: $buildCalendarRequest->season,
-            leagueIds: $buildCalendarRequest->leagueIds,
+            leagues: $buildCalendarRequest->leagues,
             formats: $buildCalendarRequest->formats,
         );
     }

@@ -16,7 +16,7 @@ final readonly class IFSCTagsParser
         $tags = [];
 
         foreach (Tag::cases() as $eventType) {
-            if (preg_match("~\b{$eventType->value}\b~", strtolower($string))) {
+            if (preg_match("~\b{$eventType->value}\b~i", strtolower($string))) {
                 $tags[] = $eventType;
             }
         }

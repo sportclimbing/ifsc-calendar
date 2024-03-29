@@ -14,6 +14,8 @@ final class IFSCEventSorter
     /** @param IFSCEvent[] $events */
     public function sortByDate(array &$events): void
     {
+        $events = array_filter($events, static fn (IFSCEvent $event): bool => count($event->rounds) > 0);
+
         usort($events, $this->sortEventsByDate());
     }
 

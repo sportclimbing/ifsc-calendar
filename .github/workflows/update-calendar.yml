@@ -23,17 +23,16 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          tools: composer
 
       - name: "Generate calendar files"
-        run: |
-          composer install --no-dev --optimize-autoloader
-          php app/run.php \
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ghcr.io/sportclimbing/ifsc-calendar:latest
+          options: -v ${{ github.workspace }}:/calendar
+          run: |
+            ifsc-calendar \
               --season 2024 \
-              --league "World Cups and World Championships" \
-              --league "IFSC Paraclimbing" \
-              --league "Games" \
-              --output "${{ env.CALENDAR_FILE_ICS }}" \
+              --output "/calendar/${{ env.CALENDAR_FILE_ICS }}" \
               --format "ics,json" \
 
       - name: "Validate calendar"

@@ -16,14 +16,14 @@ dev: install-composer
 	chmod u+x build/ifsc-calendar.phar
 
 docker:
-	docker build --tag ifsc-calendar .
+	docker build --tag ifsc-calendar . --no-cache
 
 test: install-composer
 	build/composer.phar install --dev --ignore-platform-req=ext-gd
 	vendor/bin/phpunit
 
 install:
-	cp build/ifsc-calendar.phar /usr/local/bin/ifsc-calendar
+	cp build/ifsc-calendar.phar /bin/ifsc-calendar
 
 clean:
-	rm build/ifsc-calendar.phar
+	rm -f build/ifsc-calendar.phar

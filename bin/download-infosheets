@@ -1,0 +1,42 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+use GuzzleHttp\Exception\GuzzleException;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+/**
+ * @license  http://opensource.org/licenses/mit-license.php MIT
+ * @link     https://github.com/nicoSWD
+ * @author   Nicolas Oelgart <nico@oelgart.com>
+ */
+
+$events = json_decode(file_get_contents($argv[1]));
+
+$guzzle = new GuzzleHttp\Client();
+
+foreach ($events->events as $event) {
+    $sheetUrl = "https://ifsc.results.info/events/{$event->id}/infosheet";
+
+    echo "Downloading $sheetUrl ... ";
+
+    try {
+        $response = $guzzle->get($sheetUrl);
+    } catch (GuzzleException $e) {
+        echo "Error: {$e->getMessage()}", PHP_EOL;
+        continue;
+    }
+
+    if ($response->getHeader('content-type')[0] === 'application/pdf') {
+        $saveAs = __DIR__ . "/../var/{$event->location}.pdf";
+
+        if (file_put_contents($saveAs, $response->getBody()->getContents())) {
+            `pdftohtml -noframes -i -stdout {$saveAs} > {$saveAs}.html`;
+
+            echo 'OKAY', PHP_EOL;
+            continue;
+        }
+    }
+
+    echo 'Error!', PHP_EOL;
+}

@@ -6,13 +6,13 @@
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
 use nicoSWD\IfscCalendar\Application\Command\BuildCommand;
-use nicoSWD\IfscCalendar\Kernel;
+use nicoSWD\IfscCalendar\Application\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 
 require_once dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
 return function (array $context): Application {
-    $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
+    $kernel = new Kernel('prod', (bool) $context['APP_DEBUG']);
     $kernel->boot();
 
     /** @var BuildCommand $command */
