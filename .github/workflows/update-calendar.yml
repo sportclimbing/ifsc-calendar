@@ -33,7 +33,7 @@ jobs:
             ifsc-calendar \
               --season 2024 \
               --output "/calendar/${{ env.CALENDAR_FILE_ICS }}" \
-              --format "ics,json" \
+              --format "ics,json"
 
       - name: "Validate calendar"
         run: php bin/validate-calendar "${{ env.CALENDAR_FILE_JSON }}"
