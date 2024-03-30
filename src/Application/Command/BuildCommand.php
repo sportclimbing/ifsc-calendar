@@ -26,7 +26,6 @@ use Symfony\Component\Filesystem\Filesystem;
 class BuildCommand extends Command
 {
     public function __construct(
-        private readonly FetchSeasonsUseCase $fetchSeasonsUseCase,
         private readonly BuildCalendarUseCase $buildCalendarUseCase,
     ) {
         parent::__construct();
@@ -45,7 +44,7 @@ class BuildCommand extends Command
     /** @throws InvalidURLException */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $seasons = $this->getSeasons();
+        $seasons = [2024];
         $selectedSeason = $this->getSelectedSeason($seasons, $input, $output);
         $formats = $this->getFormats($input);
 
@@ -77,26 +76,11 @@ class BuildCommand extends Command
         );
     }
 
-    /** @return IFSCSeason[] */
-    private function getSeasons(): array
-    {
-        $seasons = [];
-
-        foreach ($this->fetchSeasonsUseCase->execute()->seasons as $season) {
-            $seasons[$season->name] = $season;
-        }
-
-        return $seasons;
-    }
-
     private function askForSeason(array $seasons, InputInterface $input, OutputInterface $output): int
     {
-        $seasonNames = array_keys($seasons);
-        $seasonNames = array_slice($seasonNames, 0, 3);
-
         $question = new ChoiceQuestion(
-            "Please select your season (defaults to $seasonNames[0])",
-            $seasonNames,
+            "Please select your season (defaults to $seasons[0])",
+            $seasons,
             0
         );
         $question->setErrorMessage('Season %s is invalid.');
@@ -111,7 +95,7 @@ class BuildCommand extends Command
         if (!$selectedSeason) {
             $selectedSeason = $this->askForSeason($seasons, $input, $output);
         } elseif ($selectedSeason === 'current') {
-            $selectedSeason = key($seasons);
+            $selectedSeason = current($seasons);
         }
 
         return IFSCSeasonYear::from((int) $selectedSeason);
