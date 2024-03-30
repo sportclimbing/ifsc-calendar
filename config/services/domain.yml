@@ -23,10 +23,14 @@ services:
     class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor'
+      - '@nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2024PostProcessor'
 
   nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor:
     class: nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor
     autowire: true
+
+  nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2024PostProcessor:
+    class: nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2024PostProcessor
 
   nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder:
     class: nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder

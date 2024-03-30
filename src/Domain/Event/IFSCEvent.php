@@ -33,7 +33,7 @@ final class IFSCEvent
         public readonly string $eventName,
         public readonly string $location,
         public readonly string $country,
-        public readonly ?string $poster,
+        public ?string $poster,
         public readonly string $siteUrl,
         public readonly DateTimeImmutable $startsAt,
         public readonly DateTimeImmutable $endsAt,
