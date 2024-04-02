@@ -19,3 +19,8 @@ jobs:
 
       - name: "Run phpunit"
         run: make test
+
+      - name: "PHPStan"
+        uses: docker://jakzal/phpqa:php8.3.4-alpine
+        with:
+          args: phpstan analyze src/ -l 6
