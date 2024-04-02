@@ -63,7 +63,7 @@ final readonly class PDFRoundProvider implements IFSCRoundProviderInterface
         return $html;
     }
 
-    private function execPdfToHtml(string $pdfPath, &$pipes): mixed
+    private function execPdfToHtml(string $pdfPath, ?array &$pipes): mixed
     {
         $pdfPath = escapeshellarg($pdfPath);
 

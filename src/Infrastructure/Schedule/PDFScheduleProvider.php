@@ -10,6 +10,7 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Schedule;
 use DateTimeImmutable;
 use DateTimeZone;
 use Iterator;
+use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleProvider;
 
@@ -47,6 +48,7 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
         return $schedules;
     }
 
+    /** @return string[] */
     private function daySchedules(string $html): array
     {
         $normalize = $this->htmlNormalizer->normalize($html);
@@ -58,6 +60,7 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
         return [];
     }
 
+    /** @return Iterator<IFSCSchedule> */
     private function parseDaySchedule(string $schedule, string $timeZone): Iterator
     {
         [$dayName, $schedule] = $this->parseDayAndSchedule($schedule);
@@ -129,7 +132,7 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
         return preg_replace('~(\d\d:\d\d)\s*\n(\d\d:\d\d)\s*~', "\$1 - \$2\n", $schedule);
     }
 
-    private function followsLastRound($haystack): bool
+    private function followsLastRound(string $haystack): bool
     {
         return str_contains(strtolower($haystack), 'follow');
     }
