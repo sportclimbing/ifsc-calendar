@@ -47,7 +47,10 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         );
     }
 
-    /** @throws Exception */
+    /**
+     * @param IFSCEvent[] $events
+     * @throws Exception
+     */
     private function createCalenderFromEvents(array $events): Calendar
     {
         $calendar = new Calendar($this->createEvents($events));

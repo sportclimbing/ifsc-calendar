@@ -62,14 +62,17 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
         return json_encode($jsonEvents, flags: JSON_PRETTY_PRINT);
     }
 
-    /** @param IFSCRound[] $rounds */
+    /**
+     * @param IFSCRound[] $rounds
+     * @return string[]|array[]
+     */
     private function formatRound(array $rounds): array
     {
         $format = fn (IFSCRound $round): array => [
             'name' => $round->name,
             'categories' => $this->buildCategories($round),
             'disciplines' => $this->buildDisciplines($round),
-            'kind' => $round->kind?->value,
+            'kind' => $round->kind->value,
             'starts_at' => $this->formatDate($round->startTime),
             'ends_at' => $this->formatDate($round->endTime),
             'schedule_status' => $round->status->value,
@@ -80,6 +83,10 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
         return array_map($format, $rounds);
     }
 
+    /**
+     * @param IFSCStarter[] $starters
+     * @return string[]
+     */
     private function formatStarters(array $starters): array
     {
         $format = static fn (IFSCStarter $starter): array => [
