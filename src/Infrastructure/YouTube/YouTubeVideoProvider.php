@@ -22,8 +22,7 @@ final readonly class YouTubeVideoProvider implements YouTubeApiClient
     ) {
     }
 
-    #[Override]
-    public function fetchRecentVideos(IFSCSeasonYear $season): YouTubeVideoCollection
+    #[Override] public function fetchRecentVideos(IFSCSeasonYear $season): YouTubeVideoCollection
     {
         $videoCollection = new YouTubeVideoCollection();
 
@@ -35,8 +34,7 @@ final readonly class YouTubeVideoProvider implements YouTubeApiClient
     }
 
     /** @inheritdoc  */
-    #[Override]
-    public function fetchRestrictedRegionsForVideo(string $videoId): array
+    #[Override] public function fetchRestrictedRegionsForVideo(string $videoId): array
     {
         return $this->youTubeVideoCollection->fetchRestrictedRegionsForVideo($videoId);
     }

@@ -27,8 +27,7 @@ final readonly class IFSCApiWorldRankingProvider implements IFSCWorldRankingProv
     }
 
     /** @inheritdoc */
-    #[Override]
-    public function fetchWorldRankCategories(): array
+    #[Override] public function fetchWorldRankCategories(): array
     {
         try {
             $response = $this->apiClient->authenticatedGet(
@@ -53,8 +52,7 @@ final readonly class IFSCApiWorldRankingProvider implements IFSCWorldRankingProv
     }
 
     /** @inheritdoc */
-    #[Override]
-    public function fetchWorldRankForCategory(int $categoryId): array
+    #[Override] public function fetchWorldRankForCategory(int $categoryId): array
     {
         try {
             $response = $this->apiClient->authenticatedGet(

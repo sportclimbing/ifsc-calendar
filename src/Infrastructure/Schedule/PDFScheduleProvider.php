@@ -51,7 +51,7 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
     {
         $normalize = $this->htmlNormalizer->normalize($html);
 
-        if (preg_match_all(self::REGEX_DAY_SCHEDULE, $normalize,$matches)) {
+        if (preg_match_all(self::REGEX_DAY_SCHEDULE, $normalize, $matches)) {
             return $matches[0];
         }
 

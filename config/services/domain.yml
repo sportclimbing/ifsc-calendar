@@ -65,12 +65,6 @@ services:
     arguments:
       - '@nicoSWD\IfscVideos\Infrastructure\YouTube\YouTubeVideoProvider'
 
-  # Season
-  nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonProvider:
-    class: nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonProvider
-    arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider'
-
   # Schedule
   nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory:
     class: nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory

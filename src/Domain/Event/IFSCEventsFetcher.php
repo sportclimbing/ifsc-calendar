@@ -8,7 +8,6 @@
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
 use DateTimeImmutable;
-use DateTimeInterface;
 use DateTimeZone;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder;

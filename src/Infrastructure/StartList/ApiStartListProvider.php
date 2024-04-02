@@ -26,8 +26,7 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
     }
 
     /** @inheritdoc */
-    #[Override]
-    public function fetchStartListForEvent(int $eventId): array
+    #[Override] public function fetchStartListForEvent(int $eventId): array
     {
         try {
             $athletes = $this->apiClient->authenticatedGet(

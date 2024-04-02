@@ -22,8 +22,7 @@ final readonly class SymfonyEventDispatcher implements EventDispatcherInterface
         $this->eventDispatcher->addListener(self::EVENT_NAME, [new ConsoleEventListener(), 'logMessage']);
     }
 
-    #[Override]
-    public function dispatch(Event $event): void
+    #[Override] public function dispatch(Event $event): void
     {
         $this->eventDispatcher->dispatch($event, self::EVENT_NAME);
     }

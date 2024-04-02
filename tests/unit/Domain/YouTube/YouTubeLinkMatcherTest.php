@@ -26,8 +26,7 @@ final class YouTubeLinkMatcherTest extends TestCase
 {
     private readonly YouTubeLinkMatcher $linkMatcher;
 
-    #[Test]
-    public function seoul_speed_qualifications_url_is_found(): void
+    #[Test] public function seoul_speed_qualifications_url_is_found(): void
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Speed Qualifications',
@@ -38,8 +37,7 @@ final class YouTubeLinkMatcherTest extends TestCase
         $this->assetUrlMatchesEvent('https://youtu.be/mC1RhpB4uuQ', $event);
     }
 
-    #[Test]
-    public function seoul_speed_finals_url_is_found(): void
+    #[Test] public function seoul_speed_finals_url_is_found(): void
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Speed Finals',
@@ -51,8 +49,7 @@ final class YouTubeLinkMatcherTest extends TestCase
 
     }
 
-    #[Test]
-    public function seoul_womens_boulder_qualification_qualifications_url_is_not_found(): void
+    #[Test] public function seoul_womens_boulder_qualification_qualifications_url_is_not_found(): void
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Women\'s Boulder Qualification',
@@ -63,8 +60,7 @@ final class YouTubeLinkMatcherTest extends TestCase
         $this->assertNull($this->findStreamUrlForEvent($event));
     }
 
-    #[Test]
-    public function seoul_mens_boulder_qualification_qualifications_url_is_not_found(): void
+    #[Test] public function seoul_mens_boulder_qualification_qualifications_url_is_not_found(): void
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Men\'s Boulder Qualification',
@@ -75,8 +71,7 @@ final class YouTubeLinkMatcherTest extends TestCase
         $this->assertNull($this->findStreamUrlForEvent($event));
     }
 
-    #[Test]
-    public function seoul_boulder_semi_finals_is_not_found(): void
+    #[Test] public function seoul_boulder_semi_finals_is_not_found(): void
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Boulder Semi-finals',
@@ -87,8 +82,7 @@ final class YouTubeLinkMatcherTest extends TestCase
         $this->assertNull($this->findStreamUrlForEvent($event));
     }
 
-    #[Test]
-    public function hachioji_boulder_qualifications_is_not_found(): void
+    #[Test] public function hachioji_boulder_qualifications_is_not_found(): void
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Boulder Qualifications',
@@ -99,8 +93,7 @@ final class YouTubeLinkMatcherTest extends TestCase
         $this->assertNull($this->findStreamUrlForEvent($event));
     }
 
-    #[Test]
-    public function hachioji_boulder_semi_finals_is_found(): void
+    #[Test] public function hachioji_boulder_semi_finals_is_found(): void
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Women\'s Boulder Semi-final',
@@ -111,8 +104,7 @@ final class YouTubeLinkMatcherTest extends TestCase
         $this->assetUrlMatchesEvent('https://youtu.be/kuE-qhRq7Fk', $event);
     }
 
-    #[Test]
-    public function salt_lake_city_speed_qualification_is_found(): void
+    #[Test] public function salt_lake_city_speed_qualification_is_found(): void
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Women\'s Speed Qualification',
@@ -123,8 +115,7 @@ final class YouTubeLinkMatcherTest extends TestCase
         $this->assetUrlMatchesEvent('https://youtu.be/n6YyV2ddbb4', $event);
     }
 
-    #[Test]
-    public function chamonix_lead_finals(): void
+    #[Test] public function chamonix_lead_finals(): void
     {
         $event = $this->createEventWithNameAndDescription(
             name: 'Men\'s Lead Final',

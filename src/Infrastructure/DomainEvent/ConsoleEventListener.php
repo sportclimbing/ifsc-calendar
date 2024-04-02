@@ -13,8 +13,7 @@ use Override;
 
 final class ConsoleEventListener implements EventListenerInterface
 {
-    #[Override]
-    public function logMessage(Event $event): void
+    #[Override] public function logMessage(Event $event): void
     {
         echo $event->getMessage(), PHP_EOL;
     }
