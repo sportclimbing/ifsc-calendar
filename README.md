@@ -4,6 +4,7 @@
 
 <br /><br />
 <img src="https://img.shields.io/github/downloads/sportclimbing/ifsc-calendar/total?color=green&label=Downloads" alt="downloads" />
+<img src="https://scrutinizer-ci.com/g/sportclimbing/ifsc-calendar/badges/quality-score.png?b=main" alt="scrutinizer" />
 <img src="https://github.com/sportclimbing/ifsc-calendar/actions/workflows/update-calendar.yml/badge.svg" alt="update" />
 <img src="https://github.com/sportclimbing/ifsc-calendar/actions/workflows/push-docker-image.yml/badge.svg" alt="build" />
 </div>
