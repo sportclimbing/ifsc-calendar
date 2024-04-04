@@ -28,8 +28,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
      * @inheritDoc
      * @throws Exception
      */
-    #[Override]
-    public function generateForEvents(array $events): string
+    #[Override] public function generateForEvents(array $events): string
     {
         $jsonEvents = [
             'events' => [],

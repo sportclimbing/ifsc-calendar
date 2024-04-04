@@ -39,8 +39,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
      * @inheritDoc
      * @throws Exception
      */
-    #[Override]
-    public function generateForEvents(array $events): string
+    #[Override] public function generateForEvents(array $events): string
     {
         return (string) $this->calendarFactory->createCalendar(
             $this->createCalenderFromEvents($events),
@@ -123,7 +122,6 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         );
     }
 
-    /** @throws Exception */
     private function buildGenericTimeSpan(IFSCEvent $event): TimeSpan
     {
         return new TimeSpan(
@@ -135,7 +133,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     /** @throws InvalidLeagueName */
     private function buildDescription(IFSCEvent $event, ?IFSCRound $round = null): string
     {
-        $description  = "🏆 {$event->normalizedName()} ({$event->country})\n\n";
+        $description = "🏆 {$event->normalizedName()} ({$event->country})\n\n";
 
         if (!$round?->status->isConfirmed()) {
             $description .= "⚠️ Precise schedule has not been announced yet. ";
