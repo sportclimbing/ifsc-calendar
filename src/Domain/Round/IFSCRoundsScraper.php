@@ -9,6 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\Round;
 
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
+use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 
@@ -21,12 +22,12 @@ final readonly class IFSCRoundsScraper
     }
 
     /** @throws Exception */
-    public function fetchRoundsAndPosterForEvent(object $event): IFSCScrapedEventsResult
+    public function fetchRoundsAndPosterForEvent(IFSCEventInfo $event): IFSCScrapedEventsResult
     {
         $rounds = $this->roundProvider->fetchRounds($event);
 
         return new IFSCScrapedEventsResult(
-            poster: null,
+            posterUrl: null,
             rounds: $this->createRounds($rounds),
         );
     }

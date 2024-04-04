@@ -9,6 +9,7 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Schedule;
 
 use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\InfoSheetNotFoundEvent;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
+use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 
@@ -22,7 +23,7 @@ final readonly class PDFDownloader
     ) {
     }
 
-    public function downloadInfoSheet(object $event): ?string
+    public function downloadInfoSheet(IFSCEventInfo $event): ?string
     {
         try {
             $infoSheetUrl = $this->getInfoSheetUrl($event);
@@ -42,7 +43,7 @@ final readonly class PDFDownloader
     }
 
     /** @throws HttpException */
-    private function getInfoSheetUrl(object $event): ?string
+    private function getInfoSheetUrl(IFSCEventInfo $event): ?string
     {
         $headers = array_change_key_case(
             $this->httpClient->getHeaders(
@@ -54,14 +55,14 @@ final readonly class PDFDownloader
         return $headers['location'][0] ?? null;
     }
 
-    private function emitInfoSheetNotFoundEvent(object $event): void
+    private function emitInfoSheetNotFoundEvent(IFSCEventInfo $event): void
     {
-        $this->eventDispatcher->dispatch(new InfoSheetNotFoundEvent($event->event));
+        $this->eventDispatcher->dispatch(new InfoSheetNotFoundEvent($event->eventName));
     }
 
-    private function buildInfoSheetUrl(object $event): string
+    private function buildInfoSheetUrl(IFSCEventInfo $event): string
     {
-        return sprintf(self::INFO_SHEET_URL, $event->event_id);
+        return sprintf(self::INFO_SHEET_URL, $event->eventId);
     }
 
     private function getTempFileName(): string
@@ -72,6 +73,6 @@ final readonly class PDFDownloader
     /** @throws HttpException */
     private function downloadFile(string $url, string $tmpFile): void
     {
-        $this->httpClient->get($url, ['sink' => $tmpFile]);
+        $this->httpClient->downloadFile($url, $tmpFile);
     }
 }

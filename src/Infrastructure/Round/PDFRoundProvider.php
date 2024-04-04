@@ -8,6 +8,7 @@
 namespace nicoSWD\IfscCalendar\Infrastructure\Round;
 
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
+use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundProviderInterface;
 use nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFDownloader;
 use nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFScheduleProvider;
@@ -25,7 +26,7 @@ final readonly class PDFRoundProvider implements IFSCRoundProviderInterface
      * @inheritdoc
      * @throws IFSCEventsScraperException
      */
-    #[Override] public function fetchRounds(object $event): array
+    #[Override] public function fetchRounds(IFSCEventInfo $event): array
     {
         $pdfPath = $this->downloader->downloadInfoSheet($event);
 
@@ -33,7 +34,7 @@ final readonly class PDFRoundProvider implements IFSCRoundProviderInterface
             $html = $this->convertPdfToHtml($pdfPath);
             $this->deleteTempFile($pdfPath);
 
-            return $this->scheduleProvider->parseSchedule($html, $event->timezone->value);
+            return $this->scheduleProvider->parseSchedule($html, $event->timeZone);
         }
 
         return [];

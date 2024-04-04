@@ -17,4 +17,7 @@ interface HttpClientInterface
 
     /** @throws HttpException */
     public function get(string $url, array $options): string;
+
+    /** @throws HttpException */
+    public function downloadFile(string $url, string $saveAs);
 }

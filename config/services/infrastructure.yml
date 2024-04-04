@@ -18,7 +18,6 @@ services:
     class: nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient'
-      - '@serializer'
 
   # Domain Event
   nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher:

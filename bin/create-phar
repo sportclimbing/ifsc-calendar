@@ -23,19 +23,14 @@ $finder = (new Finder())
         $baseDir . '/',
     ])
     ->exclude([
-        $baseDir . '/.github',
         $baseDir . '/bin',
         $baseDir . '/build',
-        $baseDir . '/resources',
-        $baseDir . '/tests',
-        $baseDir . '/var',
     ])
     ->notName([
         $baseDir . '/.*',
         $baseDir . '/Dockerfile',
         $baseDir . '/Makefile',
-        $baseDir . '/symfony.lock',
-        $baseDir . '/*phpunit*',
+        $baseDir . '/*.lock',
     ])
     ->notPath('tests');
 

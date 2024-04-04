@@ -19,7 +19,6 @@ use nicoSWD\IfscCalendar\Domain\Season\IFSCSeason;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;
-use Symfony\Component\Serializer\SerializerInterface;
 
 final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderInterface
 {
@@ -31,56 +30,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
 
     public function __construct(
         private IFSCApiClient $apiClient,
-        private SerializerInterface $serializer,
     ) {
-    }
-
-    /** @inheritdoc */
-    #[Override] public function fetchEventInfo(int $eventId): IFSCEventInfo
-    {
-        try {
-            $response = $this->apiClient->authenticatedGet(
-                sprintf(self::IFSC_EVENT_API_ENDPOINT, $eventId),
-            );
-        } catch (HttpException $e) {
-            throw new IFSCApiClientException(
-                "Unable to retrieve events info: {$e->getMessage()}"
-            );
-        }
-
-        //return $this->serializer->deserialize($response, IFSCEventInfo::class, 'json');
-
-        $categories = [];
-
-        foreach ($response->d_cats as $category) {
-            $rounds = [];
-
-            foreach ($category->category_rounds as $round) {
-                $normalizedRoundName = strtolower(
-                    str_replace(' ', '-', $round->name)
-                );
-
-                $rounds[] = new IFSCEventRound(
-                    discipline: $round->kind,
-                    kind: IFSCRoundKind::from($normalizedRoundName),
-                    category: $round->category,
-                );
-            }
-
-            $categories[] = new IFSCEventCategory($rounds);
-        }
-
-        return new IFSCEventInfo(
-            eventId: $response->id,
-            eventName: $response->name,
-            leagueId: $response->league_id,
-            leagueSeasonId: $response->league_season_id,
-            timeZone: $this->fixTimeZone($response),
-            location: $this->fixFatFinger($response->location),
-            country: $response->country,
-            disciplines: $this->getDisciplines($response->disciplines),
-            categories: $categories,
-        );
     }
 
     /** @inheritdoc */
@@ -95,10 +45,8 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
                 );
 
                 foreach ($response->events as $event) {
-                    $event->league_name = $league->name;
+                    $events[] = $this->fetchEventInfo($event, $league);
                 }
-
-                $events = array_merge($events, $response->events);
             } catch (HttpException $e) {
                 throw new IFSCApiClientException(
                     "Unable to retrieve events for season: {$e->getMessage()}"
@@ -132,6 +80,35 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
         }
 
         return $seasons;
+    }
+
+    /** @throws IFSCApiClientException */
+    private function fetchEventInfo(object $event, object $league): IFSCEventInfo
+    {
+        try {
+            $response = $this->apiClient->authenticatedGet(
+                sprintf(self::IFSC_EVENT_API_ENDPOINT, $event->event_id),
+            );
+        } catch (HttpException $e) {
+            throw new IFSCApiClientException(
+                "Unable to retrieve events info: {$e->getMessage()}"
+            );
+        }
+
+        return new IFSCEventInfo(
+            eventId: $response->id,
+            eventName: $event->event,
+            leagueId: $response->league_id,
+            leagueName: $league->name,
+            leagueSeasonId: $response->league_season_id,
+            localStartDate: $event->local_start_date,
+            localEndDate: $event->local_end_date,
+            timeZone: $this->fixTimeZone($response),
+            location: $this->fixFatFinger($response->location),
+            country: $response->country,
+            disciplines: $this->getDisciplines($response->disciplines),
+            categories: $this->buildCategories($response),
+        );
     }
 
     /** @return IFSCLeague[] */
@@ -176,9 +153,29 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
         return (int) pathinfo($league->url, PATHINFO_FILENAME);
     }
 
-    private function fixFatFinger(string $location): string
+    /** @return IFSCEventCategory[] */
+    private function buildCategories(object $response): array
     {
-        return str_replace('CIty', 'City', $location);
+        $categories = [];
+
+        foreach ($response->d_cats as $category) {
+            $rounds = [];
+
+            foreach ($category->category_rounds as $round) {
+                $normalizedRoundName = strtolower(
+                    str_replace(' ', '-', $round->name)
+                );
+
+                $rounds[] = new IFSCEventRound(
+                    discipline: $round->kind,
+                    kind: IFSCRoundKind::from($normalizedRoundName),
+                    category: $round->category,
+                );
+            }
+
+            $categories[] = new IFSCEventCategory($rounds);
+        }
+        return $categories;
     }
 
     private function fixTimeZone(object $response): string
@@ -189,5 +186,10 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
             'Koper' => 'Europe/Ljubljana',
             default => $response->timezone->value,
         };
+    }
+
+    private function fixFatFinger(string $location): string
+    {
+        return str_replace('CIty', 'City', $location);
     }
 }

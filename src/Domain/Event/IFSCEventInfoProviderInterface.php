@@ -14,11 +14,9 @@ use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 
 interface IFSCEventInfoProviderInterface
 {
-    /** @throws IFSCApiClientException */
-    public function fetchEventInfo(int $eventId): IFSCEventInfo;
-
     /**
      * @param IFSCLeague[] $leagues
+     * @return IFSCEventInfo[]
      * @throws IFSCApiClientException
      */
     public function fetchEventsForLeagues(array $leagues): array;

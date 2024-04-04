@@ -1,7 +1,4 @@
 services:
-  # Event
-  nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter: ~
-
   # Calendar
   nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory:
     class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory
@@ -83,12 +80,21 @@ services:
     class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventsFetcher
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper'
-      - '@nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator'
+      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory'
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
       - '@nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider'
       - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
       - '@nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder'
 
+  nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory:
+    class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory
+    arguments:
+      - '@nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder'
+      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventsSlug'
+      - '@nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator'
+
+  nicoSWD\IfscCalendar\Domain\Event\IFSCEventsSlug: ~
+  nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter: ~
   nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper: ~
   nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer: ~
 
