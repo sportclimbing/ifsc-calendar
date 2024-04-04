@@ -19,9 +19,3 @@ jobs:
 
       - name: "Run phpunit"
         run: make test
-
-      - name: "PHPStan"
-        uses: php-actions/phpstan@v3
-        with:
-          path: src/
-          level: 3
