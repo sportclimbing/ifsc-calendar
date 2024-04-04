@@ -7,14 +7,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-push-image:
+  push_to_ghcr:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
         uses: actions/checkout@master
+
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
+      - name: Composer Install
+        run: composer install --no-dev --optimize-autoloader
 
       - name: "Build and publish a Docker image for ${{ github.repository }}"
         uses: macbre/push-to-ghcr@master
         with:
           image_name: ${{ github.repository }}
           github_token: ${{ secrets.GH_PACKAGES_TOKEN }}
+          docker_io_token: ${{ secrets.DOCKER_IO_ACCESS_TOKEN }}
