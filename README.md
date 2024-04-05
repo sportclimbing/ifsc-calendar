@@ -77,7 +77,9 @@ $ docker run -it --volume "$PWD:/calendar" \
 ```
 
 > [!NOTE]
-> All Docker images can be [found here](https://github.com/sportclimbing/ifsc-calendar/pkgs/container/ifsc-calendar).
+> All Docker images can be found on
+> - [ghcr.io](https://github.com/sportclimbing/ifsc-calendar/pkgs/container/ifsc-calendar)
+> - [Docker Hub](https://hub.docker.com/u/sportclimbing)
 
 <hr />
 
