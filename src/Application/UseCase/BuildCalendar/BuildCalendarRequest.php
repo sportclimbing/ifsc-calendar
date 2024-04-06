@@ -10,7 +10,7 @@ namespace nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar;
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarFormat;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
-final readonly class BuildCalendarRequest
+readonly final class BuildCalendarRequest
 {
     /**
      * @param string[] $leagues

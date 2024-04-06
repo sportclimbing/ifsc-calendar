@@ -10,7 +10,7 @@ namespace nicoSWD\IfscCalendar\Domain\Calendar\PostProcess;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 
-final readonly class Season2024PostProcessor
+readonly final class Season2024PostProcessor
 {
     private const int WUJIANG_IFSC_EVENT_ID = 1354;
 

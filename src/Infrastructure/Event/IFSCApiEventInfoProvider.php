@@ -21,7 +21,7 @@ use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;
 
-final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderInterface
+readonly final class IFSCApiEventInfoProvider implements IFSCEventInfoProviderInterface
 {
     private const string IFSC_EVENT_API_ENDPOINT = 'https://ifsc.results.info/api/v1/events/%d';
 

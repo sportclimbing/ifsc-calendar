@@ -12,7 +12,7 @@ use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use Override;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-final readonly class SymfonyEventDispatcher implements EventDispatcherInterface
+readonly final class SymfonyEventDispatcher implements EventDispatcherInterface
 {
     private const string EVENT_NAME = 'event.loggable';
 

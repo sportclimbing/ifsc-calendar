@@ -9,7 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\YouTube;
 
 use DateTimeImmutable;
 
-final readonly class YouTubeVideo
+readonly final class YouTubeVideo
 {
     /** @param string[] $restrictedRegions */
     public function __construct(

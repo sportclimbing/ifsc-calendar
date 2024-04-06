@@ -10,7 +10,7 @@ namespace nicoSWD\IfscCalendar\Domain\YouTube;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
 
-final readonly class YouTubeLiveStreamFinder
+readonly final class YouTubeLiveStreamFinder
 {
     public function __construct(
         private YouTubeLinkMatcher $linkMatcher,

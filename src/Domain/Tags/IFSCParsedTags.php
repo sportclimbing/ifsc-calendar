@@ -12,7 +12,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundCategory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundKind;
 
-final readonly class IFSCParsedTags
+readonly final class IFSCParsedTags
 {
     private const array DISCIPLINES = [
         IFSCDiscipline::BOULDER->value => Tag::BOULDER,

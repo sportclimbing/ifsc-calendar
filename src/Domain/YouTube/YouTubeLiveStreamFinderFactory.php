@@ -7,7 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\YouTube;
 
-final readonly class YouTubeLiveStreamFinderFactory
+readonly final class YouTubeLiveStreamFinderFactory
 {
     public function __construct(
         private YouTubeLinkMatcher   $linkMatcher,

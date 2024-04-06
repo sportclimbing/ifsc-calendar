@@ -11,7 +11,7 @@ use DateTimeImmutable;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
 
-final readonly class IFSCRound
+readonly final class IFSCRound
 {
     /**
      * @param IFSCRoundCategory[] $categories

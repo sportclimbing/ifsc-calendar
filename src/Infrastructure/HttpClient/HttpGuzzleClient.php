@@ -15,7 +15,7 @@ use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use Override;
 
-final readonly class HttpGuzzleClient implements HttpClientInterface
+readonly final class HttpGuzzleClient implements HttpClientInterface
 {
     public function __construct(
         private Client $client,

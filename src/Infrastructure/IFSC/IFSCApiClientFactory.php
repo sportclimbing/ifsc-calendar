@@ -9,7 +9,7 @@ namespace nicoSWD\IfscCalendar\Infrastructure\IFSC;
 
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 
-final readonly class IFSCApiClientFactory
+readonly final class IFSCApiClientFactory
 {
     public function __construct(
         private HttpClientInterface $httpClient,

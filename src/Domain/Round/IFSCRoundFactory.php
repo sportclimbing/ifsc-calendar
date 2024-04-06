@@ -15,7 +15,7 @@ use nicoSWD\IfscCalendar\Domain\Tags\IFSCParsedTags;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder;
 
-final readonly class IFSCRoundFactory
+readonly final class IFSCRoundFactory
 {
     public function __construct(
         private IFSCTagsParser $tagsParser,

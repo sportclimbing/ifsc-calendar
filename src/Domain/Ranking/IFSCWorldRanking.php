@@ -10,7 +10,7 @@ namespace nicoSWD\IfscCalendar\Domain\Ranking;
 use Closure;
 use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
 
-final readonly class IFSCWorldRanking
+readonly final class IFSCWorldRanking
 {
     public function __construct(
         private IFSCWorldRankingProviderInterface $rankProvider,

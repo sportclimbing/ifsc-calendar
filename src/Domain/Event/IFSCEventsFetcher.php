@@ -24,7 +24,7 @@ use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;
 
-final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
+readonly final class IFSCEventsFetcher implements IFSCEventFetcherInterface
 {
     public function __construct(
         private IFSCRoundsScraper $roundsScraper,

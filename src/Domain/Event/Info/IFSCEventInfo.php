@@ -10,7 +10,7 @@ namespace nicoSWD\IfscCalendar\Domain\Event\Info;
 use DateTimeZone;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 
-final readonly class IFSCEventInfo
+readonly final class IFSCEventInfo
 {
     /**
      * @param IFSCDiscipline[] $disciplines

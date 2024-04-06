@@ -12,7 +12,7 @@ use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCParsedTags;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 
-final readonly class IFSCScheduleFactory
+readonly final class IFSCScheduleFactory
 {
     public function __construct(
         private IFSCTagsParser $tagsParser,

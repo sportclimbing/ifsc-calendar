@@ -7,7 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\YouTube;
 
-final readonly class YouTubeVideoProvider
+readonly final class YouTubeVideoProvider
 {
     public function __construct(
         private YouTubeApiClient $apiClient,

@@ -9,7 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\Stream;
 
 use DateTimeImmutable;
 
-final readonly class LiveStream
+readonly final class LiveStream
 {
     /** @param string[] $restrictedRegions */
     public function __construct(

@@ -9,7 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\Schedule;
 
 use DateTimeImmutable;
 
-final readonly class IFSCSchedule
+readonly final class IFSCSchedule
 {
     public function __construct(
         public string $name,

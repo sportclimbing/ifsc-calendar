@@ -7,7 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\Schedule;
 
-final readonly class HTMLNormalizer
+readonly final class HTMLNormalizer
 {
     public function normalize(string $html): string
     {

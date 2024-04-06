@@ -15,7 +15,7 @@ use nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideo as IfscYouTubeVideo;
 use nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideoCollection as IfscYouTubeVideoCollection;
 use Override;
 
-final readonly class YouTubeVideoProvider implements YouTubeApiClient
+readonly final class YouTubeVideoProvider implements YouTubeApiClient
 {
     public function __construct(
         private IfscYouTubeVideoCollection $youTubeVideoCollection,

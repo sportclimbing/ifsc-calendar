@@ -14,7 +14,7 @@ use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader;
 use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleProvider;
 use Override;
 
-final readonly class PDFRoundProvider implements IFSCRoundProviderInterface
+readonly final class PDFRoundProvider implements IFSCRoundProviderInterface
 {
     public function __construct(
         private InfoSheetScheduleProvider $scheduleProvider,

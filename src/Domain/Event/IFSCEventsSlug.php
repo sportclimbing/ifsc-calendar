@@ -7,7 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
-final readonly class IFSCEventsSlug
+readonly final class IFSCEventsSlug
 {
     public function create(string $eventName): string
     {

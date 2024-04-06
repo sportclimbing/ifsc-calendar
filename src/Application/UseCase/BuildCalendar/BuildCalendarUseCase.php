@@ -10,7 +10,7 @@ namespace nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar;
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 
-final readonly class BuildCalendarUseCase
+readonly final class BuildCalendarUseCase
 {
     public function __construct(
         private IFSCCalendarBuilder $calendarBuilder,

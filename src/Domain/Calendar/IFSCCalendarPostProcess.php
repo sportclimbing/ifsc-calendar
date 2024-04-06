@@ -13,7 +13,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
-final readonly class IFSCCalendarPostProcess
+readonly final class IFSCCalendarPostProcess
 {
     public function __construct(
         private IFSCEventSorter $eventSorter,

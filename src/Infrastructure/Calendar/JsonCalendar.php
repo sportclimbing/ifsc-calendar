@@ -18,7 +18,7 @@ use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundCategory;
 use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
 use Override;
 
-final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
+readonly final class JsonCalendar implements IFSCCalendarGeneratorInterface
 {
     private const string IFSC_EVENT_INFO_URL = 'https://www.ifsc-climbing.org/events/%s';
 
