@@ -1,0 +1,26 @@
+name: "Pull Request"
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@master
+
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
+      - name: "Run phpunit"
+        run: make test
+
+      - name: "PHPStan"
+        uses: docker://jakzal/phpqa:php8.3.4-alpine
+        with:
+          args: phpstan analyze --level 6
