@@ -21,6 +21,6 @@ jobs:
         run: make test
 
       - name: "PHPStan"
-        uses: docker://jakzal/phpqa:php8.3.4-alpine
+        uses: php-actions/phpstan@v3
         with:
-          args: phpstan analyze --level 6
+          level: 6
