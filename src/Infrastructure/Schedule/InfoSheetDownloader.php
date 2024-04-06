@@ -13,7 +13,7 @@ use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 
-readonly final class InfoSheetDownloader
+final readonly class InfoSheetDownloader
 {
     private const string INFO_SHEET_URL = 'https://ifsc.results.info/events/%d/infosheet';
 

@@ -14,7 +14,7 @@ use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleProvider;
 
-readonly final class InfoSheetScheduleProvider implements IFSCScheduleProvider
+final readonly class InfoSheetScheduleProvider implements IFSCScheduleProvider
 {
     private const string REGEX_DAY_SCHEDULE = '~
         # day name

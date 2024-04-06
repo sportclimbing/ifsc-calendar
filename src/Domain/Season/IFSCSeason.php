@@ -9,7 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\Season;
 
 use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
 
-readonly final class IFSCSeason
+final readonly class IFSCSeason
 {
     /** @var IFSCLeague[] */
     public array $leagues;

@@ -10,7 +10,7 @@ namespace nicoSWD\IfscCalendar\Domain\Round;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCParsedTags;
 
-readonly final class IFSCRoundNameNormalizer
+final readonly class IFSCRoundNameNormalizer
 {
     public function normalize(IFSCParsedTags $tags, string $originalName): string
     {

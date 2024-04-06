@@ -15,7 +15,7 @@ use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;
 
-readonly final class IFSCApiWorldRankingProvider implements IFSCWorldRankingProviderInterface
+final readonly class IFSCApiWorldRankingProvider implements IFSCWorldRankingProviderInterface
 {
     private const string IFSC_WORLD_RANK_CATEGORIES_ENDPOINT = 'https://ifsc.results.info/api/v1/cuwr';
 

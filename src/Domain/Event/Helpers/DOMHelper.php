@@ -10,7 +10,7 @@ namespace nicoSWD\IfscCalendar\Domain\Event\Helpers;
 use DOMDocument;
 use DOMXPath;
 
-readonly final class DOMHelper
+final readonly class DOMHelper
 {
     private const string XPATH_EVENT_DATE_RANGE = "//div[contains(@class, 'g:gap-2 uppercase')]";
 

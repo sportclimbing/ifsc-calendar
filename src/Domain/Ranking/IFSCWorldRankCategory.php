@@ -7,7 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Ranking;
 
-readonly final class IFSCWorldRankCategory
+final readonly class IFSCWorldRankCategory
 {
     public function __construct(
         public int $id,

@@ -26,7 +26,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use Override;
 
-readonly final class ICalCalendar implements IFSCCalendarGeneratorInterface
+final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 {
     public function __construct(
         private CalendarFactory $calendarFactory,

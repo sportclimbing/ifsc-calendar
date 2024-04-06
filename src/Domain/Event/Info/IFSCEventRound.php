@@ -9,7 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\Event\Info;
 
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundKind;
 
-readonly final class IFSCEventRound
+final readonly class IFSCEventRound
 {
     public function __construct(
         public string $discipline,

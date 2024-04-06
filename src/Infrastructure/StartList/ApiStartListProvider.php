@@ -16,7 +16,7 @@ use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;
 
-readonly final class ApiStartListProvider implements IFSCStartListProviderInterface
+final readonly class ApiStartListProvider implements IFSCStartListProviderInterface
 {
     private const string IFSC_STARTERS_API_ENDPOINT = 'https://ifsc.results.info/api/v1/events/%d/registrations';
 

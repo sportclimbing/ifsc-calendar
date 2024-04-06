@@ -7,7 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\League;
 
-readonly final class IFSCLeague
+final readonly class IFSCLeague
 {
     public function __construct(
         public int $id,

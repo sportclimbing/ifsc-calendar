@@ -11,7 +11,7 @@ use Closure;
 use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRanking;
 use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRankingException;
 
-readonly final class IFSCStartListGenerator
+final readonly class IFSCStartListGenerator
 {
     private const int LIST_MAX_SIZE = 20;
 

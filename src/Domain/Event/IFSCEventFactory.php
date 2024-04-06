@@ -18,7 +18,7 @@ use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
 use nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator;
 use RuntimeException;
 
-readonly final class IFSCEventFactory
+final readonly class IFSCEventFactory
 {
     public function __construct(
         private SiteURLBuilder $siteURLBuilder,

@@ -7,7 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event\Info;
 
-readonly final class IFSCEventCategory
+final readonly class IFSCEventCategory
 {
     /** @param IFSCEventRound[] $rounds */
     public function __construct(

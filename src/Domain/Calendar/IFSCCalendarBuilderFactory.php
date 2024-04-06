@@ -9,7 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\Calendar;
 
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 
-readonly final class IFSCCalendarBuilderFactory
+final readonly class IFSCCalendarBuilderFactory
 {
     public function __construct(
         private IFSCCalendarGeneratorInterface $icsCalendarGenerator,

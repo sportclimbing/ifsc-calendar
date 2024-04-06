@@ -9,7 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\Tags;
 
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
 
-readonly final class IFSCTagsParser
+final readonly class IFSCTagsParser
 {
     public function fromString(string $string): IFSCParsedTags
     {

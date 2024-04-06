@@ -10,7 +10,7 @@ namespace nicoSWD\IfscCalendar\Domain\Calendar;
 use Closure;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
-readonly final class SiteURLBuilder
+final readonly class SiteURLBuilder
 {
     public function __construct(
         private string $siteUrl,

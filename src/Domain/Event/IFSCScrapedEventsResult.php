@@ -9,7 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\Event;
 
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 
-readonly final class IFSCScrapedEventsResult
+final readonly class IFSCScrapedEventsResult
 {
     /** @param IFSCRound[] $rounds */
     public function __construct(

@@ -13,7 +13,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
 use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 
-readonly final class YouTubeLinkMatcher
+final readonly class YouTubeLinkMatcher
 {
     public function __construct(
         private IFSCTagsParser $tagsParser,

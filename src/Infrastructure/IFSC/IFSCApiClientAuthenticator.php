@@ -10,7 +10,7 @@ namespace nicoSWD\IfscCalendar\Infrastructure\IFSC;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 
-readonly final class IFSCApiClientAuthenticator
+final readonly class IFSCApiClientAuthenticator
 {
     public const string IFSC_SESSION_COOKIE_NAME = '_verticallife_resultservice_session';
 
