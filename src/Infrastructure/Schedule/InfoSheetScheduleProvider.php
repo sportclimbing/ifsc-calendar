@@ -10,10 +10,11 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Schedule;
 use DateTimeImmutable;
 use DateTimeZone;
 use Iterator;
+use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleProvider;
 
-final readonly class PDFScheduleProvider implements IFSCScheduleProvider
+final readonly class InfoSheetScheduleProvider implements IFSCScheduleProvider
 {
     private const string REGEX_DAY_SCHEDULE = '~
         # day name
@@ -34,7 +35,7 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
     }
 
     /** @inheritdoc */
-    public function parseSchedule(string $html, string $timeZone): array
+    public function parseSchedule(string $html, DateTimeZone $timeZone): array
     {
         $schedules = [];
 
@@ -47,6 +48,7 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
         return $schedules;
     }
 
+    /** @return string[] */
     private function daySchedules(string $html): array
     {
         $normalize = $this->htmlNormalizer->normalize($html);
@@ -58,7 +60,8 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
         return [];
     }
 
-    private function parseDaySchedule(string $schedule, string $timeZone): Iterator
+    /** @return Iterator<IFSCSchedule> */
+    private function parseDaySchedule(string $schedule, DateTimeZone $timeZone): Iterator
     {
         [$dayName, $schedule] = $this->parseDayAndSchedule($schedule);
 
@@ -93,7 +96,7 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
         }
     }
 
-    private function createStartDate(string $day, string $time, string $timeZone): DateTimeImmutable
+    private function createStartDate(string $day, string $time, DateTimeZone $timeZone): DateTimeImmutable
     {
         // Year is missing!!
 
@@ -106,11 +109,11 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
                 trim($day),
                 trim($time),
             ),
-            new DateTimeZone($timeZone),
+            $timeZone,
         );
     }
 
-    private function createEndDate(string $dayName, ?string $time, DateTimeImmutable $startsAt, string $timeZone): DateTimeImmutable
+    private function createEndDate(string $dayName, ?string $time, DateTimeImmutable $startsAt, DateTimeZone $timeZone): DateTimeImmutable
     {
         if ($time !== null && trim($time) !== '') {
             return $this->createStartDate($dayName, $time, $timeZone);
@@ -119,6 +122,7 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
         return $startsAt->modify('+2 hours');
     }
 
+    /** @return string[] */
     private function parseDayAndSchedule(string $schedule): array
     {
         return explode("\n", $this->normalizeTime($schedule), limit: 2);
@@ -129,7 +133,7 @@ final readonly class PDFScheduleProvider implements IFSCScheduleProvider
         return preg_replace('~(\d\d:\d\d)\s*\n(\d\d:\d\d)\s*~', "\$1 - \$2\n", $schedule);
     }
 
-    private function followsLastRound($haystack): bool
+    private function followsLastRound(string $haystack): bool
     {
         return str_contains(strtolower($haystack), 'follow');
     }

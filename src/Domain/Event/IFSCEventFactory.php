@@ -14,6 +14,7 @@ use nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
 use nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator;
 use RuntimeException;
 
@@ -26,6 +27,7 @@ final readonly class IFSCEventFactory
     ) {
     }
 
+    /** @param IFSCRound[] $rounds */
     public function create(IFSCSeasonYear $season, IFSCEventInfo $event, array $rounds, ?string $posterUrl): IFSCEvent
     {
         [$startDate, $endDate] = $this->generateDateRangeFromRounds($rounds, $event);
@@ -49,7 +51,10 @@ final readonly class IFSCEventFactory
         );
     }
 
-    /** @param IFSCRound[] $rounds */
+    /**
+     * @param IFSCRound[] $rounds
+     * @return DateTimeImmutable[]
+     */
     private function generateDateRangeFromRounds(array $rounds, IFSCEventInfo $event): array
     {
         $confirmedDates = [];
@@ -70,7 +75,10 @@ final readonly class IFSCEventFactory
         ];
     }
 
-    /** @throws RuntimeException */
+    /**
+     * @return IFSCStarter[]
+     * @throws RuntimeException
+     */
     private function buildStartList(int $eventId): array
     {
         try {
@@ -90,8 +98,8 @@ final readonly class IFSCEventFactory
         return $this->createLocalDate("{$event->localEndDate} 16:00", $event->timeZone);
     }
 
-    private function createLocalDate(string $date, string $timeZone): DateTimeImmutable
+    private function createLocalDate(string $date, DateTimeZone $timeZone): DateTimeImmutable
     {
-        return (new DateTimeImmutable($date))->setTimezone(new DateTimeZone($timeZone));
+        return (new DateTimeImmutable($date))->setTimezone($timeZone);
     }
 }

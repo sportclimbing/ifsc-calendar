@@ -8,6 +8,7 @@
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
 use DateTimeImmutable;
+use DateTimeZone;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidLeagueName;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
@@ -29,7 +30,7 @@ final class IFSCEvent
         public readonly int $eventId,
         public readonly string $slug,
         public readonly string $leagueName,
-        public readonly string $timeZone,
+        public readonly DateTimeZone $timeZone,
         public readonly string $eventName,
         public readonly string $location,
         public readonly string $country,

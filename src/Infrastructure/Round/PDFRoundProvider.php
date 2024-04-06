@@ -10,15 +10,15 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Round;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundProviderInterface;
-use nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFDownloader;
-use nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFScheduleProvider;
+use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader;
+use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleProvider;
 use Override;
 
 final readonly class PDFRoundProvider implements IFSCRoundProviderInterface
 {
     public function __construct(
-        private PDFScheduleProvider $scheduleProvider,
-        private PDFDownloader $downloader,
+        private InfoSheetScheduleProvider $scheduleProvider,
+        private InfoSheetDownloader $downloader,
     ) {
     }
 
@@ -64,7 +64,7 @@ final readonly class PDFRoundProvider implements IFSCRoundProviderInterface
         return $html;
     }
 
-    private function execPdfToHtml(string $pdfPath, &$pipes): mixed
+    private function execPdfToHtml(string $pdfPath, mixed &$pipes): mixed
     {
         $pdfPath = escapeshellarg($pdfPath);
 
@@ -77,6 +77,7 @@ final readonly class PDFRoundProvider implements IFSCRoundProviderInterface
         );
     }
 
+    /** @return array<int,array<string>> */
     private function getDescriptorSpec(): array
     {
         return [

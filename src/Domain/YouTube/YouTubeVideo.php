@@ -11,11 +11,13 @@ use DateTimeImmutable;
 
 final readonly class YouTubeVideo
 {
+    /** @param string[] $restrictedRegions */
     public function __construct(
         public string $title,
         public int $duration,
         public string $videoId,
         public DateTimeImmutable $publishedAt,
+        public ?DateTimeImmutable $scheduledStartTime,
         public array $restrictedRegions,
     ) {
     }

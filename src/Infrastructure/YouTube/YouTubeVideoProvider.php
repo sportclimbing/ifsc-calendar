@@ -22,6 +22,17 @@ final readonly class YouTubeVideoProvider implements YouTubeApiClient
     ) {
     }
 
+    #[Override] public function fetchAllVideos(): YouTubeVideoCollection
+    {
+        $videoCollection = new YouTubeVideoCollection();
+
+        foreach ($this->youTubeVideoCollection->getAllVideos() as $video) {
+            $videoCollection->add($this->createVideo($video));
+        }
+
+        return $videoCollection;
+    }
+
     #[Override] public function fetchRecentVideos(IFSCSeasonYear $season): YouTubeVideoCollection
     {
         $videoCollection = new YouTubeVideoCollection();
@@ -52,6 +63,7 @@ final readonly class YouTubeVideoProvider implements YouTubeApiClient
             duration: $video->duration,
             videoId: $video->videoId,
             publishedAt: $video->publishedAt,
+            scheduledStartTime: $video->scheduledStartTime,
             restrictedRegions: $video->restrictedRegions,
         );
     }

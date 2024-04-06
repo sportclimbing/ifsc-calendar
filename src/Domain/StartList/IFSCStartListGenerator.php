@@ -58,7 +58,10 @@ final readonly class IFSCStartListGenerator
         return static fn (IFSCStarter $athlete1, IFSCStarter $athlete2): int => $athlete2->score <=> $athlete1->score;
     }
 
-    /** @throws IFSCStartListException */
+    /**
+     * @return IFSCStarter[]
+     * @throws IFSCStartListException
+     */
     private function getStartListForEvent(int $eventId): array
     {
         return $this->startListProvider->fetchStartListForEvent($eventId);

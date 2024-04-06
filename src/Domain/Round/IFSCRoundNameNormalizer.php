@@ -40,11 +40,16 @@ final readonly class IFSCRoundNameNormalizer
         return preg_replace_callback('~(^|-| )([a-z])~', $callback, $name);
     }
 
+    /**
+     * @param IFSCDiscipline[] $disciplines
+     * @return string[]
+     */
     private function disciplineNames(array $disciplines): array
     {
         return array_map(static fn (IFSCDiscipline $discipline): string => $discipline->value, $disciplines);
     }
 
+    /** @param IFSCRoundCategory[] $categories */
     private function buildCategories(array $categories): string
     {
         if (count($categories) === 2) {
@@ -54,6 +59,7 @@ final readonly class IFSCRoundNameNormalizer
         }
     }
 
+    /** @param IFSCDiscipline[] $disciplines */
     private function buildDisciplines(array $disciplines): string
     {
         if (count($disciplines) > 1) {

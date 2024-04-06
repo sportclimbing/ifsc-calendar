@@ -2,7 +2,6 @@
     "type": "project",
     "license": "MIT",
     "minimum-stability": "stable",
-    "prefer-stable": true,
     "authors": [
         {
             "name": "Nico Oelgart",
@@ -17,7 +16,7 @@
         "ext-libxml": "*",
         "eluceo/ical": "^2.13",
         "guzzlehttp/guzzle": "^7.8",
-        "sportclimbing/ifsc-youtube-videos": "^0.0.146",
+        "sportclimbing/ifsc-youtube-videos": "dev-main",
         "symfony/console": "7.0.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.0.*",
@@ -27,6 +26,7 @@
         "symfony/yaml": "7.0.*"
     },
     "require-dev": {
+        "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^11.0.6"
     },
     "config": {

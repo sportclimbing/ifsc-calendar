@@ -8,32 +8,43 @@
 namespace nicoSWD\IfscCalendar\Domain\Round;
 
 use DateTimeImmutable;
-use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
+use DateTimeInterface;
+use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
+use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCParsedTags;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
+use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder;
 
 final readonly class IFSCRoundFactory
 {
     public function __construct(
         private IFSCTagsParser $tagsParser,
+        private YouTubeLiveStreamFinder $liveStreamFinder,
     ) {
     }
 
     public function create(
-        string $name,
-        StreamUrl $streamUrl,
+        IFSCEventInfo $event,
+        string $roundName,
         DateTimeImmutable $startTime,
         DateTimeImmutable $endTime,
         IFSCRoundStatus $status,
     ): IFSCRound {
-        $tags = $this->getTags($name);
+        $tags = $this->getTags($roundName);
+        $liveStream = $this->findLiveStream($event, $roundName);
+
+        if ($liveStream->scheduledStartTime) {
+            $startTime = $this->buildStartTime($liveStream, $event);
+            $endTime = $startTime->modify('90 minutes');
+            $status = IFSCRoundStatus::CONFIRMED;
+        }
 
         return new IFSCRound(
-            name: $name,
+            name: $roundName,
             categories: $tags->getCategories(),
             disciplines: $tags->getDisciplines(),
             kind: $tags->getRoundKind(),
-            streamUrl: $streamUrl,
+            streamUrl: $liveStream,
             startTime: $startTime,
             endTime: $endTime,
             status: $status,
@@ -43,5 +54,16 @@ final readonly class IFSCRoundFactory
     private function getTags(string $string): IFSCParsedTags
     {
         return $this->tagsParser->fromString($string);
+    }
+
+    private function buildStartTime(LiveStream $liveStream, IFSCEventInfo $event): DateTimeImmutable
+    {
+        return (new DateTimeImmutable($liveStream->scheduledStartTime->format(DateTimeInterface::RFC3339)))
+            ->setTimezone($event->timeZone);
+    }
+
+    private function findLiveStream(IFSCEventInfo $event, string $roundName): LiveStream
+    {
+        return $this->liveStreamFinder->findLiveStream($event, $roundName);
     }
 }

@@ -15,6 +15,9 @@ interface IFSCWorldRankingProviderInterface
      */
     public function fetchWorldRankCategories(): array;
 
-    /** @throws IFSCWorldRankingException */
+    /**
+     * @return array<mixed>
+     * @throws IFSCWorldRankingException
+     */
     public function fetchWorldRankForCategory(int $categoryId): array;
 }

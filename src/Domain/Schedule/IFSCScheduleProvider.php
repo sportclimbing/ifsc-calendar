@@ -7,8 +7,10 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Schedule;
 
+use DateTimeZone;
+
 interface IFSCScheduleProvider
 {
     /** @return IFSCSchedule[] */
-    public function parseSchedule(string $html, string $timeZone): array;
+    public function parseSchedule(string $html, DateTimeZone $timeZone): array;
 }

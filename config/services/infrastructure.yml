@@ -44,14 +44,14 @@ services:
   nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer:
     class: nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer
 
-  nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFScheduleProvider:
-    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFScheduleProvider
+  nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleProvider:
+    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleProvider
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer'
       - '@nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory'
 
-  nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFDownloader:
-    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFDownloader
+  nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader:
+    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
       - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
@@ -59,8 +59,8 @@ services:
   nicoSWD\IfscCalendar\Infrastructure\Round\PDFRoundProvider:
     class: nicoSWD\IfscCalendar\Infrastructure\Round\PDFRoundProvider
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFScheduleProvider'
-      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFDownloader'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleProvider'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader'
 
   # Start List
   nicoSWD\IfscCalendar\Infrastructure\StartList\ApiStartListProvider:

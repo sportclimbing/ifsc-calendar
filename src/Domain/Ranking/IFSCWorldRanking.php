@@ -61,7 +61,10 @@ final readonly class IFSCWorldRanking
         return $this->rankProvider->fetchWorldRankCategories();
     }
 
-    /** @throws IFSCWorldRankingException */
+    /**
+     * @return array<mixed>
+     * @throws IFSCWorldRankingException
+     */
     private function fetchWorldRankForCategory(int $categoryId): array
     {
         return $this->rankProvider->fetchWorldRankForCategory($categoryId);

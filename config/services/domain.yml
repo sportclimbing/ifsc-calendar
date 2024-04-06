@@ -12,19 +12,12 @@ services:
       - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory'
       - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventsFetcher'
       - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess'
-      - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher'
-      - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher'
-      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter'
 
   nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess:
     class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess
     arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor'
+      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter'
       - '@nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2024PostProcessor'
-
-  nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor:
-    class: nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor
-    autowire: true
 
   nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2024PostProcessor:
     class: nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2024PostProcessor
@@ -48,8 +41,8 @@ services:
       - '@nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRanking'
 
   # YouTube
-  nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher:
-    class: nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkFetcher
+  nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoProvider:
+    class: nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoProvider
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider'
 
@@ -62,18 +55,21 @@ services:
     arguments:
       - '@nicoSWD\IfscVideos\Infrastructure\YouTube\YouTubeVideoProvider'
 
+  nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderFactory:
+    class: nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderFactory
+    arguments:
+      - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher'
+      - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoProvider'
+
+  nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder:
+    factory: [ '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderFactory', 'create']
+
   # Schedule
   nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory:
     class: nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser'
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer'
-
-  # Stream URL
-  nicoSWD\IfscCalendar\Domain\Stream\StreamUrlFactory:
-    class: nicoSWD\IfscCalendar\Domain\Stream\StreamUrlFactory
-    arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider'
 
   # Events
   nicoSWD\IfscCalendar\Domain\Event\IFSCEventsFetcher:
@@ -84,7 +80,7 @@ services:
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
       - '@nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider'
       - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
-      - '@nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder'
+      - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder'
 
   nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory:
     class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory
@@ -96,7 +92,6 @@ services:
   nicoSWD\IfscCalendar\Domain\Event\IFSCEventsSlug: ~
   nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter: ~
   nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper: ~
-  nicoSWD\IfscCalendar\Domain\Event\Helpers\Normalizer: ~
 
   # Round
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper:
@@ -107,7 +102,9 @@ services:
 
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory:
     class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory
-    autowire: true
+    arguments:
+      - '@nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser'
+      - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder'
 
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer:
     class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer

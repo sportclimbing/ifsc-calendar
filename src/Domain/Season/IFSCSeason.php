@@ -13,6 +13,8 @@ final readonly class IFSCSeason
 {
     /** @var IFSCLeague[] */
     public array $leagues;
+
+    /** @param IFSCLeague[] $leagues */
     public function __construct(
         public string $name,
         array $leagues,

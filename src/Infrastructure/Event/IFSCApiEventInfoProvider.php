@@ -7,6 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\Event;
 
+use DateTimeZone;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventInfoProviderInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventCategory;
@@ -126,19 +127,17 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
         return $leagues;
     }
 
-    /** @return IFSCDiscipline[] */
+    /**
+     * @param object[] $disciplines
+     * @return IFSCDiscipline[]
+     */
     private function getDisciplines(array $disciplines): array
     {
         $parsedDisciplines = [];
 
         foreach ($disciplines as $discipline) {
-            if ($discipline === IFSCDiscipline::COMBINED->value) {
-                $parsedDisciplines[] = IFSCDiscipline::BOULDER->value;
-                $parsedDisciplines[] = IFSCDiscipline::LEAD->value;
-            } else {
-                foreach (explode('&', $discipline->kind) as $kind) {
-                    $parsedDisciplines[] = IFSCDiscipline::from($kind)->value;
-                }
+            foreach (explode('&', $discipline->kind) as $kind) {
+                $parsedDisciplines[] = IFSCDiscipline::from($kind)->value;
             }
         }
 
@@ -175,17 +174,20 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
 
             $categories[] = new IFSCEventCategory($rounds);
         }
+
         return $categories;
     }
 
-    private function fixTimeZone(object $response): string
+    private function fixTimeZone(object $response): DateTimeZone
     {
         // ffs ifsc
-        return match ($response->location) {
+        $timeZone = match ($response->location) {
             'Innsbruck' => 'Europe/Vienna',
             'Koper' => 'Europe/Ljubljana',
             default => $response->timezone->value,
         };
+
+        return new DateTimeZone($timeZone);
     }
 
     private function fixFatFinger(string $location): string

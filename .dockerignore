@@ -5,3 +5,4 @@
 /vendor
 /*.lock
 /phpunit*
+/phpstan.dist.neon

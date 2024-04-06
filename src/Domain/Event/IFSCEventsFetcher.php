@@ -16,11 +16,11 @@ use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventRound;
 use nicoSWD\IfscCalendar\Domain\League\IFSCLeague;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
-use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;
 
@@ -74,17 +74,18 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         return $this->roundsScraper->fetchRoundsAndPosterForEvent($event);
     }
 
+    /** @return IFSCRound[] */
     private function generateRounds(IFSCEventInfo $event): array
     {
         $rounds = [];
 
         foreach ($event->categories as $category) {
             foreach ($category->rounds as $round) {
-                $startTime = $this->estimatedLocalStartDate($event);
+                $startTime = $this->estimatedLocalStartTime($event);
 
                 $rounds[] = $this->roundFactory->create(
-                    name: $this->normalizeRoundName($round),
-                    streamUrl: new StreamUrl(),
+                    event: $event,
+                    roundName: $this->normalizeRoundName($round),
                     startTime: $startTime,
                     endTime: $startTime->modify('90 minutes'),
                     status: IFSCRoundStatus::ESTIMATED,
@@ -108,7 +109,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
 
     /**
      * @param IFSCSeasonYear $season
-     * @param IFSCLeague[] $selectedLeagues
+     * @param string[] $selectedLeagues
      * @return IFSCLeague[]
      * @throws IFSCApiClientException
      */
@@ -118,7 +119,6 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         $filteredLeagues = [];
 
         foreach ($seasons[$season->value]->leagues as $league) {
-
             if (in_array($league->name, $selectedLeagues, strict: true)) {
                 $filteredLeagues[] = $league;
             }
@@ -128,6 +128,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
     }
 
     /**
+     * @param string[] $selectedLeagues
      * @return IFSCEventInfo[]
      * @throws IFSCApiClientException
      */
@@ -143,13 +144,13 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         $this->eventDispatcher->dispatch(new EventScrapingStartedEvent($event->eventName));
     }
 
-    private function estimatedLocalStartDate(IFSCEventInfo $event): DateTimeImmutable
+    private function estimatedLocalStartTime(IFSCEventInfo $event): DateTimeImmutable
     {
         return $this->createLocalDate("{$event->localStartDate} 08:00", $event->timeZone);
     }
 
-    private function createLocalDate(string $date, string $timeZone): DateTimeImmutable
+    private function createLocalDate(string $date, DateTimeZone $timeZone): DateTimeImmutable
     {
-        return (new DateTimeImmutable($date))->setTimezone(new DateTimeZone($timeZone));
+        return (new DateTimeImmutable($date))->setTimezone($timeZone);
     }
 }

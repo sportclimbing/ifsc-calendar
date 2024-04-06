@@ -11,7 +11,6 @@ use Exception;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
-use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
 
 final readonly class IFSCRoundsScraper
 {
@@ -28,19 +27,22 @@ final readonly class IFSCRoundsScraper
 
         return new IFSCScrapedEventsResult(
             posterUrl: null,
-            rounds: $this->createRounds($rounds),
+            rounds: $this->createRounds($event, $rounds),
         );
     }
 
-    /** @param IFSCSchedule[] $schedules */
-    private function createRounds(array $schedules): array
+    /**
+     * @param IFSCSchedule[] $schedules
+     * @return IFSCRound[]
+     */
+    private function createRounds(IFSCEventInfo $event, array $schedules): array
     {
         $rounds = [];
 
         foreach ($schedules as $schedule) {
             $rounds[] = $this->roundFactory->create(
-                name: $schedule->name,
-                streamUrl: new StreamUrl(),
+                event: $event,
+                roundName: $schedule->name,
                 startTime: $schedule->startsAt,
                 endTime: $schedule->endsAt,
                 status: IFSCRoundStatus::CONFIRMED,

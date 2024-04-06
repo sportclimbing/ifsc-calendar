@@ -8,18 +8,19 @@
 namespace nicoSWD\IfscCalendar\tests\Infrastructure\Schedule;
 
 use DateTimeImmutable;
+use DateTimeZone;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 use nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer;
-use nicoSWD\IfscCalendar\Infrastructure\Schedule\PDFScheduleProvider;
+use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 final class PDFScheduleProviderTest extends TestCase
 {
-    private readonly PDFScheduleProvider $scheduleProvider;
+    private readonly InfoSheetScheduleProvider $scheduleProvider;
 
     #[Test] public function keqiao_schedule_is_found(): void
     {
@@ -272,7 +273,7 @@ final class PDFScheduleProviderTest extends TestCase
     {
         return $this->scheduleProvider->parseSchedule(
             $this->loadTestFile($filename),
-            $timeZone,
+            new DateTimeZone($timeZone),
         );
     }
 
@@ -283,7 +284,7 @@ final class PDFScheduleProviderTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->scheduleProvider = new PDFScheduleProvider(
+        $this->scheduleProvider = new InfoSheetScheduleProvider(
             new HTMLNormalizer(),
             new IFSCScheduleFactory(
                 new IFSCTagsParser(),

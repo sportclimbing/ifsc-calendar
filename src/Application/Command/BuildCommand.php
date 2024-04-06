@@ -15,6 +15,7 @@ use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarFormat;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -74,6 +75,7 @@ class BuildCommand extends Command
         );
     }
 
+    /** @param array<int, int> $seasons */
     private function askForSeason(array $seasons, InputInterface $input, OutputInterface $output): int
     {
         $question = new ChoiceQuestion(
@@ -83,9 +85,13 @@ class BuildCommand extends Command
         );
         $question->setErrorMessage('Season %s is invalid.');
 
-        return (int) $this->getHelper('question')->ask($input, $output, $question);
+        /** @var QuestionHelper $helper */
+        $helper = $this->getHelper('question');
+
+        return (int) $helper->ask($input, $output, $question);
     }
 
+    /** @param array<int, int> $seasons */
     private function getSelectedSeason(array $seasons, InputInterface $input, OutputInterface $output): IFSCSeasonYear
     {
         $selectedSeason = $input->getOption('season');
@@ -118,6 +124,7 @@ class BuildCommand extends Command
         }
     }
 
+    /** @return IFSCCalendarFormat[] */
     private function getFormats(InputInterface $input): array
     {
         return array_map($this->createFormats(), explode(',', $input->getOption('format')));
