@@ -12,7 +12,7 @@ use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 
-final readonly class IFSCRoundsScraper
+readonly final class IFSCRoundsScraper
 {
     public function __construct(
         private IFSCRoundFactory $roundFactory,
