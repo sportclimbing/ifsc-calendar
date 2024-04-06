@@ -143,8 +143,8 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
             $description .= "This calendar will update automatically once it's published!\n\n";
         }
 
-        $description.= "🧗 League:\n{$event->leagueName}\n\n";
-        $description.= "🍿 Stream URL:\n{$event->siteUrl}\n";
+        $description .= "🧗 League:\n{$event->leagueName}\n\n";
+        $description .= "🍿 Stream URL:\n{$event->siteUrl}\n";
 
         if ($event->starters) {
             $description .= "\n📋 Start List:\n";
