@@ -11,6 +11,7 @@ use ArrayIterator;
 
 final class YouTubeVideoCollection
 {
+    /** @var YouTubeVideo[] $videos */
     private array $videos = [];
 
     public function add(YouTubeVideo $video): void
@@ -18,7 +19,7 @@ final class YouTubeVideoCollection
         $this->videos[] = $video;
     }
 
-    /** @return YouTubeVideo[] */
+    /** @return ArrayIterator<int,YouTubeVideo> */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->videos);

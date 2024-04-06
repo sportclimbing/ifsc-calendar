@@ -52,7 +52,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
                 'disciplines' => $event->disciplines,
                 'starts_at' => $this->formatDate($event->startsAt),
                 'ends_at' => $this->formatDate($event->endsAt),
-                'timezone' => $event->timeZone,
+                'timezone' => $event->timeZone->getName(),
                 'rounds' => $this->formatRound($event->rounds),
                 'start_list' => $this->formatStarters($event->starters),
             ];
@@ -61,14 +61,17 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
         return json_encode($jsonEvents, flags: JSON_PRETTY_PRINT);
     }
 
-    /** @param IFSCRound[] $rounds */
+    /**
+     * @param IFSCRound[] $rounds
+     * @return array<mixed>
+     */
     private function formatRound(array $rounds): array
     {
         $format = fn (IFSCRound $round): array => [
             'name' => $round->name,
             'categories' => $this->buildCategories($round),
             'disciplines' => $this->buildDisciplines($round),
-            'kind' => $round->kind?->value,
+            'kind' => $round->kind->value,
             'starts_at' => $this->formatDate($round->startTime),
             'ends_at' => $this->formatDate($round->endTime),
             'schedule_status' => $round->status->value,
@@ -79,6 +82,10 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
         return array_map($format, $rounds);
     }
 
+    /**
+     * @param IFSCStarter[] $starters
+     * @return array<array<string, string|null>>
+     */
     private function formatStarters(array $starters): array
     {
         $format = static fn (IFSCStarter $starter): array => [

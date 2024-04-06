@@ -8,6 +8,7 @@
 namespace nicoSWD\IfscCalendar\Infrastructure\IFSC;
 
 use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
+use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 
 final readonly class IFSCApiClientAuthenticator
 {
@@ -20,7 +21,10 @@ final readonly class IFSCApiClientAuthenticator
     ) {
     }
 
-    /** @throws IFSCApiClientException */
+    /**
+     * @throws IFSCApiClientException
+     * @throws HttpException
+     */
     public function fetchSessionId(): string
     {
         foreach ($this->getCookies() as $cookie) {
@@ -34,6 +38,10 @@ final readonly class IFSCApiClientAuthenticator
         throw new IFSCApiClientException('Could not retrieve session cookie');
     }
 
+    /**
+     * @return string[]
+     * @throws HttpException
+     */
     private function getCookies(): array
     {
         $headers = $this->httpClient->getHeaders(self::IFSC_RESULTS_INFO_PAGE);
@@ -41,6 +49,7 @@ final readonly class IFSCApiClientAuthenticator
         return $headers['set-cookie'] ?? [];
     }
 
+    /** @return array<string,string> */
     private function parseCookie(string $cookie): array
     {
         parse_str($cookie, $result);
@@ -48,6 +57,7 @@ final readonly class IFSCApiClientAuthenticator
         return $result;
     }
 
+    /** @param array<string,string> $result */
     private function extractSessionId(array $result): string
     {
         return sscanf($result[self::IFSC_SESSION_COOKIE_NAME], '%[^;]s')[0];

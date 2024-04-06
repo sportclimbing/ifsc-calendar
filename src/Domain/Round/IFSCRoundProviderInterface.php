@@ -7,10 +7,11 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Round;
 
+use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 
 interface IFSCRoundProviderInterface
 {
     /** @return IFSCSchedule[] */
-    public function fetchRounds(object $event): array;
+    public function fetchRounds(IFSCEventInfo $event): array;
 }

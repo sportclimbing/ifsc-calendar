@@ -7,10 +7,10 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\YouTube;
 
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use DateTimeImmutable;
+use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
-use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
+use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 
 final readonly class YouTubeLinkMatcher
@@ -22,36 +22,38 @@ final readonly class YouTubeLinkMatcher
 
     private const string YOUTUBE_BASE_URL = 'https://youtu.be/';
 
-    public function findStreamUrlForRound(IFSCRound $round, IFSCEvent $event, YouTubeVideoCollection $videoCollection): StreamUrl
+    public function findStreamUrlForRound(IFSCEventInfo $event, string $roundName, YouTubeVideoCollection $videoCollection): LiveStream
     {
         foreach ($videoCollection->getIterator() as $video) {
             /** @var YouTubeVideo $video */
-            if ($this->videoTitleMatchesRoundName($video, $round, $event)) {
-                return new StreamUrl(
+            if ($this->videoTitleMatchesRoundName($video, $roundName, $event)) {
+                return new LiveStream(
                     url: self::YOUTUBE_BASE_URL . $video->videoId,
+                    scheduledStartTime: $video->scheduledStartTime,
                     restrictedRegions: $video->restrictedRegions,
                 );
             }
         }
 
-        return new StreamUrl();
+        return new LiveStream();
     }
 
-    private function videoTitleMatchesRoundName(YouTubeVideo $video, IFSCRound $round, IFSCEvent $event): bool
+    private function videoTitleMatchesRoundName(YouTubeVideo $video, string $roundName, IFSCEventInfo $event): bool
     {
         $videoTitle = mb_strtolower($video->title);
-        $roundName = mb_strtolower($round->name);
+        $roundName = mb_strtolower($roundName);
 
         if (!$this->videoTitleContainsSameLocationAndSeason($videoTitle, $event)) {
             return false;
         }
 
         $videoTags = $this->fetchTagsFromTitle($videoTitle);
-        $eventTags = $this->fetchTagsFromTitle($roundName);
 
         if ($this->videoIsHighlights($videoTags)) {
             return false;
         }
+
+        $eventTags = $this->fetchTagsFromTitle($roundName);
 
         if ($this->videoIsMensAndWomensCombined($videoTags, $eventTags)) {
             return true;
@@ -60,18 +62,20 @@ final readonly class YouTubeLinkMatcher
         return $videoTags === $eventTags;
     }
 
+    /** @return Tag[] */
     private function fetchTagsFromTitle(string $title): array
     {
         return $this->tagsParser->fromString($title)->allTags();
     }
 
-    private function videoTitleContainsSameLocationAndSeason(string $videoTitle, IFSCEvent $event): bool
+    private function videoTitleContainsSameLocationAndSeason(string $videoTitle, IFSCEventInfo $event): bool
     {
         return
             str_contains($videoTitle, mb_strtolower($event->location)) &&
-            str_contains($videoTitle, (string) $event->season->value);
+            str_contains($videoTitle, $this->eventSeason($event));
     }
 
+    /** @param Tag[] $videoTags */
     private function videoIsHighlights(array $videoTags): bool
     {
         return
@@ -80,6 +84,10 @@ final readonly class YouTubeLinkMatcher
             $this->hasTag($videoTags, Tag::REVIEW);
     }
 
+    /**
+     * @param Tag[] $videoTags
+     * @param Tag[] $eventTags
+     */
     private function videoIsMensAndWomensCombined(array $videoTags, array $eventTags): bool
     {
         if (!$this->hasTag($videoTags, Tag::MEN) &&
@@ -95,11 +103,16 @@ final readonly class YouTubeLinkMatcher
         return $videoTags === $eventTags;
     }
 
-    private function hasTag(array $item, Tag $tag): bool
+    /** @param Tag[] $tags */
+    private function hasTag(array $tags, Tag $tag): bool
     {
-        return in_array($tag, $item, strict: true);
+        return in_array($tag, $tags, strict: true);
     }
 
+    /**
+     * @param Tag[] $items
+     * @return Tag[]
+     */
     private function removeTags(array $items, Tag ...$tags): array
     {
         foreach ($tags as $tag) {
@@ -107,5 +120,10 @@ final readonly class YouTubeLinkMatcher
         }
 
         return array_values($items);
+    }
+
+    private function eventSeason(IFSCEventInfo $event): string
+    {
+        return (new DateTimeImmutable($event->localStartDate))->format('Y');
     }
 }

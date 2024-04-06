@@ -8,13 +8,9 @@
 namespace nicoSWD\IfscCalendar\tests\Domain\YouTube;
 
 use DateTimeImmutable;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundCategory;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundKind;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
-use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
-use nicoSWD\IfscCalendar\Domain\Stream\StreamUrl;
+use DateTimeZone;
+use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
+use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher;
 use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideo;
@@ -28,102 +24,101 @@ final class YouTubeLinkMatcherTest extends TestCase
 
     #[Test] public function seoul_speed_qualifications_url_is_found(): void
     {
-        $event = $this->createEventWithNameAndDescription(
-            name: 'Speed Qualifications',
-            description: 'IFSC World Cup Seoul 2023',
+        $liveStream = $this->createEventWithNameAndDescription(
+            roundName: 'Speed Qualifications',
+            eventName: 'IFSC World Cup Seoul 2023',
             location: 'Seoul',
         );
 
-        $this->assetUrlMatchesEvent('https://youtu.be/mC1RhpB4uuQ', $event);
+        $this->assertSame('https://youtu.be/mC1RhpB4uuQ', $liveStream->url);
     }
 
     #[Test] public function seoul_speed_finals_url_is_found(): void
     {
-        $event = $this->createEventWithNameAndDescription(
-            name: 'Speed Finals',
-            description: 'IFSC World Cup Seoul 2023',
+        $liveStream = $this->createEventWithNameAndDescription(
+            roundName: 'Speed Finals',
+            eventName: 'IFSC World Cup Seoul 2023',
             location: 'Seoul',
         );
 
-        $this->assetUrlMatchesEvent('https://youtu.be/eIa6VYrfqX8', $event);
-
+        $this->assertSame('https://youtu.be/eIa6VYrfqX8', $liveStream->url);
     }
 
     #[Test] public function seoul_womens_boulder_qualification_qualifications_url_is_not_found(): void
     {
-        $event = $this->createEventWithNameAndDescription(
-            name: 'Women\'s Boulder Qualification',
-            description: 'IFSC World Cup Seoul 2023',
+        $liveStream = $this->createEventWithNameAndDescription(
+            roundName: 'Women\'s Boulder Qualification',
+            eventName: 'IFSC World Cup Seoul 2023',
             location: 'Seoul',
         );
 
-        $this->assertNull($this->findStreamUrlForEvent($event));
+        $this->assertNull($liveStream->url);
     }
 
     #[Test] public function seoul_mens_boulder_qualification_qualifications_url_is_not_found(): void
     {
-        $event = $this->createEventWithNameAndDescription(
-            name: 'Men\'s Boulder Qualification',
-            description: 'IFSC World Cup Seoul 2023',
+        $liveStream = $this->createEventWithNameAndDescription(
+            roundName: 'Men\'s Boulder Qualification',
+            eventName: 'IFSC World Cup Seoul 2023',
             location: 'Seoul',
         );
 
-        $this->assertNull($this->findStreamUrlForEvent($event));
+        $this->assertNull($liveStream->url);
     }
 
     #[Test] public function seoul_boulder_semi_finals_is_not_found(): void
     {
-        $event = $this->createEventWithNameAndDescription(
-            name: 'Boulder Semi-finals',
-            description: 'IFSC World Cup Seoul 2023',
+        $liveStream = $this->createEventWithNameAndDescription(
+            roundName: 'Boulder Semi-finals',
+            eventName: 'IFSC World Cup Seoul 2023',
             location: 'Seoul',
         );
 
-        $this->assertNull($this->findStreamUrlForEvent($event));
+        $this->assertNull($liveStream->url);
     }
 
     #[Test] public function hachioji_boulder_qualifications_is_not_found(): void
     {
-        $event = $this->createEventWithNameAndDescription(
-            name: 'Boulder Qualifications',
-            description: 'IFSC World Cup Hachioji 2023',
+        $liveStream = $this->createEventWithNameAndDescription(
+            roundName: 'Boulder Qualifications',
+            eventName: 'IFSC World Cup Hachioji 2023',
             location: 'Hachioji',
         );
 
-        $this->assertNull($this->findStreamUrlForEvent($event));
+        $this->assertNull($liveStream->url);
     }
 
     #[Test] public function hachioji_boulder_semi_finals_is_found(): void
     {
-        $event = $this->createEventWithNameAndDescription(
-            name: 'Women\'s Boulder Semi-final',
-            description: 'IFSC World Cup Hachioji 2023',
+        $liveStream = $this->createEventWithNameAndDescription(
+            roundName: 'Women\'s Boulder Semi-final',
+            eventName: 'IFSC World Cup Hachioji 2023',
             location: 'Hachioji',
         );
 
-        $this->assetUrlMatchesEvent('https://youtu.be/kuE-qhRq7Fk', $event);
+        $this->assertSame('https://youtu.be/kuE-qhRq7Fk', $liveStream->url);
     }
 
     #[Test] public function salt_lake_city_speed_qualification_is_found(): void
     {
-        $event = $this->createEventWithNameAndDescription(
-            name: 'Women\'s Speed Qualification',
-            description: 'IFSC World Cup Salt Lake City 2023',
+        $liveStream = $this->createEventWithNameAndDescription(
+            roundName: 'Women\'s Speed Qualification',
+            eventName: 'IFSC World Cup Salt Lake City 2023',
             location: 'Salt Lake City',
         );
 
-        $this->assetUrlMatchesEvent('https://youtu.be/n6YyV2ddbb4', $event);
+        $this->assertSame('https://youtu.be/n6YyV2ddbb4', $liveStream->url);
     }
 
     #[Test] public function chamonix_lead_finals(): void
     {
-        $event = $this->createEventWithNameAndDescription(
-            name: 'Men\'s Lead Final',
-            description: 'IFSC World Cup Chamonix 2023',
+        $liveStream = $this->createEventWithNameAndDescription(
+            roundName: 'Men\'s Lead Final',
+            eventName: 'IFSC World Cup Chamonix 2023',
             location: 'Chamonix',
         );
 
-        $this->assetUrlMatchesEvent('https://youtu.be/ZNgbe8vi2OI', $event);
+        $this->assertSame('https://youtu.be/ZNgbe8vi2OI', $liveStream->url);
     }
 
     private function createVideoCollection(): YouTubeVideoCollection
@@ -162,6 +157,7 @@ final class YouTubeLinkMatcherTest extends TestCase
                 duration: 10,
                 videoId: $videoId,
                 publishedAt: new DateTimeImmutable(),
+                scheduledStartTime: new DateTimeImmutable(),
                 restrictedRegions: [],
             ));
         }
@@ -169,45 +165,24 @@ final class YouTubeLinkMatcherTest extends TestCase
         return $videoCollection;
     }
 
-    private function createEventWithNameAndDescription(string $name, string $description, string $location): IFSCEvent
+    private function createEventWithNameAndDescription(string $roundName, string $eventName, string $location): LiveStream
     {
-        return new IFSCEvent(
-            season: IFSCSeasonYear::SEASON_2023,
+        $event = new IFSCEventInfo(
             eventId: 1292,
-            slug: 'ifsc-world-cup-salt-lake-city-2024',
+            eventName: $eventName,
+            leagueId: 37,
             leagueName: 'World Cups and World Championships',
-            timeZone: '',
-            eventName: $description,
+            leagueSeasonId: 12,
+            localStartDate: '2023-04-10T11:55:00Z',
+            localEndDate: '2023-04-10T12:55:00Z',
+            timeZone: new DateTimeZone('Europe/Madrid'),
             location: $location,
             country: 'JPN',
-            poster: 'https://cdn.ifsc-climbing.org/images/Events/2023/230506_Jakarta_WC/230415_Poster_JAK23.jpg',
-            siteUrl: '',
-            startsAt: new DateTimeImmutable('2023-09-23T19:30:00+08:00'),
-            endsAt: new DateTimeImmutable('2023-09-23T21:30:00+08:00'),
             disciplines: [],
-            rounds: [
-                new IFSCRound(
-                    name: $name,
-                    categories: [IFSCRoundCategory::WOMEN],
-                    disciplines: [],
-                    kind: IFSCRoundKind::FINAL,
-                    streamUrl: new StreamUrl(),
-                    startTime: new DateTimeImmutable(),
-                    endTime: new DateTimeImmutable(),
-                    status: IFSCRoundStatus::CONFIRMED,
-                ),
-            ],
+            categories: [],
         );
-    }
 
-    private function findStreamUrlForEvent(IFSCEvent $event): ?string
-    {
-        return $this->linkMatcher->findStreamUrlForRound($event->rounds[0], $event, $this->createVideoCollection())->url;
-    }
-
-    private function assetUrlMatchesEvent(string $url, IFSCEvent $event): void
-    {
-        $this->assertSame($url, $this->findStreamUrlForEvent($event));
+        return $this->linkMatcher->findStreamUrlForRound($event, $roundName, $this->createVideoCollection());
     }
 
     protected function setUp(): void

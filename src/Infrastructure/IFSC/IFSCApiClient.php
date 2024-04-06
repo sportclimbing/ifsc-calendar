@@ -22,6 +22,7 @@ readonly class IFSCApiClient
     }
 
     /**
+     * @return object|array<mixed>
      * @throws IFSCApiClientException
      * @throws HttpException
      */
@@ -40,6 +41,8 @@ readonly class IFSCApiClient
     }
 
     /**
+     * @param array<string,mixed> $options
+     * @return object|array<mixed>
      * @throws IFSCApiClientException
      * @throws HttpException
      */

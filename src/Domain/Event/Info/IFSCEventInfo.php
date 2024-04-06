@@ -7,6 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event\Info;
 
+use DateTimeZone;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 
 final readonly class IFSCEventInfo
@@ -19,8 +20,11 @@ final readonly class IFSCEventInfo
         public int $eventId,
         public string $eventName,
         public int $leagueId,
+        public string $leagueName,
         public int $leagueSeasonId,
-        public string $timeZone,
+        public string $localStartDate,
+        public string $localEndDate,
+        public DateTimeZone $timeZone,
         public string $location,
         public string $country,
         public array $disciplines,

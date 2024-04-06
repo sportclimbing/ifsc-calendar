@@ -65,6 +65,12 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
         }
     }
 
+    /** @inheritdoc */
+    #[Override] public function downloadFile(string $url, string $saveAs): void
+    {
+        $this->get($url, ['sink' => $saveAs]);
+    }
+
     private function emitRequestFailedEvent(string $url, int $errorCode, int $retryCount): void
     {
         $this->eventDispatcher->dispatch(new HTTPRequestFailedEvent($url, $errorCode, $retryCount));

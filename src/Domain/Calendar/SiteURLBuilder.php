@@ -27,6 +27,7 @@ final readonly class SiteURLBuilder
         return preg_replace_callback('~{(?<var_name>season|event_id)}~', $this->replaceVariables($params), $this->siteUrl);
     }
 
+    /** @param array<string,string|int> $params */
     private function replaceVariables(array $params): Closure
     {
         return static fn (array $match): string => (string) $params[$match['var_name']];

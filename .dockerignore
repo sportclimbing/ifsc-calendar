@@ -1,0 +1,8 @@
+/.git*
+/resources
+/tests
+/var
+/vendor
+/*.lock
+/phpunit*
+/phpstan.dist.neon

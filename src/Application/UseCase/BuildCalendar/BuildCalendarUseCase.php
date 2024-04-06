@@ -25,7 +25,10 @@ final readonly class BuildCalendarUseCase
         );
     }
 
-    /** @throws InvalidURLException */
+    /**
+     * @return array<string,string>
+     * @throws InvalidURLException
+     */
     private function buildCalendar(BuildCalendarRequest $buildCalendarRequest): array
     {
         return $this->calendarBuilder->generateForSeason(

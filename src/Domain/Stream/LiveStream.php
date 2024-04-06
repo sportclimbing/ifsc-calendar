@@ -7,16 +7,15 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Stream;
 
-final readonly class StreamUrl
+use DateTimeImmutable;
+
+final readonly class LiveStream
 {
+    /** @param string[] $restrictedRegions */
     public function __construct(
         public ?string $url = null,
+        public ?DateTimeImmutable $scheduledStartTime = null,
         public array $restrictedRegions = [],
     ) {
-    }
-
-    public function hasUrl(): bool
-    {
-        return $this->url !== null;
     }
 }

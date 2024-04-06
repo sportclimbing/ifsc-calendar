@@ -27,3 +27,6 @@ install:
 
 clean:
 	rm -f build/ifsc-calendar.phar
+
+shell:
+	docker run -it --tty -v ".:/app" php:8.3.4-cli-alpine sh

@@ -5,14 +5,7 @@ WORKDIR /calendar
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV APP_DEBUG 0
 
-COPY app/run.php app/
-COPY bin/console bin/
-COPY bin/create-phar bin/
-COPY build/*.sh build/
-COPY config/ config/
-COPY src/ src/
-COPY Makefile .
-COPY composer* .
+COPY . .
 
 RUN apk update && apk add wget git unzip make
 

@@ -7,17 +7,16 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Calendar;
 
-use Closure;
 use Exception;
-use nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2023PostProcessor;
 use nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2024PostProcessor;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
 final readonly class IFSCCalendarPostProcess
 {
     public function __construct(
-        private Season2023PostProcessor $season2023PostProcessor,
+        private IFSCEventSorter $eventSorter,
         private Season2024PostProcessor $season2024PostProcessor,
     ) {
     }
@@ -37,29 +36,16 @@ final readonly class IFSCCalendarPostProcess
             case IFSCSeasonYear::SEASON_2020:
             case IFSCSeasonYear::SEASON_2021:
             case IFSCSeasonYear::SEASON_2022:
-            case IFSCSeasonYear::SEASON_2025:
-                break;
             case IFSCSeasonYear::SEASON_2023:
-                $events = $this->season2023PostProcessor->process($events);
+            case IFSCSeasonYear::SEASON_2025:
                 break;
             case IFSCSeasonYear::SEASON_2024:
                 $events = $this->season2024PostProcessor->process($events);
                 break;
         }
 
-        $this->orderEventsByDate($events);
+        $this->eventSorter->sortByDate($events);
 
         return $events;
-    }
-
-    /** @param IFSCEvent[] $events */
-    private function orderEventsByDate(array &$events): void
-    {
-        usort($events, $this->orderByDate());
-    }
-
-    private function orderByDate(): Closure
-    {
-        return static fn (IFSCEvent $event1, IFSCEvent $event2) => $event1->startsAt <=> $event2->startsAt;
     }
 }
