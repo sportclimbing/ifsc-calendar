@@ -28,6 +28,8 @@ use Override;
 
 final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 {
+    private const string DISCORD_URL = 'https://discord.gg/rbM5vjcVHM';
+
     public function __construct(
         private CalendarFactory $calendarFactory,
         private string $productIdentifier,
@@ -144,7 +146,8 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         }
 
         $description .= "🧗 League:\n{$event->leagueName}\n\n";
-        $description .= "🍿 Stream URL:\n{$event->siteUrl}\n";
+        $description .= "🍿 Stream URL:\n{$event->siteUrl}\n\n";
+        $description .= "💬 Join Discord:\n{${self::DISCORD_URL}}\n";
 
         if ($event->starters) {
             $description .= "\n📋 Start List:\n";
