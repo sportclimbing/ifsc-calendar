@@ -147,7 +147,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
         $description .= "🧗 League:\n{$event->leagueName}\n\n";
         $description .= "🍿 Stream URL:\n{$event->siteUrl}\n\n";
-        $description .= "💬 Join Discord:\n{${self::DISCORD_URL}}\n";
+        $description .= "💬 Join Discord:\n" . self::DISCORD_URL . "\n";
 
         if ($event->starters) {
             $description .= "\n📋 Start List:\n";
