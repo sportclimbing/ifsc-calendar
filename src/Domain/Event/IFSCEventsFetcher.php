@@ -58,20 +58,11 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
                 season: $season,
                 event: $event,
                 rounds: $rounds,
-                posterUrl: $scrapedRounds->posterUrl,
+                posterUrl: null,
             );
         }
 
         return $events;
-    }
-
-    /**
-     * @throws IFSCEventsScraperException
-     * @throws Exception
-     */
-    private function fetchScrapedRounds(IFSCEventInfo $event): IFSCScrapedEventsResult
-    {
-        return $this->roundsScraper->fetchRoundsAndPosterForEvent($event);
     }
 
     /** @return IFSCRound[] */
@@ -125,6 +116,15 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         }
 
         return $filteredLeagues;
+    }
+
+    /**
+     * @throws IFSCEventsScraperException
+     * @throws Exception
+     */
+    private function fetchScrapedRounds(IFSCEventInfo $event): IFSCScrapedEventsResult
+    {
+        return $this->roundsScraper->fetchRoundsForEvent($event);
     }
 
     /**
