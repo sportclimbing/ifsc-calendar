@@ -35,7 +35,7 @@ final readonly class IFSCRoundFactory
 
         if ($liveStream->scheduledStartTime) {
             $startTime = $this->buildStartTime($liveStream, $event);
-            $endTime = $startTime->modify('90 minutes');
+            $endTime = $this->buildEndTime($startTime, $liveStream);
             $status = IFSCRoundStatus::CONFIRMED;
         }
 
@@ -65,5 +65,18 @@ final readonly class IFSCRoundFactory
     private function findLiveStream(IFSCEventInfo $event, string $roundName): LiveStream
     {
         return $this->liveStreamFinder->findLiveStream($event, $roundName);
+    }
+
+    private function buildEndTime(DateTimeImmutable $startTime, LiveStream $liveStream): DateTimeImmutable
+    {
+        if ($liveStream->duration > 0) {
+            $duration = $liveStream->duration;
+        } else {
+            $duration = 90;
+        }
+
+        return $startTime->modify(
+            sprintf('+%d minutes', $duration)
+        );
     }
 }
