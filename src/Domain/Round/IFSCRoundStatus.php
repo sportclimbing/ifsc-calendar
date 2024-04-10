@@ -11,6 +11,7 @@ enum IFSCRoundStatus: string
 {
     case CONFIRMED = 'confirmed';
     case ESTIMATED = 'estimated';
+    case PROVISIONAL = 'provisional';
 
     public function isConfirmed(): bool
     {
