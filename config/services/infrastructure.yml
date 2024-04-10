@@ -56,8 +56,8 @@ services:
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
       - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
 
-  nicoSWD\IfscCalendar\Infrastructure\Round\PDFRoundProvider:
-    class: nicoSWD\IfscCalendar\Infrastructure\Round\PDFRoundProvider
+  nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider:
+    class: nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleProvider'
       - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader'
