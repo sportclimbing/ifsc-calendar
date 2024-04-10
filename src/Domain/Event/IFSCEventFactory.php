@@ -22,7 +22,7 @@ final readonly class IFSCEventFactory
 {
     public function __construct(
         private SiteURLBuilder $siteURLBuilder,
-        private IFSCEventsSlug $eventsSlug,
+        private IFSCEventSlug $eventsSlug,
         private IFSCStartListGenerator $startListGenerator,
     ) {
     }
