@@ -54,7 +54,7 @@ jobs:
           php bin/calendar-diff old-calendar.json new-calendar.json > diff.md
           
           if [ $(wc -w < diff.md) -gt 0 ]; then
-            echo "This PR results in the following results in the `JSON` calendar" > calendar.diff
+            echo "This PR results in the following changes in the `JSON` calendar" > calendar.diff
             cat diff.md >> calendar.diff
           else
             echo "No changes in the `JSON`calendar" > calendar.diff
