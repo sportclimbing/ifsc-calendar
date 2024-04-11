@@ -30,10 +30,10 @@ final readonly class IFSCRoundsScraper
     /** @return IFSCRound[] */
     private function createRounds(IFSCEventInfo $event): array
     {
-        $schedules = [];
+        $rounds = [];
 
         foreach ($this->roundProvider->fetchRounds($event) as $round) {
-            $schedules[] = $this->roundFactory->create(
+            $rounds[] = $this->roundFactory->create(
                 event: $event,
                 roundName: $round->name,
                 startTime: $round->startsAt,
@@ -42,6 +42,6 @@ final readonly class IFSCRoundsScraper
             );
         }
 
-        return $schedules;
+        return $rounds;
     }
 }
