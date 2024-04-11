@@ -17,4 +17,9 @@ enum IFSCRoundStatus: string
     {
         return $this === self::CONFIRMED;
     }
+
+    public function isProvisional(): bool
+    {
+        return $this === self::PROVISIONAL;
+    }
 }
