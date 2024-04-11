@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  phpunit:
+  code-quality:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
@@ -24,3 +24,41 @@ jobs:
         uses: php-actions/phpstan@v3
         with:
           level: 6
+
+  calendar-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@master
+
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
+      - name: "Install poppler-utils"
+        run: apt update && apt install poppler-utils -y
+
+      - name: "Build Calendar"
+        run: |
+          composer install --no-dev
+          php app/run.php --season 2024 --output new-calendar.json --format json
+
+      - name: "Check diff"
+        run: |
+          curl -sSL "https://calendar.ifsc.stream/?format=json&nocache=1" --output old-calendar.json
+          php bin/calendar-diff old-calendar.json new-calendar.json > diff.md
+          
+          if [ $(wc -w < diff.md) -gt 0 ]; then
+            echo "This PR results in the following results in the `JSON` calendar" > calendar.diff
+            cat diff.md >> calendar.diff
+          else
+            echo "No changes in the `JSON`calendar" > calendar.diff
+          fi
+
+      - name: "Comment calendar diff in PR"
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: calendar.diff
+          comment_tag: calendar_diff
