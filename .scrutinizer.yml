@@ -1,0 +1,16 @@
+build:
+  environment:
+    php:
+      version: 8.3.3
+  nodes:
+    analysis:
+      tests:
+        override:
+          - php-scrutinizer-run
+filter:
+  excluded_paths:
+    - tests/*
+    - vendor/*
+
+checks:
+  php: true
