@@ -38,7 +38,7 @@ jobs:
           tools: composer
 
       - name: "Install poppler-utils"
-        run: apt update && apt install poppler-utils -y
+        run: sudo apt-get update && sudo apt-get install poppler-utils -y
 
       - name: "Build Calendar"
         run: |
