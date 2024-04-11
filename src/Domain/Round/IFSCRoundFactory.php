@@ -17,6 +17,8 @@ use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder;
 
 final readonly class IFSCRoundFactory
 {
+    private const int DEFAULT_ROUND_DURATION = 90;
+
     public function __construct(
         private IFSCTagsParser $tagsParser,
         private YouTubeLiveStreamFinder $liveStreamFinder,
@@ -77,12 +79,10 @@ final readonly class IFSCRoundFactory
         if ($liveStream->duration > 0) {
             $duration = $liveStream->duration;
         } else {
-            $duration = 90;
+            $duration = self::DEFAULT_ROUND_DURATION;
         }
 
-        $endTime = clone $startTime;
-
-        return $endTime->modify(
+        return $startTime->modify(
             sprintf('+%d minutes', $duration)
         );
     }
