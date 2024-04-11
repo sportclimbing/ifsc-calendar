@@ -58,7 +58,12 @@ final readonly class IFSCRoundFactory
 
     private function buildStartTime(LiveStream $liveStream, IFSCEventInfo $event): DateTimeImmutable
     {
-        return (new DateTimeImmutable($liveStream->scheduledStartTime->format(DateTimeInterface::RFC3339)))
+        $schedulesStartTime = $liveStream->scheduledStartTime->format(
+            DateTimeInterface::RFC3339,
+        );
+
+        return (new DateTimeImmutable($schedulesStartTime))
+            ->modify('+5 minutes')
             ->setTimezone($event->timeZone);
     }
 
@@ -75,7 +80,9 @@ final readonly class IFSCRoundFactory
             $duration = 90;
         }
 
-        return $startTime->modify(
+        $endTime = clone $startTime;
+
+        return $endTime->modify(
             sprintf('+%d minutes', $duration)
         );
     }
