@@ -96,17 +96,17 @@ function generate_round_diff(array $oldRounds, array $newRounds): string
                     $oldValue = $oldRound[$key];
 
                     if ($newValue !== $oldValue) {
-                        $roundDiff .= "|   |{$key}  |" . normalize_value($oldValue) . "|" . normalize_value($newValue) . "|" . PHP_EOL;
+                        $roundDiff .= "| 👉  |_{$key}_  |" . normalize_value($oldValue) . "|" . normalize_value($newValue) . "|" . PHP_EOL;
                     }
                 } else {
                     if (normalize_value($newValue) !== 'null') {
-                        $roundDiff .= "|   |{$key}  |null|" . normalize_value($newValue) . "|" . PHP_EOL;
+                        $roundDiff .= "| 👉  |_{$key}_  |null|" . normalize_value($newValue) . "|" . PHP_EOL;
                     }
                 }
             }
 
             if ($roundDiff) {
-                $changedRounds .= "| **🟣 {$newRound['name']}** |       |               |             |" . PHP_EOL;
+                $changedRounds .= "|  **{$newRound['name']}** |       |               |             |" . PHP_EOL;
                 $changedRounds .= $roundDiff;
             }
         }
