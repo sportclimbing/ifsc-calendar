@@ -36,7 +36,7 @@ final readonly class IFSCRoundFactory
         $liveStream = $this->findLiveStream($event, $roundName);
 
         if ($liveStream->scheduledStartTime) {
-            if (!$endTime && $liveStream->duration > 0) {
+            if ($liveStream->duration > 0) {
                 $endTime = $liveStream->scheduledStartTime->modify(
                     sprintf('+%d minutes', $liveStream->duration),
                 );
