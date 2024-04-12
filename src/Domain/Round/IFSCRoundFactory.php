@@ -18,6 +18,8 @@ use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder;
 
 final readonly class IFSCRoundFactory
 {
+    private const int DEFAULT_ROUND_DURATION = 90;
+
     public function __construct(
         private IFSCTagsParser $tagsParser,
         private YouTubeLiveStreamFinder $liveStreamFinder,
