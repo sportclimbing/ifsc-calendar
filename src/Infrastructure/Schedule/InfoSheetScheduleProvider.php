@@ -80,7 +80,7 @@ final readonly class InfoSheetScheduleProvider implements IFSCScheduleProvider
                     $startsAt = $this->createStartDate($dayName, $match['start_time'][$key], $timeZone);
                 }
 
-                $endsAt = $this->createEndDate($dayName, $match['end_time'][$key] ?? null, $startsAt, $timeZone);
+                $endsAt = $this->createEndDate($dayName, $match['end_time'][$key] ?? null, $timeZone);
                 $lastStart = $startsAt;
 
                 $schedule = $this->scheduleFactory->create(
@@ -113,13 +113,13 @@ final readonly class InfoSheetScheduleProvider implements IFSCScheduleProvider
         );
     }
 
-    private function createEndDate(string $dayName, ?string $time, DateTimeImmutable $startsAt, DateTimeZone $timeZone): DateTimeImmutable
+    private function createEndDate(string $dayName, ?string $time, DateTimeZone $timeZone): ?DateTimeImmutable
     {
         if ($time !== null && trim($time) !== '') {
             return $this->createStartDate($dayName, $time, $timeZone);
         }
 
-        return $startsAt->modify('+2 hours');
+        return null;
     }
 
     /** @return string[] */

@@ -100,11 +100,15 @@ services:
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
       - '@nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider'
 
+  nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDuration:
+    class: nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDuration
+
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory:
     class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser'
       - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder'
+      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDuration'
 
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer:
     class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer

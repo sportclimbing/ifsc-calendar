@@ -18,11 +18,10 @@ use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder;
 
 final readonly class IFSCRoundFactory
 {
-    private const int DEFAULT_ROUND_DURATION = 90;
-
     public function __construct(
         private IFSCTagsParser $tagsParser,
         private YouTubeLiveStreamFinder $liveStreamFinder,
+        private IFSCAverageRoundDuration $averageRoundDuration,
     ) {
     }
 
@@ -30,16 +29,27 @@ final readonly class IFSCRoundFactory
         IFSCEventInfo $event,
         string $roundName,
         DateTimeImmutable $startTime,
-        DateTimeImmutable $endTime,
+        ?DateTimeImmutable $endTime,
         IFSCRoundStatus $status,
     ): IFSCRound {
         $tags = $this->getTags($roundName);
         $liveStream = $this->findLiveStream($event, $roundName);
 
         if ($liveStream->scheduledStartTime) {
+            if (!$endTime && $liveStream->duration > 0) {
+                $endTime = $liveStream->scheduledStartTime->modify(
+                    sprintf('+%d minutes', $liveStream->duration),
+                );
+            }
+
             $startTime = $this->buildStartTime($liveStream, $event);
-            $endTime = $this->buildEndTime($startTime, $liveStream);
             $status = IFSCRoundStatus::CONFIRMED;
+        }
+
+        if (!$endTime) {
+            $endTime = $startTime->modify(
+                sprintf('+%d minutes', $this->averageRoundDuration($tags)),
+            );
         }
 
         return new IFSCRound(
@@ -80,16 +90,8 @@ final readonly class IFSCRoundFactory
         return $this->liveStreamFinder->findLiveStream($event, $roundName);
     }
 
-    private function buildEndTime(DateTimeImmutable $startTime, LiveStream $liveStream): DateTimeImmutable
+    private function averageRoundDuration(IFSCParsedTags $tags): int
     {
-        if ($liveStream->duration > 0) {
-            $duration = $liveStream->duration;
-        } else {
-            $duration = self::DEFAULT_ROUND_DURATION;
-        }
-
-        return $startTime->modify(
-            sprintf('+%d minutes', $duration)
-        );
+        return $this->averageRoundDuration->fromTags($tags->allTags());
     }
 }
