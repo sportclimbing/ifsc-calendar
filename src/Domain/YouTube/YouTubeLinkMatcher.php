@@ -30,6 +30,7 @@ final readonly class YouTubeLinkMatcher
                 return new LiveStream(
                     url: self::YOUTUBE_BASE_URL . $video->videoId,
                     scheduledStartTime: $video->scheduledStartTime,
+                    duration: $video->duration,
                     restrictedRegions: $video->restrictedRegions,
                 );
             }

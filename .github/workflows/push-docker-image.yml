@@ -13,11 +13,6 @@ jobs:
       - name: "Checkout code"
         uses: actions/checkout@master
 
-      - name: "Setup PHP"
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-
       - name: "Build and publish a Docker image for ${{ github.repository }}"
         uses: macbre/push-to-ghcr@master
         with:

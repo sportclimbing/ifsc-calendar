@@ -96,20 +96,18 @@ function generate_round_diff(array $oldRounds, array $newRounds): string
                     $oldValue = $oldRound[$key];
 
                     if ($newValue !== $oldValue) {
-                        $roundDiff .= "|{$key}  |" . normalize_value($oldValue) . "|" . normalize_value($newValue) . "|" . PHP_EOL;
+                        $roundDiff .= "| 👉  |_{$key}_  |" . normalize_value($oldValue) . "|" . normalize_value($newValue) . "|" . PHP_EOL;
                     }
                 } else {
                     if (normalize_value($newValue) !== 'null') {
-                        $roundDiff .= "|{$key}  |null|" . normalize_value($newValue) . "|" . PHP_EOL;
+                        $roundDiff .= "| 👉  |_{$key}_  |null|" . normalize_value($newValue) . "|" . PHP_EOL;
                     }
                 }
             }
 
             if ($roundDiff) {
-                $changedRounds .= "| {$newRound['name']}   |---            |---              |" . PHP_EOL;
-                $changedRounds .= "|-----------------------|---------------|-----------------|" . PHP_EOL;
-                $changedRounds .= "| **Key**               | **Old Value** | **New Value**   |" . PHP_EOL;
-                $changedRounds .= $roundDiff . PHP_EOL;
+                $changedRounds .= "|  **{$newRound['name']}** |       |               |             |" . PHP_EOL;
+                $changedRounds .= $roundDiff;
             }
         }
     }
@@ -117,7 +115,9 @@ function generate_round_diff(array $oldRounds, array $newRounds): string
     if ($changedRounds) {
         $diff .= PHP_EOL;
         $diff .= "#### Changed Rounds" . PHP_EOL;
-        $diff .= $changedRounds;
+        $diff .= "|Round | **Key**               | **Old Value** | **New Value**   |" . PHP_EOL;
+        $diff .= "|------|-----------------------|---------------|-----------------|" . PHP_EOL;
+        $diff .= $changedRounds . PHP_EOL;
     }
 
     if ($addedRounds) {
@@ -168,7 +168,7 @@ foreach ($newEvents as $newEvent) {
         if (count($newEvent['start_list']) > 0) {
             $addedEvents .= "#### 📋 Start List:" . PHP_EOL;
             $addedEvents .= "|" . implode('|', array_keys($newEvent['start_list'][0])) . "|" . PHP_EOL;
-            $addedEvents .= "|" . str_repeat('-------------|', count($newEvent['start_list'][0])) . PHP_EOL;
+            $addedEvents .= "|" . str_repeat(' |', count($newEvent['start_list'][0])) . PHP_EOL;
 
             foreach ($newEvent['start_list'] as $startList) {
                 foreach ($startList as $value) {
@@ -250,7 +250,7 @@ foreach ($newEvents as $newEvent) {
         }
 
         if ($startListDiff) {
-            $changedEvents .= "| 📋 Start List | ---             | ---           | ---                | ---               |" . PHP_EOL;
+            $changedEvents .= "| 📋 Start List |                 |               |                    |                   |" . PHP_EOL;
             $changedEvents .= "|---------------|-----------------|---------------|--------------------|-------------------|" . PHP_EOL;
             $changedEvents .= "| **Status**    | **First Name**  | **Last Name** | **New First Name** | **New Last Name** |" . PHP_EOL;
             $changedEvents .= $startListDiff . PHP_EOL;

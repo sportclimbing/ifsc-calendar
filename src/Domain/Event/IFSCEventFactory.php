@@ -22,7 +22,7 @@ final readonly class IFSCEventFactory
 {
     public function __construct(
         private SiteURLBuilder $siteURLBuilder,
-        private IFSCEventsSlug $eventsSlug,
+        private IFSCEventSlug $eventsSlug,
         private IFSCStartListGenerator $startListGenerator,
     ) {
     }
@@ -47,7 +47,7 @@ final readonly class IFSCEventFactory
             endsAt: $endDate,
             disciplines: $event->disciplines,
             rounds: $rounds,
-            starters: $this->buildStartList($event->eventId),
+            startList: $this->buildStartList($event->eventId),
         );
     }
 
@@ -60,7 +60,7 @@ final readonly class IFSCEventFactory
         $confirmedDates = [];
 
         foreach ($rounds as $round) {
-            if ($round->status->isConfirmed()) {
+            if ($round->status->isConfirmed() || $round->status->isProvisional()) {
                 $confirmedDates[] = $round->startTime;
             }
         }

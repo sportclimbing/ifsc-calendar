@@ -129,15 +129,15 @@ $ ./build/ifsc-calendar.phar \
 
 ## 🔧 Todo
 - [ ] Use Symfony serializer to build response object from IFSC API
-- [ ] Calculate average event duration and add it to `events.json` and to the calendar as the official web
-  does not tell when an event finishes.
+- [ ] Calculate average event duration (based on past events)
+- [ ] Add proper start lists to rounds
+- [ ] Add tickets URL?
 - [ ] Finish writing calendar setup guides
 - [ ] Cleanup PHP code
 - [ ] Add more tests
-- [ ] Make scraping more robust and fail on errors or missing data
-- [ ] Fix scraper for older seasons (formatting changes drastically)
-- [ ] Add more domain events to improve output log
-- [ ] Add automated tests to PRs (unit tests, coverage, etc)
+- [x] Make scraping more robust and fail on errors or missing data
+- [x] Add more domain events to improve output log
+- [x] Add automated tests to PRs (unit tests, coverage, etc)
 - [x] Push Docker image to Docker Hub
 - [x] Add BuyMeACoffee link to `.ics` calendar events
 - [x] Show activity and warnings in console (domain events)
@@ -151,6 +151,7 @@ $ ./build/ifsc-calendar.phar \
 - [x] Always serve asset from latest release on calendar URL
 - [x] Fetch stream links from YouTube API if none can be scraped
 - [x] Automatically regenerate calendar and update release
+- [ ] ~~Fix scraper for older seasons (formatting changes drastically)~~
 
 ## Requirements
 - PHP 8.3

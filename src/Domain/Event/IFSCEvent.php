@@ -22,7 +22,7 @@ final class IFSCEvent
 
     /**
      * @param IFSCRound[] $rounds
-     * @param IFSCStarter[] $starters
+     * @param IFSCStarter[] $startList
      * @param IFSCDiscipline[] $disciplines
      */
     public function __construct(
@@ -40,7 +40,7 @@ final class IFSCEvent
         public readonly DateTimeImmutable $endsAt,
         public readonly array $disciplines,
         array $rounds,
-        public readonly array $starters = [],
+        public readonly array $startList = [],
     ) {
         $this->rounds = $rounds;
     }

@@ -10,7 +10,6 @@ namespace nicoSWD\IfscCalendar\Domain\Round;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCScrapedEventsResult;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
-use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 
 final readonly class IFSCRoundsScraper
 {
@@ -21,31 +20,25 @@ final readonly class IFSCRoundsScraper
     }
 
     /** @throws Exception */
-    public function fetchRoundsAndPosterForEvent(IFSCEventInfo $event): IFSCScrapedEventsResult
+    public function fetchRoundsForEvent(IFSCEventInfo $event): IFSCScrapedEventsResult
     {
-        $rounds = $this->roundProvider->fetchRounds($event);
-
         return new IFSCScrapedEventsResult(
-            posterUrl: null,
-            rounds: $this->createRounds($event, $rounds),
+            rounds: $this->createRounds($event),
         );
     }
 
-    /**
-     * @param IFSCSchedule[] $schedules
-     * @return IFSCRound[]
-     */
-    private function createRounds(IFSCEventInfo $event, array $schedules): array
+    /** @return IFSCRound[] */
+    private function createRounds(IFSCEventInfo $event): array
     {
         $rounds = [];
 
-        foreach ($schedules as $schedule) {
+        foreach ($this->roundProvider->fetchRounds($event) as $round) {
             $rounds[] = $this->roundFactory->create(
                 event: $event,
-                roundName: $schedule->name,
-                startTime: $schedule->startsAt,
-                endTime: $schedule->endsAt,
-                status: IFSCRoundStatus::CONFIRMED,
+                roundName: $round->name,
+                startTime: $round->startsAt,
+                endTime: $round->endsAt,
+                status: IFSCRoundStatus::PROVISIONAL,
             );
         }
 

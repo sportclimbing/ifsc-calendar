@@ -86,10 +86,10 @@ services:
     class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder'
-      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventsSlug'
+      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventSlug'
       - '@nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator'
 
-  nicoSWD\IfscCalendar\Domain\Event\IFSCEventsSlug: ~
+  nicoSWD\IfscCalendar\Domain\Event\IFSCEventSlug: ~
   nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter: ~
   nicoSWD\IfscCalendar\Domain\Event\Helpers\DOMHelper: ~
 
@@ -98,7 +98,7 @@ services:
     class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper
     arguments:
       - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
-      - '@nicoSWD\IfscCalendar\Infrastructure\Round\PDFRoundProvider'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider'
 
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory:
     class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory

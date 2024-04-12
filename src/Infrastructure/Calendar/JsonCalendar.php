@@ -54,7 +54,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
                 'ends_at' => $this->formatDate($event->endsAt),
                 'timezone' => $event->timeZone->getName(),
                 'rounds' => $this->formatRound($event->rounds),
-                'start_list' => $this->formatStarters($event->starters),
+                'start_list' => $this->formatStarters($event->startList),
             ];
         }
 
@@ -75,8 +75,8 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
             'starts_at' => $this->formatDate($round->startTime),
             'ends_at' => $this->formatDate($round->endTime),
             'schedule_status' => $round->status->value,
-            'stream_url' => $round->streamUrl->url,
-            'stream_blocked_regions' => $round->streamUrl->restrictedRegions,
+            'stream_url' => $round->liveStream->url,
+            'stream_blocked_regions' => $round->liveStream->restrictedRegions,
         ];
 
         return array_map($format, $rounds);
@@ -106,7 +106,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
     /** @return string[] */
     private function buildDisciplines(IFSCRound $round): array
     {
-        return array_map(static fn (IFSCDiscipline $discipline): string => $discipline->value, $round->disciplines);
+        return array_map(static fn (IFSCDiscipline $discipline): string => $discipline->value, $round->disciplines->all());
     }
 
     /** @return string[] */

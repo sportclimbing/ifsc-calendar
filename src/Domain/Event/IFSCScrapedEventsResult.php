@@ -13,7 +13,6 @@ final readonly class IFSCScrapedEventsResult
 {
     /** @param IFSCRound[] $rounds */
     public function __construct(
-        public ?string $posterUrl,
         public array $rounds,
     ) {
     }

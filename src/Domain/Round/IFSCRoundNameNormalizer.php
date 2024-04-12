@@ -15,13 +15,11 @@ final readonly class IFSCRoundNameNormalizer
     public function normalize(IFSCParsedTags $tags, string $originalName): string
     {
         $originalName = trim($originalName);
-
-        $categories = $tags->getCategories();
         $disciplines = $tags->getDisciplines();
         $kind = $tags->getRoundKind();
 
         if (!$tags->isPreRound() && $disciplines && $kind) {
-            $roundName = $this->buildCategories($categories);
+            $roundName = $this->buildCategories($tags);
             $roundName .= $this->buildDisciplines($disciplines);
             $roundName .= " {$kind->value}";
 
@@ -49,9 +47,10 @@ final readonly class IFSCRoundNameNormalizer
         return array_map(static fn (IFSCDiscipline $discipline): string => $discipline->value, $disciplines);
     }
 
-    /** @param IFSCRoundCategory[] $categories */
-    private function buildCategories(array $categories): string
+    private function buildCategories(IFSCParsedTags $tags): string
     {
+        $categories = $tags->getCategories();
+
         if (count($categories) === 2) {
             return "Men's & Women's";
         } else {
