@@ -47,7 +47,7 @@ final readonly class IFSCEventFactory
             endsAt: $endDate,
             disciplines: $event->disciplines,
             rounds: $rounds,
-            starters: $this->buildStartList($event->eventId),
+            startList: $this->buildStartList($event->eventId),
         );
     }
 

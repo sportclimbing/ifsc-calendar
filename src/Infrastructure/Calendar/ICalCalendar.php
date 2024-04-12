@@ -71,7 +71,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         $calendarEvents = [];
 
         foreach ($events as $event) {
-            $rounds = $this->getNonQualificationRounds($event);
+            $rounds = $this->getStreamableRounds($event);
 
             if (!empty($rounds)) {
                 foreach ($rounds as $round) {
@@ -97,12 +97,10 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
             ->setOccurrence($this->buildTimeSpan($round));
 
         if ($round->status->isConfirmed()) {
-            $alarm = $this->createAlarmOneHourBefore($event, $round);
-        } else {
-            $alarm = $this->createAlarmOneDayBefore($event, $round);
+            $calendarEvent->addAlarm(
+                $this->createAlarmOneHourBefore($event, $round->name),
+            );
         }
-
-        $calendarEvent->addAlarm($alarm);
 
         return $calendarEvent;
     }
@@ -110,13 +108,19 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     /** @throws Exception */
     private function createEventWithoutRounds(IFSCEvent $event): Event
     {
-        return (new Event())
+        $calendarEvent = (new Event())
             ->setSummary(sprintf('%s (%s)', $event->normalizedName(), $event->country))
             ->setDescription($this->buildDescription($event))
             ->setUrl(new Uri($event->siteUrl))
             ->setStatus(EventStatus::TENTATIVE())
             ->setLocation(new Location("{$event->location} ({$event->country})"))
             ->setOccurrence($this->buildGenericTimeSpan($event));
+
+        $calendarEvent->addAlarm(
+            $this->createAlarmOneDayBefore($event, $event->eventName),
+        );
+
+        return $calendarEvent;
     }
 
     private function buildTimeSpan(IFSCRound $round): TimeSpan
@@ -140,7 +144,10 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     {
         $description = "🏆 {$event->normalizedName()} ({$event->country})\n\n";
 
-        if (!$round?->status->isConfirmed()) {
+        if ($round?->status->isProvisional()) {
+            $description .= "⚠️ Schedule is provisional and might change. ";
+            $description .= "This calendar will update automatically once it's confirmed!\n\n";
+        } elseif ($round === null) {
             $description .= "⚠️ Precise schedule has not been announced yet. ";
             $description .= "This calendar will update automatically once it's published!\n\n";
         }
@@ -149,11 +156,11 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         $description .= "🍿 Stream URL:\n{$event->siteUrl}\n\n";
         $description .= "💬 Join Discord:\n" . self::DISCORD_URL . "\n";
 
-        if ($event->starters) {
+        if ($event->startList) {
             $description .= "\n📋 Start List:\n";
 
-            foreach ($event->starters as $starter) {
-                $description .= " - {$starter->firstName} {$starter->lastName} ({$starter->country})\n";
+            foreach ($event->startList as $athlete) {
+                $description .= " - {$athlete->firstName} {$athlete->lastName} ({$athlete->country})\n";
             }
 
             $description .= " - ...\n";
@@ -176,22 +183,29 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     }
 
     /** @return IFSCRound[] */
-    private function getNonQualificationRounds(IFSCEvent $event): array
+    private function getStreamableRounds(IFSCEvent $event): array
     {
-        return array_filter($event->rounds, static fn (IFSCRound $round): bool => !$round->kind->isQualification());
+        return array_filter($event->rounds, fn (IFSCRound $round): bool => $this->roundIsStreamable($round));
     }
 
-    private function createAlarmOneHourBefore(IFSCEvent $event, IFSCRound $round): Alarm
+    private function roundIsStreamable(IFSCRound $round): bool
     {
-        return $this->createAlarm($event, $round, timeBefore: '1 hour');
+        return
+            !$round->kind->isQualification() ||
+            ($round->disciplines->isSpeed() && $round->liveStream->hasUrl());
     }
 
-    private function createAlarmOneDayBefore(IFSCEvent $event, IFSCRound $round): Alarm
+    private function createAlarmOneHourBefore(IFSCEvent $event, string $name): Alarm
     {
-        return $this->createAlarm($event, $round, timeBefore: '1 day');
+        return $this->createAlarm($event, $name, timeBefore: '1 hour');
     }
 
-    private function createAlarm(IFSCEvent $event, IFSCRound $round, string $timeBefore): Alarm
+    private function createAlarmOneDayBefore(IFSCEvent $event, string $name): Alarm
+    {
+        return $this->createAlarm($event, $name, timeBefore: '1 day');
+    }
+
+    private function createAlarm(IFSCEvent $event, string $name, string $timeBefore): Alarm
     {
         $trigger = new RelativeTrigger(
             DateInterval::createFromDateString(datetime: "-{$timeBefore}"),
@@ -199,7 +213,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
         return new Alarm(
             new DisplayAction(
-                description: "Reminder: IFSC: {$round->name} - {$event->location} ({$event->country}) starts in {$timeBefore}!"
+                description: "Reminder: IFSC: {$name} - {$event->location} ({$event->country}) starts in {$timeBefore}!"
             ),
             $trigger->withRelationToEnd(),
         );

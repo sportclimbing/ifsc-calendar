@@ -78,7 +78,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
                     event: $event,
                     roundName: $this->normalizeRoundName($round),
                     startTime: $startTime,
-                    endTime: $startTime->modify('90 minutes'),
+                    endTime: $startTime->modify('+90 minutes'),
                     status: IFSCRoundStatus::ESTIMATED,
                 );
             }

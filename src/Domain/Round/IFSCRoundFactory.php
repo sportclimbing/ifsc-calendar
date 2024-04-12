@@ -9,6 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\Round;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDisciplines;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCParsedTags;
@@ -44,9 +45,9 @@ final readonly class IFSCRoundFactory
         return new IFSCRound(
             name: $roundName,
             categories: $tags->getCategories(),
-            disciplines: $tags->getDisciplines(),
+            disciplines: $this->getDisciplines($tags),
             kind: $tags->getRoundKind(),
-            streamUrl: $liveStream,
+            liveStream: $liveStream,
             startTime: $startTime,
             endTime: $endTime,
             status: $status,
@@ -56,6 +57,11 @@ final readonly class IFSCRoundFactory
     private function getTags(string $string): IFSCParsedTags
     {
         return $this->tagsParser->fromString($string);
+    }
+
+    private function getDisciplines(IFSCParsedTags $tags): IFSCDisciplines
+    {
+        return new IFSCDisciplines($tags->getDisciplines());
     }
 
     private function buildStartTime(LiveStream $liveStream, IFSCEventInfo $event): DateTimeImmutable

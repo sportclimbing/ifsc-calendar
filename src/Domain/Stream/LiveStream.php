@@ -19,4 +19,9 @@ final readonly class LiveStream
         public array $restrictedRegions = [],
     ) {
     }
+
+    public function hasUrl(): bool
+    {
+        return $this->url !== null;
+    }
 }
