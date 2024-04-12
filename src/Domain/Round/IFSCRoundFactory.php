@@ -14,13 +14,13 @@ use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCParsedTags;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
-use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder;
+use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderInterface;
 
 final readonly class IFSCRoundFactory
 {
     public function __construct(
         private IFSCTagsParser $tagsParser,
-        private YouTubeLiveStreamFinder $liveStreamFinder,
+        private YouTubeLiveStreamFinderInterface $liveStreamFinder,
         private IFSCAverageRoundDuration $averageRoundDuration,
     ) {
     }
@@ -36,13 +36,14 @@ final readonly class IFSCRoundFactory
         $liveStream = $this->findLiveStream($event, $roundName);
 
         if ($liveStream->scheduledStartTime) {
+            $startTime = $this->buildStartTime($liveStream, $event);
+
             if ($liveStream->duration > 0) {
-                $endTime = $liveStream->scheduledStartTime->modify(
+                $endTime = $startTime->modify(
                     sprintf('+%d minutes', $liveStream->duration),
                 );
             }
 
-            $startTime = $this->buildStartTime($liveStream, $event);
             $status = IFSCRoundStatus::CONFIRMED;
         }
 
