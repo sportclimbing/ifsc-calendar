@@ -83,6 +83,26 @@ final class IFSCRoundFactoryTest extends TestCase
         $this->assertSame('2024-04-13T04:00:00+08:00', $this->formatDate($round->endTime));
     }
 
+    #[Test] public function end_time_is_guessed_based_on_youtube_if_start_dates_mismatch(): void
+    {
+        $roundFactory = $this->ReturningLiveStreamWith(
+            scheduledStartTime: '2024-04-12T17:55:00+08:00',
+            duration: 0,
+        );
+
+        $round = $roundFactory->create(
+            event: $this->createEvent(),
+            roundName: "Men's & Women's Lead Qualification",
+            startTime: $this->createDateTime('2024-04-12T19:00:00+08:00'),
+            endTime: $this->createDateTime('2024-04-12T20:00:00+08:00'),
+            status: IFSCRoundStatus::PROVISIONAL,
+        );
+
+        $this->assertSame(IFSCRoundStatus::CONFIRMED, $round->status);
+        $this->assertSame('2024-04-12T18:00:00+08:00', $this->formatDate($round->startTime));
+        $this->assertSame('2024-04-12T19:00:00+08:00', $this->formatDate($round->endTime));
+    }
+
     private function ReturningLiveStreamWith(?string $scheduledStartTime, int $duration): IFSCRoundFactory
     {
         return new IFSCRoundFactory(

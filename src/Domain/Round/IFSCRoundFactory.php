@@ -36,7 +36,14 @@ final readonly class IFSCRoundFactory
         $liveStream = $this->findLiveStream($event, $roundName);
 
         if ($liveStream->scheduledStartTime) {
-            $startTime = $this->buildStartTime($liveStream, $event);
+            $youTubeStartTime = $this->buildStartTime($liveStream, $event);
+
+            if ($endTime && !$this->startTimeMatchesYouTubes($startTime, $liveStream)) {
+                $diff = $startTime->diff($endTime);
+                $endTime = $youTubeStartTime->add($diff);
+            }
+
+            $startTime = $youTubeStartTime;
 
             if ($liveStream->duration > 0) {
                 $endTime = $startTime->modify(
@@ -48,9 +55,7 @@ final readonly class IFSCRoundFactory
         }
 
         if (!$endTime) {
-            $endTime = $startTime->modify(
-                sprintf('+%d minutes', $this->averageRoundDuration($tags)),
-            );
+            $endTime = $this->calcEndTime($startTime, $tags);
         }
 
         return new IFSCRound(
@@ -94,5 +99,24 @@ final readonly class IFSCRoundFactory
     private function averageRoundDuration(IFSCParsedTags $tags): int
     {
         return $this->averageRoundDuration->fromTags($tags->allTags());
+    }
+
+    private function startTimeMatchesYouTubes(DateTimeImmutable $startTime, LiveStream $liveStream): bool
+    {
+        $diff = $startTime->diff($liveStream->scheduledStartTime);
+
+        return
+            $diff->i <= 5 &&
+            $diff->y === 0 &&
+            $diff->m === 0 &&
+            $diff->d === 0 &&
+            $diff->h === 0;
+    }
+
+    private function calcEndTime(DateTimeImmutable $startTime, IFSCParsedTags $tags): DateTimeImmutable
+    {
+        return $startTime->modify(
+            sprintf('+%d minutes', $this->averageRoundDuration($tags)),
+        );
     }
 }

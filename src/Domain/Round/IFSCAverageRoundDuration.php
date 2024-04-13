@@ -13,6 +13,7 @@ final readonly class IFSCAverageRoundDuration
 {
     private const int DEFAULT_ROUND_DURATION = 90;
 
+    // Run `bin/avg-round-duration` to generate an updated list
     private const array AVERAGE_DURATIONS = [
         'boulder_combined_men_qualification' => 120,
         'boulder_combined_men_qualification_women' => 120,
