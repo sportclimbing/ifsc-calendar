@@ -23,7 +23,7 @@ final readonly class IFSCScheduleFactory
     public function create(
         string $name,
         DateTimeImmutable $startsAt,
-        DateTimeImmutable $endsAt,
+        ?DateTimeImmutable $endsAt,
     ): IFSCSchedule {
         $tags = $this->tagsParser->fromString($name);
 

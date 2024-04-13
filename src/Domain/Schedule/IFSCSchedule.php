@@ -14,7 +14,7 @@ final readonly class IFSCSchedule
     public function __construct(
         public string $name,
         public DateTimeImmutable $startsAt,
-        public DateTimeImmutable $endsAt,
+        public ?DateTimeImmutable $endsAt,
         public bool $isPreRound,
     ) {
     }
