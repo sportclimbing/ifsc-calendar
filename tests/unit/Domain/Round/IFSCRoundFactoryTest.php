@@ -25,7 +25,7 @@ final class IFSCRoundFactoryTest extends TestCase
 {
     #[Test] public function finished_live_stream_start_and_end_time_is_used(): void
     {
-        $roundFactory = $this->ReturningLiveStreamWith(
+        $roundFactory = $this->roundFactoryReturningLiveStreamWith(
             scheduledStartTime: '2024-04-12T10:55:00Z',
             duration: 60,
         );
@@ -45,7 +45,7 @@ final class IFSCRoundFactoryTest extends TestCase
 
     #[Test] public function average_round_duration_is_used_when_not_streamed_yet(): void
     {
-        $roundFactory = $this->ReturningLiveStreamWith(
+        $roundFactory = $this->roundFactoryReturningLiveStreamWith(
             scheduledStartTime: '2024-04-12T10:55:00Z',
             duration: 0,
         );
@@ -65,7 +65,7 @@ final class IFSCRoundFactoryTest extends TestCase
 
     #[Test] public function round_schedule_is_not_confirmed_unless_a_live_stream_was_found(): void
     {
-        $roundFactory = $this->ReturningLiveStreamWith(
+        $roundFactory = $this->roundFactoryReturningLiveStreamWith(
             scheduledStartTime: null,
             duration: 0,
         );
@@ -85,7 +85,7 @@ final class IFSCRoundFactoryTest extends TestCase
 
     #[Test] public function end_time_is_guessed_based_on_youtube_if_start_dates_mismatch(): void
     {
-        $roundFactory = $this->ReturningLiveStreamWith(
+        $roundFactory = $this->roundFactoryReturningLiveStreamWith(
             scheduledStartTime: '2024-04-12T17:55:00+08:00',
             duration: 0,
         );
@@ -103,7 +103,7 @@ final class IFSCRoundFactoryTest extends TestCase
         $this->assertSame('2024-04-12T19:00:00+08:00', $this->formatDate($round->endTime));
     }
 
-    private function ReturningLiveStreamWith(?string $scheduledStartTime, int $duration): IFSCRoundFactory
+    private function roundFactoryReturningLiveStreamWith(?string $scheduledStartTime, int $duration): IFSCRoundFactory
     {
         return new IFSCRoundFactory(
             new IFSCTagsParser(),
