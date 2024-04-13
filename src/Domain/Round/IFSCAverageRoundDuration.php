@@ -14,49 +14,42 @@ final readonly class IFSCAverageRoundDuration
     private const int DEFAULT_ROUND_DURATION = 90;
 
     private const array AVERAGE_DURATIONS = [
-        'men_boulder_final' => 120,
-        'men_boulder_semi_final' => 120,
-        'women_boulder_final' => 120,
-        'women_boulder_semi_final' => 120,
-        'lead_final' => 120,
-        'speed_final' => 90,
-        'lead_semi_final' => 150,
-        'speed_qualification' => 90,
-        'women_lead_boulder_semi_final' => 90,
-        'men_lead_boulder_final' => 180,
-        'women_lead_boulder_final' => 180,
-        'men_lead_boulder_semi_final' => 180,
-        'lead_boulder_final' => 240,
-        'lead_boulder_semi_final' => 120,
-        'women_men_boulder_final' => 180,
-        'women_men_boulder_semi_final' => 150,
-        'women_men_speed_final' => 60,
-        'women_men_lead_final' => 120,
-        'women_men_lead_semi_final' => 150,
-        'paraclimbing_final' => 210,
-        'men_speed_qualification' => 60,
-        'women_speed_final' => 60,
-        'boulder_final' => 210,
-        'men_lead_final' => 60,
-        'men_lead_semi_final' => 120,
-        'women_lead_final' => 120,
-        'women_lead_semi_final' => 210,
-        'boulder_semi_final' => 120,
-        'women_men_lead_boulder_semi_final_final' => 360,
-        'combined_final' => 420,
-        'lead_combined_qualification' => 90,
-        'boulder_combined_qualification' => 120,
-        'speed_combined_qualification' => 60,
-        'men_combined_final' => 240,
-        'women_combined_final' => 240,
-        'women_boulder_combined_qualification' => 120,
-        'men_lead_combined_qualification' => 90,
-        'men_boulder_combined_qualification' => 120,
-        'women_lead_combined_qualification' => 120,
-        'women_final' => 120,
-        'women_men_paraclimbing_final' => 150,
-        'paraclimbing' => 120,
-        'men_boulder_paraclimbing_final' => 150,
+        'boulder_combined_men_qualification' => 120,
+        'boulder_combined_men_qualification_women' => 120,
+        'boulder_combined_qualification_women' => 120,
+        'boulder_final_lead_men' => 180,
+        'boulder_final_lead_men_semi_final_women' => 360,
+        'boulder_final_lead_men_women' => 240,
+        'boulder_final_lead_women' => 180,
+        'boulder_final_men' => 120,
+        'boulder_final_men_paraclimbing' => 150,
+        'boulder_final_men_women' => 180,
+        'boulder_final_women' => 120,
+        'boulder_lead_men_semi_final' => 180,
+        'boulder_lead_men_semi_final_women' => 120,
+        'boulder_lead_semi_final_women' => 90,
+        'boulder_men_semi_final' => 120,
+        'boulder_men_semi_final_women' => 120,
+        'boulder_semi_final_women' => 120,
+        'combined_final_men' => 240,
+        'combined_final_men_women' => 420,
+        'combined_final_women' => 240,
+        'combined_lead_men_qualification' => 90,
+        'combined_lead_men_qualification_women' => 90,
+        'combined_lead_qualification_women' => 120,
+        'combined_men_qualification_speed_women' => 60,
+        'final_lead_men' => 60,
+        'final_lead_men_women' => 120,
+        'final_lead_women' => 120,
+        'final_men_paraclimbing_women' => 210,
+        'final_men_speed_women' => 90,
+        'final_speed_women' => 60,
+        'lead_men_semi_final' => 120,
+        'lead_men_semi_final_women' => 150,
+        'lead_semi_final_women' => 210,
+        'men_paraclimbing_women' => 120,
+        'men_qualification_speed' => 60,
+        'men_qualification_speed_women' => 90,
     ];
 
     /** @param Tag[] $tags */
@@ -69,13 +62,15 @@ final readonly class IFSCAverageRoundDuration
     /** @param Tag[] $tags */
     private function lookupKey(array $tags): string
     {
-        $lookupKey = implode('_',
-            array_map(
-                static fn (Tag $tag): string => $tag->name,
-                $tags,
-            )
+        $tags = array_map(
+            static fn (Tag $tag): string => $tag->name,
+            $tags,
         );
 
-        return strtolower($lookupKey);
+        sort($tags);
+
+        return strtolower(
+            implode('_', $tags),
+        );
     }
 }

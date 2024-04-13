@@ -98,7 +98,7 @@ final readonly class IFSCParsedTags
         return $this->hasTag(Tag::PRE_ROUND);
     }
 
-    private function hasTag(Tag $tag): bool
+    public function hasTag(Tag $tag): bool
     {
         return in_array($tag, $this->tags, strict: true);
     }
