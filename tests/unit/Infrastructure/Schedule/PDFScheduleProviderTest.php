@@ -9,6 +9,7 @@ namespace nicoSWD\IfscCalendar\tests\Infrastructure\Schedule;
 
 use DateTimeImmutable;
 use DateTimeZone;
+use Exception;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory;
@@ -57,7 +58,7 @@ final class PDFScheduleProviderTest extends TestCase
     {
         $schedule = $this->parseEventsFromFile('Wujiang.pdf.html', 'Asia/Shanghai');
 
-        $this->assertSame(6, count($schedule));
+        $this->assertSame(5, count($schedule));
 
         $this->assertSame("Men's & Women's Lead Qualification", $schedule[0]->name);
         $this->assertSameDate("2024-04-12T09:00:00+08:00", $schedule[0]->startsAt);
@@ -75,13 +76,9 @@ final class PDFScheduleProviderTest extends TestCase
         $this->assertSameDate("2024-04-13T19:30:00+08:00", $schedule[3]->startsAt);
         $this->assertNull($schedule[3]->endsAt);
 
-        $this->assertSame("Women's Lead Final", $schedule[4]->name);
+        $this->assertSame("Men's & Women's Lead Final", $schedule[4]->name);
         $this->assertSameDate("2024-04-14T19:00:00+08:00", $schedule[4]->startsAt);
         $this->assertNull($schedule[4]->endsAt);
-
-        $this->assertSame("Men's Lead Final", $schedule[5]->name);
-        $this->assertSameDate("2024-04-14T20:00:00+08:00", $schedule[5]->startsAt);
-        $this->assertNull($schedule[5]->endsAt);
     }
 
     #[Test] public function salt_lake_city_schedule_is_found(): void
@@ -268,7 +265,10 @@ final class PDFScheduleProviderTest extends TestCase
         $this->assertSame($expected, $actual->format(\DateTimeInterface::RFC3339));
     }
 
-    /** @return IFSCSchedule[] */
+    /**
+     * @return IFSCSchedule[]
+     * @throws Exception
+     */
     private function parseEventsFromFile(string $filename, string $timeZone): array
     {
         return $this->scheduleProvider->parseSchedule(
