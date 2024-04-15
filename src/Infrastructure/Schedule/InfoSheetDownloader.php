@@ -10,8 +10,8 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Schedule;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\InfoSheetNotFoundEvent;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
+use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
+use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpException;
 
 final readonly class InfoSheetDownloader
 {

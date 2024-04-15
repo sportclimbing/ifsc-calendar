@@ -7,7 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\IFSC;
 
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
+use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
 
 final readonly class IFSCApiClientFactory
 {

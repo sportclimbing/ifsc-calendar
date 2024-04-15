@@ -7,10 +7,10 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\Ranking;
 
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRankCategory;
 use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRankingException;
 use nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRankingProviderInterface;
+use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpException;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
 use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;

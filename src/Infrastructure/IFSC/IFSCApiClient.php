@@ -10,8 +10,8 @@ namespace nicoSWD\IfscCalendar\Infrastructure\IFSC;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\RequestOptions;
 use JsonException;
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
+use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
+use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpException;
 
 readonly class IFSCApiClient
 {
