@@ -117,7 +117,7 @@ function generate_round_diff(array $oldRounds, array $newRounds): string
         $newRound = find_round_by_name($newRounds, $oldRound['name']);
 
         if (!$newRound) {
-            $removedRounds .= '|<s>' . $oldRound['name'] . '</s>|<s>' . $oldRounds['starts_at'] . '</s>|<s>' . $oldRounds['ends_at'] . '</s>|' . PHP_EOL;
+            $removedRounds .= '|<s>' . $oldRound['name'] . '</s>|<s>' . $oldRound['starts_at'] . '</s>|<s>' . $oldRound['ends_at'] . '</s>|' . PHP_EOL;
         }
     }
 
