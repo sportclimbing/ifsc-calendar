@@ -40,13 +40,13 @@ jobs:
           php-version: '8.3'
           tools: composer
 
-      - name: "Install poppler-utils"
-        run: sudo apt-get update && sudo apt-get install poppler-utils -y
-
-      - name: "Build Calendar"
+      - name: "Install dependencies"
         run: |
+          sudo apt-get update && sudo apt-get install poppler-utils -y
           composer install --no-dev
-          php app/run.php --season 2024 --output new-calendar.json --format json
+
+      - name: "Generate Calendar"
+        run: php app/run.php --season 2024 --output new-calendar.json --format json
 
       - name: "Check diff"
         run: |
