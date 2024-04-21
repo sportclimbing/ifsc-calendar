@@ -102,6 +102,10 @@ services:
 
   nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDuration:
     class: nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDuration
+    arguments:
+      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey'
+
+  nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey: ~
 
   nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory:
     class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory
