@@ -7,8 +7,8 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\IFSC;
 
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
+use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
+use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpException;
 
 final readonly class IFSCApiClientAuthenticator
 {
@@ -21,18 +21,18 @@ final readonly class IFSCApiClientAuthenticator
     ) {
     }
 
-    /**
-     * @throws IFSCApiClientException
-     * @throws HttpException
-     */
+    /** @throws IFSCApiClientException */
     public function fetchSessionId(): string
     {
-        foreach ($this->getCookies() as $cookie) {
-            $parsedCookie = $this->parseCookie($cookie);
+        try {
+            foreach ($this->getCookies() as $cookie) {
+                $parsedCookie = $this->parseCookie($cookie);
 
-            if (isset($parsedCookie[self::IFSC_SESSION_COOKIE_NAME])) {
-                return $this->extractSessionId($parsedCookie);
+                if (isset($parsedCookie[self::IFSC_SESSION_COOKIE_NAME])) {
+                    return $this->extractSessionId($parsedCookie);
+                }
             }
+        } catch (HttpException) {
         }
 
         throw new IFSCApiClientException('Could not retrieve session cookie');

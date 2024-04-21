@@ -12,6 +12,7 @@ use DateTimeInterface;
 use DateTimeZone;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDuration;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
 use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
@@ -122,7 +123,9 @@ final class IFSCRoundFactoryTest extends TestCase
                     );
                 }
             },
-            new IFSCAverageRoundDuration(),
+            new IFSCAverageRoundDuration(
+                new IFSCAverageRoundDurationLookupKey(),
+            ),
         );
     }
 

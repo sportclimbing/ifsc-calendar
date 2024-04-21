@@ -1,0 +1,42 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+use GuzzleHttp\Exception\GuzzleException;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+const WEBHOOK_URI = 'https://ical.ifsc.stream/webhook/notify-update';
+
+echo '[+] Updating calendar...', PHP_EOL;
+
+try {
+    $httpClient = new GuzzleHttp\Client();
+    $response = $httpClient->get(WEBHOOK_URI, options: [
+        'headers' => [
+            'Authorization' => 'Bearer ' . getenv('WEBHOOK_SECRET'),
+        ],
+    ]);
+} catch (GuzzleException $e) {
+    echo '[-] Error: ', $e->getMessage(), PHP_EOL;
+    exit(1);
+}
+
+if ($response->getStatusCode() !== 200) {
+    echo '[-] Request failed with code: ', $response->getStatusCode(), PHP_EOL;
+    exit(1);
+}
+
+try {
+    $json = json_decode($response->getBody()->getContents(), flags: JSON_THROW_ON_ERROR);
+} catch (JsonException $e) {
+    echo '[-] Unable to parse JSON response: ', $response->getStatusCode(), PHP_EOL;
+    exit(1);
+}
+
+if ($json->status !== 'success') {
+    echo '[-] Update failed with error: ', $json->error, PHP_EOL;
+    exit(1);
+}
+
+echo '[+] Calendar updated successfully', PHP_EOL;
+exit(0);

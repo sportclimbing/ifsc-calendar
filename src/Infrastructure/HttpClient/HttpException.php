@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@oelgart.com>
  */
-namespace nicoSWD\IfscCalendar\Domain\HttpClient;
+namespace nicoSWD\IfscCalendar\Infrastructure\HttpClient;
 
 use Exception;
 

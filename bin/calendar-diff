@@ -79,6 +79,7 @@ function generate_round_diff(array $oldRounds, array $newRounds): string
     $diff = '';
     $changedRounds = '';
     $addedRounds = '';
+    $removedRounds = '';
 
     foreach ($newRounds as $newRound) {
         $oldRound = find_round_by_name($oldRounds, $newRound['name']);
@@ -106,9 +107,17 @@ function generate_round_diff(array $oldRounds, array $newRounds): string
             }
 
             if ($roundDiff) {
-                $changedRounds .= "|  **{$newRound['name']}** |       |               |             |" . PHP_EOL;
+                $changedRounds .= "|  **{$newRound['name']}** |   |   |   |" . PHP_EOL;
                 $changedRounds .= $roundDiff;
             }
+        }
+    }
+
+    foreach ($oldRounds as $oldRound) {
+        $newRound = find_round_by_name($newRounds, $oldRound['name']);
+
+        if (!$newRound) {
+            $removedRounds .= '|<s>' . $oldRound['name'] . '</s>|<s>' . $oldRound['starts_at'] . '</s>|<s>' . $oldRound['ends_at'] . '</s>|' . PHP_EOL;
         }
     }
 
@@ -124,7 +133,15 @@ function generate_round_diff(array $oldRounds, array $newRounds): string
         $diff .= "#### Added Rounds" . PHP_EOL;
         $diff .= "|" . implode('|', array_keys($newRounds[0])) . "|" . PHP_EOL;
         $diff .= "|" . str_repeat('-------------|', count($newRounds[0])) . PHP_EOL;
-        $diff .= $addedRounds . PHP_EOL . PHP_EOL;
+        $diff .= $addedRounds . PHP_EOL;
+    }
+    
+    if ($removedRounds) {
+        $diff .= PHP_EOL;
+        $diff .= "#### Removed Rounds" . PHP_EOL;
+        $diff .= "|Round | starts_at | ends_at |" . PHP_EOL;
+        $diff .= "|------|-----------|---------|" . PHP_EOL;
+        $diff .= $removedRounds . PHP_EOL . PHP_EOL;
     }
 
     return $diff;

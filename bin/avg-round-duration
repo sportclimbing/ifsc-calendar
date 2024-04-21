@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php declare(strict_types=1);
 
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
+use nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -11,39 +11,23 @@ $videos = json_decode(
 );
 
 $tagsParser = new IFSCTagsParser();
-
-function cache_key(array $tags): string
-{
-    $key = [];
-
-    foreach ($tags as $tag) {
-        $key[] = $tag->name;
-    }
-
-    sort($key);
-
-    return strtolower(implode('_', $key));
-}
-
 $videoDurations = [];
 
 foreach ($videos as $video) {
-    $tags = $tagsParser->fromString($video->title);
-
-    if (!$tags->hasTag(Tag::WOMEN) && !$tags->hasTag(Tag::MEN)) {
-        $videoTags = [Tag::WOMEN, Tag::MEN, ...$tags->allTags()];
-    } else {
-        $videoTags = $tags->allTags();
+    if (!in_array(substr($video->published_at, 0, 4), ['2022', '2023', '2024'])) {
+        continue;
     }
 
-    $videoDurations[cache_key($videoTags)][] = $video->duration;
+    $tags = $tagsParser->fromString($video->title);
+    $lookupKey = (new IFSCAverageRoundDurationLookupKey())->generate($tags);
+    $videoDurations[$lookupKey][] = $video->duration;
 }
 
 $results = [];
 
 foreach ($videoDurations as $key => $minutes) {
     $averageDuration = (int) floor(array_sum($minutes) / count($minutes));
-    $averageDuration -= ($averageDuration % 30);
+    $averageDuration -= ($averageDuration % 15);
 
     if ($averageDuration > 30) {
         $results[$key] = $averageDuration;

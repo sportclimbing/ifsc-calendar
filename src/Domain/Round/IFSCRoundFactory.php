@@ -98,7 +98,7 @@ final readonly class IFSCRoundFactory
 
     private function averageRoundDuration(IFSCParsedTags $tags): int
     {
-        return $this->averageRoundDuration->fromTags($tags->allTags());
+        return $this->averageRoundDuration->fromTags($tags);
     }
 
     private function startTimeMatchesYouTubes(DateTimeImmutable $startTime, LiveStream $liveStream): bool

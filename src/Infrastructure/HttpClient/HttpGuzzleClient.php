@@ -11,8 +11,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\HTTPRequestFailedEvent;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpClientInterface;
-use nicoSWD\IfscCalendar\Domain\HttpClient\HttpException;
 use Override;
 
 final readonly class HttpGuzzleClient implements HttpClientInterface
