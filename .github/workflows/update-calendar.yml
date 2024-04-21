@@ -23,7 +23,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          tools: composer
+          extensions: curl
 
       - name: "Generate calendar files"
         uses: addnab/docker-run-action@v3
@@ -77,8 +77,6 @@ jobs:
 
       - name: "Notify update"
         if: steps.check_diff.outputs.has_changes == 'true'
-        run: |
-          composer install --no-dev
-          php bin/notify-update
+        run: php bin/notify-update
         env:
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
