@@ -14,7 +14,7 @@ $tagsParser = new IFSCTagsParser();
 $videoDurations = [];
 
 foreach ($videos as $video) {
-    if (!str_starts_with($video->published_at, '2023-')) {
+    if (!in_array(substr($video->published_at, 0, 4), ['2022', '2023', '2024'])) {
         continue;
     }
 
