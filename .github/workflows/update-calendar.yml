@@ -11,6 +11,7 @@ permissions:
 env:
   CALENDAR_FILE_ICS: "IFSC-World-Cups-and-World-Championships.ics"
   CALENDAR_FILE_JSON: "IFSC-World-Cups-and-World-Championships.json"
+  LATEST_CALENDAR_URL: "https://github.com/sportclimbing/ifsc-calendar/releases/latest/download/IFSC-World-Cups-and-World-Championships.json"
 
 jobs:
   update-calendar:
@@ -42,7 +43,7 @@ jobs:
       - name: "Check diff"
         id: check_diff
         run: |
-          curl -sSL "https://calendar.ifsc.stream/?format=json&nocache=1" --output old-calendar.json
+          curl -sSL "${{ env.LATEST_CALENDAR_URL }}" --output old-calendar.json
           php bin/calendar-diff old-calendar.json "${{ env.CALENDAR_FILE_JSON }}" > diff.md || true
           
           if [ $(wc -w < diff.md) -gt 0 ]; then
