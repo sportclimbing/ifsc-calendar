@@ -4,6 +4,7 @@ WORKDIR /calendar
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV APP_DEBUG 0
+ENV APP_ENV prod
 
 COPY . .
 
@@ -19,6 +20,7 @@ WORKDIR /calendar
 VOLUME /calendar/
 
 ENV APP_DEBUG 0
+ENV APP_ENV prod
 
 RUN apk update && \
     apk add poppler-utils && \
