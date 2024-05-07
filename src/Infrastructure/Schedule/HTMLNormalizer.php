@@ -24,12 +24,24 @@ final readonly class HTMLNormalizer
             $html,
         );
         $html = html_entity_decode($html);
-        $html = substr($html, strpos($html, 'PROGRAMME'));
+        $offset = $this->cutOffOffset($html);
+        $html = substr($html, $offset);
         $lines = preg_split('~\n~', $html, -1, PREG_SPLIT_NO_EMPTY);
         $lines = array_map('trim', $lines);
         $lines = array_filter($lines);
         $html = implode("\n", $lines);
 
         return strip_tags($html);
+    }
+
+    private function cutOffOffset(string $html): int
+    {
+        $pos = strpos($html, 'PROGRAMME');
+
+        if ($pos === false) {
+            $pos = strpos($html, 'Schedule');
+        }
+
+        return $pos ?: 0;
     }
 }
