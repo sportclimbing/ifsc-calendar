@@ -8,7 +8,7 @@ ENV APP_ENV prod
 
 COPY . .
 
-RUN apk update && apk add wget git unzip make
+RUN apk update && apk add --no-cache wget git unzip make
 
 RUN echo "phar.readonly=0" > /usr/local/etc/php/conf.d/phar.ini && \
     mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
@@ -23,7 +23,7 @@ ENV APP_DEBUG 0
 ENV APP_ENV prod
 
 RUN apk update && \
-    apk add poppler-utils && \
+    apk add --no-cache poppler-utils && \
     mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 COPY --from=builder /calendar/build/ifsc-calendar.phar /bin/ifsc-calendar
