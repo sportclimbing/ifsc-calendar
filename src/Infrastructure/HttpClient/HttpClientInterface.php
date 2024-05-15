@@ -29,5 +29,8 @@ interface HttpClientInterface
     public function get(string $url, array $options): string;
 
     /** @throws HttpException */
+    public function getRedirectLocation(string $url): ?string;
+
+    /** @throws HttpException */
     public function downloadFile(string $url, string $saveAs): void;
 }

@@ -24,14 +24,50 @@ final readonly class HTMLNormalizer
             $html,
         );
         $html = html_entity_decode($html);
-        $offset = $this->cutOffOffset($html);
+        $offset = $this->cutOffOffset2($html);
         $html = substr($html, $offset);
         $lines = preg_split('~\n~', $html, -1, PREG_SPLIT_NO_EMPTY);
         $lines = array_map('trim', $lines);
         $lines = array_filter($lines);
         $html = implode("\n", $lines);
+        $html = $this->fixOqsShanghai($html);
 
-        return strip_tags($html);
+        return trim(strip_tags($html));
+    }
+
+    public function normalizeTime(string $schedule): string
+    {
+        $schedule = preg_replace('~(\d{2})\.(\d{2})~', '$1:$2', $schedule);
+
+        return preg_replace('~(\d\d:\d\d)\s*\n(\d\d:\d\d)\s*~', "\$1 - \$2\n", $schedule);
+    }
+
+    private function cutOffOffset2(string $html): int
+    {
+        $pos = strpos($html, 'PROGRAMME');
+
+        if ($pos === false) {
+            $pos = strpos($html, 'Schedule');
+        }
+
+        return $pos ?: 0;
+    }
+
+    private function fixOqsShanghai(string $html): string
+    {
+        // Remove line-break
+        $html = preg_replace_callback(
+            '~Thursday\s*\n16 May~',
+            static fn (array $matches): string => str_replace("\n", ' ', $matches[0]),
+            $html
+        );
+
+        // Re-order lines
+        return preg_replace_callback(
+            '~(([^\n]+\n){2})(<b>(?:Thursday|Friday) 1\d May\s*[^\n]+\n)~',
+            static fn (array $match): string => $match[3] . $match[1],
+            $html,
+        );
     }
 
     private function cutOffOffset(string $html): int

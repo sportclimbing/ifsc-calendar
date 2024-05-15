@@ -34,7 +34,7 @@ final readonly class IFSCParsedTags
 
     /** @param Tag[] $tags */
     public function __construct(
-        private array $tags
+        private array $tags,
     ) {
     }
 

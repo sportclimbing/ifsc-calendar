@@ -9,11 +9,11 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Schedule;
 
 use DateTimeImmutable;
 use DateTimeZone;
+use Iterator;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory;
-use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleProvider;
 
-final readonly class InfoSheetScheduleProvider implements IFSCScheduleProvider
+final readonly class InfoSheetScheduleParser
 {
     private const string REGEX_DAY_SCHEDULE = '~
         # day name
@@ -33,7 +33,7 @@ final readonly class InfoSheetScheduleProvider implements IFSCScheduleProvider
     ) {
     }
 
-    /** @inheritdoc */
+    /** @return IFSCSchedule[] */
     public function parseSchedule(string $html, DateTimeZone $timeZone): array
     {
         $schedules = [];
@@ -50,9 +50,9 @@ final readonly class InfoSheetScheduleProvider implements IFSCScheduleProvider
     /** @return string[] */
     private function daySchedules(string $html): array
     {
-        $normalize = $this->htmlNormalizer->normalize($html);
+        $html = $this->htmlNormalizer->normalize($html);
 
-        if (preg_match_all(self::REGEX_DAY_SCHEDULE, $normalize, $matches)) {
+        if (preg_match_all(self::REGEX_DAY_SCHEDULE, $html, $matches)) {
             return $matches[0];
         }
 
@@ -64,48 +64,59 @@ final readonly class InfoSheetScheduleProvider implements IFSCScheduleProvider
     {
         [$dayName, $schedule] = $this->parseDayAndSchedule($schedule);
 
-        $scheduleRegex = '~
-            (?<start_time>\d?\d:\d\d|follow(?:ing|ed)\s+by)\n?(?:\s*-\s*
-            (?<end_time>\d?\d:\d\d))?\s*\n
-            (?<name>[^\r\n]+)\s*\n~xi';
-
         /** @var IFSCSchedule[] $schedules */
         $schedules = [];
 
-        if (preg_match_all($scheduleRegex, $schedule, $match, flags: PREG_UNMATCHED_AS_NULL)) {
-            foreach (array_keys($match['start_time']) as $key) {
-                if ($this->followsLastRound($match['start_time'][$key])) {
-                    $prevIndex = count($schedules) - 1;
+        foreach ($this->parse($schedule) as $match) {
+            if ($this->followsLastRound($match['start_time'])) {
+                $prevIndex = count($schedules) - 1;
 
-                    if (isset($schedules[$prevIndex])) {
-                        $schedule = $this->scheduleFactory->create(
-                            name: "{$schedules[$prevIndex]->name} & {$match['name'][$key]}",
-                            startsAt: $schedules[$prevIndex]->startsAt,
-                            endsAt: $schedules[$prevIndex]->endsAt,
-                        );
-
-                        if (!$schedule->isPreRound) {
-                            $schedules[$prevIndex] = $schedule;
-                        }
-                    }
-                } else {
-                    $startsAt = $this->createStartDate($dayName, $match['start_time'][$key], $timeZone);
-                    $endsAt = $this->createEndDate($dayName, $match['end_time'][$key] ?? null, $timeZone);
-
+                if (isset($schedules[$prevIndex])) {
                     $schedule = $this->scheduleFactory->create(
-                        name: $match['name'][$key],
-                        startsAt: $startsAt,
-                        endsAt: $endsAt,
+                        name: "{$schedules[$prevIndex]->name} & {$match['name']}",
+                        startsAt: $schedules[$prevIndex]->startsAt,
+                        endsAt: $schedules[$prevIndex]->endsAt,
                     );
 
                     if (!$schedule->isPreRound) {
-                        $schedules[] = $schedule;
+                        $schedules[$prevIndex] = $schedule;
                     }
+                }
+            } else {
+                $startsAt = $this->createStartDate($dayName, $match['start_time'], $timeZone);
+                $endsAt = $this->createEndDate($dayName, $match['end_time'] ?? null, $timeZone);
+
+                $schedule = $this->scheduleFactory->create(
+                    name: $match['name'],
+                    startsAt: $startsAt,
+                    endsAt: $endsAt,
+                );
+
+                if (!$schedule->isPreRound) {
+                    $schedules[] = $schedule;
                 }
             }
         }
 
         return $schedules;
+    }
+
+    protected function parse(string $schedule): Iterator
+    {
+        $scheduleRegex = '~
+            (?<start_time>\d?\d:\d\d|follow(?:ing|ed)\s+by)\n?(?:\s*-\s*
+            (?<end_time>\d?\d:\d\d))?\s*\n
+            (?<name>[^\r\n]+)\s*\n~xi';
+
+        if (preg_match_all($scheduleRegex, $schedule, $match, flags: PREG_UNMATCHED_AS_NULL)) {
+            foreach (array_keys($match['start_time']) as $key) {
+                yield [
+                    'name' => $match['name'][$key],
+                    'start_time' => $match['start_time'][$key],
+                    'end_time' => $match['end_time'][$key],
+                ];
+            }
+        }
     }
 
     private function createStartDate(string $day, string $time, DateTimeZone $timeZone): DateTimeImmutable
@@ -137,12 +148,7 @@ final readonly class InfoSheetScheduleProvider implements IFSCScheduleProvider
     /** @return string[] */
     private function parseDayAndSchedule(string $schedule): array
     {
-        return explode("\n", $this->normalizeTime($schedule), limit: 2);
-    }
-
-    private function normalizeTime(string $schedule): string
-    {
-        return preg_replace('~(\d\d:\d\d)\s*\n(\d\d:\d\d)\s*~', "\$1 - \$2\n", $schedule);
+        return explode("\n", $this->htmlNormalizer->normalizeTime($schedule), limit: 2);
     }
 
     private function followsLastRound(string $haystack): bool

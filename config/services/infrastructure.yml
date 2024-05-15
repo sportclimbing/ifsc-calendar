@@ -44,8 +44,8 @@ services:
   nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer:
     class: nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer
 
-  nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleProvider:
-    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleProvider
+  nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleParser:
+    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleParser
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer'
       - '@nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory'
@@ -54,13 +54,20 @@ services:
     class: nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
-      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
+      - '@Symfony\Component\Filesystem\Filesystem'
 
   nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider:
     class: nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleProvider'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleParser'
       - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader'
+      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Shell\Command'
+      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
+      - '@Symfony\Component\Filesystem\Filesystem'
+
+  # Process
+  nicoSWD\IfscCalendar\Infrastructure\Shell\Command: ~
 
   # Start List
   nicoSWD\IfscCalendar\Infrastructure\StartList\ApiStartListProvider:

@@ -11,8 +11,8 @@
     "require": {
         "php": ">=8.3",
         "ext-ctype": "*",
-        "ext-iconv": "*",
         "ext-dom": "*",
+        "ext-iconv": "*",
         "ext-libxml": "*",
         "eluceo/ical": "^2.13",
         "guzzlehttp/guzzle": "^7.8",

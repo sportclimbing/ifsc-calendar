@@ -9,6 +9,7 @@ namespace nicoSWD\IfscCalendar\Domain\Event\Info;
 
 use DateTimeZone;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
+use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 
 final readonly class IFSCEventInfo
 {
@@ -30,5 +31,23 @@ final readonly class IFSCEventInfo
         public array $disciplines,
         public array $categories,
     ) {
+    }
+
+    public static function fromEvent(IFSCEvent $event): self
+    {
+        return new self(
+            eventId: $event->eventId,
+            eventName: $event->eventName,
+            leagueId: 0,
+            leagueName: $event->leagueName,
+            leagueSeasonId: 0,
+            localStartDate: '',
+            localEndDate: '',
+            timeZone: $event->timeZone,
+            location: $event->location,
+            country: $event->country,
+            disciplines: $event->disciplines,
+            categories: [],
+        );
     }
 }

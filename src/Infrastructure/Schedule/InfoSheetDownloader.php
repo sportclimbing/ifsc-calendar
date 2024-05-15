@@ -7,72 +7,41 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\Schedule;
 
-use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\InfoSheetNotFoundEvent;
-use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
-use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpException;
+use Symfony\Component\Filesystem\Filesystem;
 
 final readonly class InfoSheetDownloader
 {
-    private const string INFO_SHEET_URL = 'https://ifsc.results.info/events/%d/infosheet';
-
     public function __construct(
         private HttpClientInterface $httpClient,
-        private EventDispatcherInterface $eventDispatcher,
+        private Filesystem $filesystem,
     ) {
     }
 
-    public function downloadInfoSheet(IFSCEventInfo $event): ?string
+    /** @throws InfoSheetDownloadFailedException */
+    public function downloadInfoSheet(string $infoSheetUrl): ?string
     {
         try {
-            $infoSheetUrl = $this->getInfoSheetUrl($event);
+            $tmpFile = $this->getTempFileName();
+            $this->downloadFile($infoSheetUrl, $tmpFile);
 
-            if ($infoSheetUrl) {
-                $tmpFile = $this->getTempFileName();
-                $this->downloadFile($infoSheetUrl, $tmpFile);
-
-                return $tmpFile;
-            }
+            return $tmpFile;
         } catch (HttpException) {
+            throw new InfoSheetDownloadFailedException(
+                'Unable to download info sheet',
+            );
         }
-
-        $this->emitInfoSheetNotFoundEvent($event);
-
-        return null;
-    }
-
-    /** @throws HttpException */
-    private function getInfoSheetUrl(IFSCEventInfo $event): ?string
-    {
-        $headers = array_change_key_case(
-            $this->httpClient->getHeaders(
-                url: $this->buildInfoSheetUrl($event),
-                options: ['allow_redirects' => false],
-            )
-        );
-
-        return $headers['location'][0] ?? null;
-    }
-
-    private function emitInfoSheetNotFoundEvent(IFSCEventInfo $event): void
-    {
-        $this->eventDispatcher->dispatch(new InfoSheetNotFoundEvent($event->eventName));
-    }
-
-    private function buildInfoSheetUrl(IFSCEventInfo $event): string
-    {
-        return sprintf(self::INFO_SHEET_URL, $event->eventId);
-    }
-
-    private function getTempFileName(): string
-    {
-        return tempnam('/tmp', 'infosheet_');
     }
 
     /** @throws HttpException */
     private function downloadFile(string $url, string $tmpFile): void
     {
         $this->httpClient->downloadFile($url, $tmpFile);
+    }
+
+    private function getTempFileName(): string
+    {
+        return $this->filesystem->tempnam('/tmp', 'infosheet_');
     }
 }
