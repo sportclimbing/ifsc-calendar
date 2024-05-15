@@ -24,7 +24,7 @@ final readonly class HTMLNormalizer
             $html,
         );
         $html = html_entity_decode($html);
-        $offset = $this->cutOffOffset($html);
+        $offset = $this->cutOffOffset2($html);
         $html = substr($html, $offset);
         $lines = preg_split('~\n~', $html, -1, PREG_SPLIT_NO_EMPTY);
         $lines = array_map('trim', $lines);
@@ -42,7 +42,7 @@ final readonly class HTMLNormalizer
         return preg_replace('~(\d\d:\d\d)\s*\n(\d\d:\d\d)\s*~', "\$1 - \$2\n", $schedule);
     }
 
-    private function cutOffOffset(string $html): int
+    private function cutOffOffset2(string $html): int
     {
         $pos = strpos($html, 'PROGRAMME');
 
