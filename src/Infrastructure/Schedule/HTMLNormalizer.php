@@ -55,8 +55,14 @@ final readonly class HTMLNormalizer
 
     private function fixOqsShanghai(string $html): string
     {
-        $html = preg_replace_callback('~Thursday\s*\n16 May~', static fn (array $matches): string => str_replace("\n", ' ', $matches[0]), $html);
+        // Remove line-break
+        $html = preg_replace_callback(
+            '~Thursday\s*\n16 May~',
+            static fn (array $matches): string => str_replace("\n", ' ', $matches[0]),
+            $html
+        );
 
+        // Re-order lines
         return preg_replace_callback(
             '~(([^\n]+\n){2})(<b>(?:Thursday|Friday) 1\d May\s*[^\n]+\n)~',
             static fn (array $match): string => $match[3] . $match[1],

@@ -50,12 +50,6 @@ services:
       - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer'
       - '@nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory'
 
-  nicoSWD\IfscCalendar\Infrastructure\Schedule\ThreeColumnInfoSheetScheduleParser:
-    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\ThreeColumnInfoSheetScheduleParser
-    arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer'
-      - '@nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory'
-
   nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader:
     class: nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader
     arguments:
@@ -66,16 +60,6 @@ services:
     class: nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider
     arguments:
       - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleParser'
-      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader'
-      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
-      - '@nicoSWD\IfscCalendar\Infrastructure\Shell\Command'
-      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
-      - '@Symfony\Component\Filesystem\Filesystem'
-
-  nicoSWD\IfscCalendar\Infrastructure\Round\ThreeColumnInfoSheetRoundProvider:
-    class: nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider
-    arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\ThreeColumnInfoSheetScheduleParser'
       - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader'
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
       - '@nicoSWD\IfscCalendar\Infrastructure\Shell\Command'

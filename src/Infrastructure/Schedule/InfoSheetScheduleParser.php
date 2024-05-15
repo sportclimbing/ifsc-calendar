@@ -13,7 +13,7 @@ use Iterator;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory;
 
-readonly class InfoSheetScheduleParser
+final readonly class InfoSheetScheduleParser
 {
     private const string REGEX_DAY_SCHEDULE = '~
         # day name

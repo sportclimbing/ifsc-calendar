@@ -16,15 +16,12 @@ use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory;
 use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
 use nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer;
 use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleParser;
-use nicoSWD\IfscCalendar\Infrastructure\Schedule\ThreeColumnInfoSheetScheduleParser;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 final class PDFScheduleProviderTest extends TestCase
 {
-    private InfoSheetScheduleParser $scheduleProvider;
-
-    private ThreeColumnInfoSheetScheduleParser $threeColumnInfoSheetScheduleParser;
+    private readonly InfoSheetScheduleParser $scheduleParser;
 
     #[Test] public function keqiao_schedule_is_found(): void
     {
@@ -265,7 +262,7 @@ final class PDFScheduleProviderTest extends TestCase
 
     #[Test] public function oqs_shanghai_schedule_is_found(): void
     {
-        $schedule = $this->parseEventsFromThreeColumnFile('OQS_Shanghai.pdf.html', 'Asia/Shanghai');
+        $schedule = $this->parseEventsFromFile('OQS_Shanghai.pdf.html', 'Asia/Shanghai');
 
         $this->assertSame(10, count($schedule));
 
@@ -317,19 +314,7 @@ final class PDFScheduleProviderTest extends TestCase
      */
     private function parseEventsFromFile(string $filename, string $timeZone): array
     {
-        return $this->scheduleProvider->parseSchedule(
-            $this->loadTestFile($filename),
-            new DateTimeZone($timeZone),
-        );
-    }
-
-    /**
-     * @return IFSCSchedule[]
-     * @throws Exception
-     */
-    private function parseEventsFromThreeColumnFile(string $filename, string $timeZone): array
-    {
-        return $this->threeColumnInfoSheetScheduleParser->parseSchedule(
+        return $this->scheduleParser->parseSchedule(
             $this->loadTestFile($filename),
             new DateTimeZone($timeZone),
         );
@@ -342,15 +327,7 @@ final class PDFScheduleProviderTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->scheduleProvider = new InfoSheetScheduleParser(
-            new HTMLNormalizer(),
-            new IFSCScheduleFactory(
-                new IFSCTagsParser(),
-                new IFSCRoundNameNormalizer(),
-            ),
-        );
-
-        $this->threeColumnInfoSheetScheduleParser = new ThreeColumnInfoSheetScheduleParser(
+        $this->scheduleParser = new InfoSheetScheduleParser(
             new HTMLNormalizer(),
             new IFSCScheduleFactory(
                 new IFSCTagsParser(),
