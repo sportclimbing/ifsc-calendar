@@ -57,9 +57,9 @@ final readonly class HTMLNormalizer
     {
         $html = preg_replace_callback('~Thursday\s*\n16 May~', static fn (array $matches): string => str_replace("\n", ' ', $matches[0]), $html);
 
-        return preg_replace(
-            '~((.*?)\n){2}(<b>(?:Thursday|Friday) 1\d May\s*[^\n]+\n)~',
-            "\$3\n\$1",
+        return preg_replace_callback(
+            '~(([^\n]+\n){2})(<b>(?:Thursday|Friday) 1\d May\s*[^\n]+\n)~',
+            static fn (array $match): string => $match[3] . $match[1],
             $html,
         );
     }

@@ -22,10 +22,10 @@ use PHPUnit\Framework\TestCase;
 
 final class PDFScheduleProviderTest extends TestCase
 {
-    private readonly InfoSheetScheduleParser $scheduleProvider;
+    private InfoSheetScheduleParser $scheduleProvider;
 
-    private readonly ThreeColumnInfoSheetScheduleParser $threeColumnInfoSheetScheduleParser;
-/*
+    private ThreeColumnInfoSheetScheduleParser $threeColumnInfoSheetScheduleParser;
+
     #[Test] public function keqiao_schedule_is_found(): void
     {
         $schedule = $this->parseEventsFromFile('Keqiao.pdf.html', 'Asia/Shanghai');
@@ -262,36 +262,48 @@ final class PDFScheduleProviderTest extends TestCase
         $this->assertSameDate("2024-09-22T19:00:00+02:00", $schedule[5]->startsAt);
         $this->assertNull($schedule[5]->endsAt);
     }
-*/
+
     #[Test] public function oqs_shanghai_schedule_is_found(): void
     {
-        $schedule = $this->parseEventsFromFile('OQS_Shanghai.pdf.html', 'Asia/Shanghai');
+        $schedule = $this->parseEventsFromThreeColumnFile('OQS_Shanghai.pdf.html', 'Asia/Shanghai');
 
-        $this->assertSame(8, count($schedule));
+        $this->assertSame(10, count($schedule));
 
-        $this->assertSame("Men's & Women's Lead Qualification", $schedule[0]->name);
-        $this->assertSameDate("2024-05-17T10:00:00+08:00", $schedule[0]->startsAt);
+        $this->assertSame("Men's & Women's Boulder Qualification", $schedule[0]->name);
+        $this->assertSameDate("2024-05-16T10:30:00+08:00", $schedule[0]->startsAt);
         $this->assertNull($schedule[0]->endsAt);
 
-        $this->assertSame("Women's Boulder Qualification", $schedule[1]->name);
-        $this->assertSameDate("2024-09-20T16:00:00+02:00", $schedule[1]->startsAt);
+        $this->assertSame("Men's & Women's Lead Qualification", $schedule[1]->name);
+        $this->assertSameDate("2024-05-17T10:00:00+08:00", $schedule[1]->startsAt);
         $this->assertNull($schedule[1]->endsAt);
 
-        $this->assertSame("Men's Boulder Semi-Final", $schedule[2]->name);
-        $this->assertSameDate("2024-09-21T12:00:00+02:00", $schedule[2]->startsAt);
+        $this->assertSame("Men's Speed Qualification", $schedule[2]->name);
+        $this->assertSameDate("2024-05-17T16:50:00+08:00", $schedule[2]->startsAt);
         $this->assertNull($schedule[2]->endsAt);
 
-        $this->assertSame("Men's Boulder Final", $schedule[3]->name);
-        $this->assertSameDate("2024-09-21T20:00:00+02:00", $schedule[3]->startsAt);
+        $this->assertSame("Men's & Women's Boulder Semi-Final", $schedule[3]->name);
+        $this->assertSameDate("2024-05-17T09:30:00+08:00", $schedule[3]->startsAt);
         $this->assertNull($schedule[3]->endsAt);
 
-        $this->assertSame("Women's Boulder Semi-Final", $schedule[4]->name);
-        $this->assertSameDate("2024-09-22T12:00:00+02:00", $schedule[4]->startsAt);
+        $this->assertSame("Men's & Women's Lead Semi-Final", $schedule[4]->name);
+        $this->assertSameDate("2024-05-18T13:30:00+08:00", $schedule[4]->startsAt);
         $this->assertNull($schedule[4]->endsAt);
 
-        $this->assertSame("Women's Boulder Final", $schedule[5]->name);
-        $this->assertSameDate("2024-09-22T19:00:00+02:00", $schedule[5]->startsAt);
+        $this->assertSame("Men's & Women's Speed Final", $schedule[5]->name);
+        $this->assertSameDate("2024-05-18T17:00:00+08:00", $schedule[5]->startsAt);
         $this->assertNull($schedule[5]->endsAt);
+
+        $this->assertSame("Men's Boulder & Lead Final", $schedule[6]->name);
+        $this->assertSameDate("2024-05-18T10:00:00+08:00", $schedule[6]->startsAt);
+        $this->assertNull($schedule[6]->endsAt);
+
+        $this->assertSame("Men's Boulder & Lead Final", $schedule[7]->name);
+        $this->assertSameDate("2024-05-18T12:05:00+08:00", $schedule[7]->startsAt);
+        $this->assertNull($schedule[7]->endsAt);
+
+        $this->assertSame("Women's Boulder & Lead Final", $schedule[8]->name);
+        $this->assertSameDate("2024-05-19T15:25:00+08:00", $schedule[8]->startsAt);
+        $this->assertNull($schedule[8]->endsAt);
     }
 
     private function assertSameDate(string $expected, DateTimeImmutable $actual): void
@@ -305,7 +317,19 @@ final class PDFScheduleProviderTest extends TestCase
      */
     private function parseEventsFromFile(string $filename, string $timeZone): array
     {
-        return $this->threeColumnScheduleProvider->parseSchedule(
+        return $this->scheduleProvider->parseSchedule(
+            $this->loadTestFile($filename),
+            new DateTimeZone($timeZone),
+        );
+    }
+
+    /**
+     * @return IFSCSchedule[]
+     * @throws Exception
+     */
+    private function parseEventsFromThreeColumnFile(string $filename, string $timeZone): array
+    {
+        return $this->threeColumnInfoSheetScheduleParser->parseSchedule(
             $this->loadTestFile($filename),
             new DateTimeZone($timeZone),
         );
@@ -326,7 +350,7 @@ final class PDFScheduleProviderTest extends TestCase
             ),
         );
 
-        $this->threeColumnScheduleProvider = new ThreeColumnInfoSheetScheduleParser(
+        $this->threeColumnInfoSheetScheduleParser = new ThreeColumnInfoSheetScheduleParser(
             new HTMLNormalizer(),
             new IFSCScheduleFactory(
                 new IFSCTagsParser(),
