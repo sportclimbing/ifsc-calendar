@@ -69,4 +69,15 @@ final readonly class HTMLNormalizer
             $html,
         );
     }
+
+    private function cutOffOffset(string $html): int
+    {
+        $pos = strpos($html, 'PROGRAMME');
+
+        if ($pos === false) {
+            $pos = strpos($html, 'Schedule');
+        }
+
+        return $pos ?: 0;
+    }
 }
