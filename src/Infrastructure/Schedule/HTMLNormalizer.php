@@ -12,7 +12,7 @@ final readonly class HTMLNormalizer
     public function normalize(string $html): string
     {
         $html = str_replace(["<br/>", "<b>&#160;</b>"], ["\n", ''], $html);
-        $html = preg_replace(['~<([ai])\s?[^>]*>.*?</\\1>~', '~<(?:img|hr)[^>]+>~'], '', $html);
+        $html = preg_replace(['~<(a)\s?[^>]*>.*?</a>~', '~<(?:img|hr)[^>]+>~'], '', $html);
         $html = str_replace(["–", "–"], "-", $html);
         $html = str_replace("&#160;", " ", $html);
         $html = preg_replace("~,\s+20\d\d~", '', $html);
@@ -24,7 +24,7 @@ final readonly class HTMLNormalizer
             $html,
         );
         $html = html_entity_decode($html);
-        $offset = $this->cutOffOffset2($html);
+        $offset = $this->cutOffOffset($html);
         $html = substr($html, $offset);
         $lines = preg_split('~\n~', $html, -1, PREG_SPLIT_NO_EMPTY);
         $lines = array_map('trim', $lines);
@@ -42,23 +42,26 @@ final readonly class HTMLNormalizer
         return preg_replace('~(\d\d:\d\d)\s*\n(\d\d:\d\d)\s*~', "\$1 - \$2\n", $schedule);
     }
 
-    private function cutOffOffset2(string $html): int
-    {
-        $pos = strpos($html, 'PROGRAMME');
-
-        if ($pos === false) {
-            $pos = strpos($html, 'Schedule');
-        }
-
-        return $pos ?: 0;
-    }
-
     private function fixOqsShanghai(string $html): string
     {
         // Remove line-break
         $html = preg_replace_callback(
             '~Thursday\s*\n16 May~',
             static fn (array $matches): string => str_replace("\n", ' ', $matches[0]),
+            $html
+        );
+
+        // Fix round names
+        $html = preg_replace_callback(
+            '~(?<category>Women|Men)\'s Boulder & Lead Final - <i>(?<discipline>Boulder|Lead) stage</i>~',
+            static fn (array $matches): string => sprintf("%s's %s Final", $matches['category'], $matches['discipline']),
+            $html,
+        );
+
+        // Fix round name
+        $html = str_replace(
+            'followed by <b>Men’s Speed Qualification </b>',
+            "<b>Women's & Men's Speed Qualification",
             $html
         );
 

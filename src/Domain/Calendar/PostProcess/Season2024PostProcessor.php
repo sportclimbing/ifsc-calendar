@@ -14,6 +14,7 @@ use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundProviderInterface;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
+use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
 
 final readonly class Season2024PostProcessor
 {
@@ -21,6 +22,7 @@ final readonly class Season2024PostProcessor
     private const string WUJIAN_POSTER_URL = 'https://res.dasheng.top/227/pro/ctms_tool/20240323/jpg/d7f6d496a71d4dc785c8d0e51169d17b.jpg';
     private const int OLYMPIC_QUALIFIERS_SHANGHAI_ID = 1384;
     private const string OLYMPIC_QUALIFIERS_SHANGHAI_INFO_SHEET = 'https://images.ifsc-climbing.org/ifsc/image/private/t_q_good/prd/yg3cqznmay12orsv9hpa.pdf';
+    private const string OLYMPIC_QUALIFIERS_SHANGHAI_LIVE_STREAM = 'https://olympics.com/en/sport-events/olympic-qualifier-series-2024-shanghai/broadcasting-schedule';
 
     public function __construct(
         private IFSCRoundProviderInterface $roundProvider,
@@ -72,6 +74,7 @@ final readonly class Season2024PostProcessor
                 startTime: $schedule->startsAt,
                 endTime: $schedule->endsAt,
                 status: IFSCRoundStatus::PROVISIONAL,
+                liveStream: new LiveStream(self::OLYMPIC_QUALIFIERS_SHANGHAI_LIVE_STREAM),
             );
         }
 
