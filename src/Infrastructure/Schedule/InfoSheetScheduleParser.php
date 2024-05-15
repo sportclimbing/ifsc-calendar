@@ -125,7 +125,7 @@ final readonly class InfoSheetScheduleParser
 
         $day = preg_replace('~(\d{1,2})(?:st|nd|rd|th|ve)~', '$1', $day);
 
-        $d = DateTimeImmutable::createFromFormat(
+        return DateTimeImmutable::createFromFormat(
             'l j M Y H:i',
             sprintf(
                 '%s 2024 %s',
@@ -134,8 +134,6 @@ final readonly class InfoSheetScheduleParser
             ),
             $timeZone,
         );
-
-        return $d ?: new DateTimeImmutable('now', $timeZone);
     }
 
     private function createEndDate(string $dayName, ?string $time, DateTimeZone $timeZone): ?DateTimeImmutable
