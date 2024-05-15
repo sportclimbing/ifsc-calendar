@@ -31,9 +31,13 @@ final readonly class IFSCRoundFactory
         DateTimeImmutable $startTime,
         ?DateTimeImmutable $endTime,
         IFSCRoundStatus $status,
+        ?LiveStream $liveStream = null,
     ): IFSCRound {
         $tags = $this->getTags($roundName);
-        $liveStream = $this->findLiveStream($event, $roundName);
+
+        if (!$liveStream) {
+            $liveStream = $this->findLiveStream($event, $roundName);
+        }
 
         if ($liveStream->scheduledStartTime) {
             $youTubeStartTime = $this->buildStartTime($liveStream, $event);
