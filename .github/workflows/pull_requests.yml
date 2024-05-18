@@ -50,7 +50,7 @@ jobs:
 
       - name: "Check diff"
         run: |
-          curl -sSL "https://calendar.ifsc.stream/?format=json&nocache=1" --output old-calendar.json
+          curl -sSL "https://github.com/sportclimbing/ifsc-calendar/releases/latest/download/IFSC-World-Cups-and-World-Championships.json" --output old-calendar.json
           php bin/calendar-diff old-calendar.json new-calendar.json > diff.md
           
           if [ $(wc -w < diff.md) -gt 0 ]; then
