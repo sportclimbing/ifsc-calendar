@@ -25,9 +25,9 @@ final class PDFScheduleProviderTest extends TestCase
 
     #[Test] public function keqiao_schedule_is_found(): void
     {
-        $schedule = $this->parseEventsFromFile('Keqiao.pdf.html', 'Asia/Shanghai');
+        $schedule = $this->parseScheduleFromFile('Keqiao.pdf.html', 'Asia/Shanghai');
 
-        $this->assertSame(6, count($schedule));
+        $this->assertCount(6, $schedule);
 
         $this->assertSame("Women's Boulder Qualification", $schedule[0]->name);
         $this->assertSameDate("2024-04-08T09:00:00+08:00", $schedule[0]->startsAt);
@@ -56,9 +56,9 @@ final class PDFScheduleProviderTest extends TestCase
 
     #[Test] public function wujiang_schedule_is_found(): void
     {
-        $schedule = $this->parseEventsFromFile('Wujiang.pdf.html', 'Asia/Shanghai');
+        $schedule = $this->parseScheduleFromFile('Wujiang.pdf.html', 'Asia/Shanghai');
 
-        $this->assertSame(5, count($schedule));
+        $this->assertCount(5, $schedule);
 
         $this->assertSame("Men's & Women's Lead Qualification", $schedule[0]->name);
         $this->assertSameDate("2024-04-12T09:00:00+08:00", $schedule[0]->startsAt);
@@ -83,9 +83,9 @@ final class PDFScheduleProviderTest extends TestCase
 
     #[Test] public function salt_lake_city_schedule_is_found(): void
     {
-        $schedule = $this->parseEventsFromFile('Salt_Lake_City.pdf.html', 'America/Phoenix');
+        $schedule = $this->parseScheduleFromFile('Salt_Lake_City.pdf.html', 'America/Phoenix');
 
-        $this->assertSame(10, count($schedule));
+        $this->assertCount(10, $schedule);
 
         $this->assertSame("Men's Boulder Qualification", $schedule[0]->name);
         $this->assertSameDate("2024-05-03T09:00:00-07:00", $schedule[0]->startsAt);
@@ -130,9 +130,9 @@ final class PDFScheduleProviderTest extends TestCase
 
     #[Test] public function innsbruck_schedule_is_found(): void
     {
-        $schedule = $this->parseEventsFromFile('Innsbruck.pdf.html', 'Europe/Vienna');
+        $schedule = $this->parseScheduleFromFile('Innsbruck.pdf.html', 'Europe/Vienna');
 
-        $this->assertSame(10, count($schedule));
+        $this->assertCount(10, $schedule);
 
         $this->assertSame("Women's Boulder Qualification", $schedule[0]->name);
         $this->assertSameDate("2024-06-26T09:00:00+02:00", $schedule[0]->startsAt);
@@ -177,9 +177,9 @@ final class PDFScheduleProviderTest extends TestCase
 
     #[Test] public function koper_schedule_is_found(): void
     {
-        $schedule = $this->parseEventsFromFile('Koper.pdf.html', 'Europe/Ljubljana');
+        $schedule = $this->parseScheduleFromFile('Koper.pdf.html', 'Europe/Ljubljana');
 
-        $this->assertSame(4, count($schedule));
+        $this->assertCount(4, $schedule);
 
         $this->assertSame("Men's & Women's Lead Qualification", $schedule[0]->name);
         $this->assertSameDate("2024-09-06T09:00:00+02:00", $schedule[0]->startsAt);
@@ -200,9 +200,9 @@ final class PDFScheduleProviderTest extends TestCase
 
     #[Test] public function chamonix_schedule_is_found(): void
     {
-        $schedule = $this->parseEventsFromFile('Chamonix.pdf.html', 'Europe/Paris');
+        $schedule = $this->parseScheduleFromFile('Chamonix.pdf.html', 'Europe/Paris');
 
-        $this->assertSame(6, count($schedule));
+        $this->assertCount(6, $schedule);
 
         $this->assertSame("Men's & Women's Speed Qualification", $schedule[0]->name);
         $this->assertSameDate("2024-07-12T18:45:00+02:00", $schedule[0]->startsAt);
@@ -231,9 +231,9 @@ final class PDFScheduleProviderTest extends TestCase
 
     #[Test] public function prague_schedule_is_found(): void
     {
-        $schedule = $this->parseEventsFromFile('Prague.pdf.html', 'Europe/Prague');
+        $schedule = $this->parseScheduleFromFile('Prague.pdf.html', 'Europe/Prague');
 
-        $this->assertSame(6, count($schedule));
+        $this->assertCount(6, $schedule);
 
         $this->assertSame("Men's Boulder Qualification", $schedule[0]->name);
         $this->assertSameDate("2024-09-20T09:00:00+02:00", $schedule[0]->startsAt);
@@ -262,9 +262,9 @@ final class PDFScheduleProviderTest extends TestCase
 
     #[Test] public function oqs_shanghai_schedule_is_found(): void
     {
-        $schedule = $this->parseEventsFromFile('OQS_Shanghai.pdf.html', 'Asia/Shanghai');
+        $schedule = $this->parseScheduleFromFile('OQS_Shanghai.pdf.html', 'Asia/Shanghai');
 
-        $this->assertSame(10, count($schedule));
+        $this->assertCount(10, $schedule);
 
         $this->assertSame("Men's & Women's Boulder Qualification", $schedule[0]->name);
         $this->assertSameDate("2024-05-16T10:30:00+08:00", $schedule[0]->startsAt);
@@ -312,16 +312,17 @@ final class PDFScheduleProviderTest extends TestCase
         $this->assertSame($expected, $actual->format(\DateTimeInterface::RFC3339));
     }
 
-    /**
-     * @return IFSCSchedule[]
-     * @throws Exception
-     */
-    private function parseEventsFromFile(string $filename, string $timeZone): array
+    /** @return IFSCSchedule[] */
+    private function parseScheduleFromFile(string $filename, string $timeZone): array
     {
-        return $this->scheduleParser->parseSchedule(
-            $this->loadTestFile($filename),
-            new DateTimeZone($timeZone),
-        );
+        try {
+            return $this->scheduleParser->parseSchedule(
+                $this->loadTestFile($filename),
+                new DateTimeZone($timeZone),
+            );
+        } catch (Exception $e) {
+            $this->fail($e->getMessage());
+        }
     }
 
     private function loadTestFile(string $filename): string
