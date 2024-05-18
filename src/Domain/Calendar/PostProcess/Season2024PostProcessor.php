@@ -64,23 +64,23 @@ final readonly class Season2024PostProcessor
 
         return [
             // 16/5
-            $this->round($eventInfo, "Men's & Women's Boulder Qualification", '2024-05-16T04:30:00+02:00'),
+            $this->round($eventInfo, "Men's & Women's Boulder Qualification", '2024-05-16T10:30:00+08:00'),
 
             // 17/5
-            $this->round($eventInfo, "Men's & Women's Lead Qualification", '2024-05-17T04:00:00+02:00'),
-            $this->round($eventInfo, "Women's Speed Qualification", '2024-05-17T10:50:00+02:00'),
-            $this->round($eventInfo, "Men's Speed Qualification", '2024-05-17T11:45:00+02:00'),
+            $this->round($eventInfo, "Men's & Women's Lead Qualification", '2024-05-17T10:00:00+08:00'),
+            $this->round($eventInfo, "Women's Speed Qualification", '2024-05-17T16:50:00+08:00'),
+            $this->round($eventInfo, "Men's Speed Qualification", '2024-05-17T17:45:00+08:00'),
 
             // 18/5
-            $this->round($eventInfo, "Men's & Women's Boulder Semifinal", '2024-05-18T03:30:00+02:00'),
-            $this->round($eventInfo, "Men's & Women's Lead Semifinal", '2024-05-18T07:30:00+02:00'),
-            $this->round($eventInfo, "Men's & Women's Speed Final", '2024-05-18T11:00:00+02:00'),
+            $this->round($eventInfo, "Men's & Women's Boulder Semifinal", '2024-05-18T09:30:00+08:00'),
+            $this->round($eventInfo, "Men's & Women's Lead Semifinal", '2024-05-18T13:30:00+08:00'),
+            $this->round($eventInfo, "Men's & Women's Speed Final", '2024-05-18T17:00:00+08:00'),
 
             // 19/05
-            $this->round($eventInfo, "Men's Boulder Final", '2024-05-19T04:00:00+02:00'),
-            $this->round($eventInfo, "Men's Lead Final", '2024-05-19T06:05:00+02:00'),
-            $this->round($eventInfo, "Women's Boulder Final", '2024-05-19T09:25:00+02:00'),
-            $this->round($eventInfo, "Women's Lead Final", '2024-05-19T11:30:00+02:00'),
+            $this->round($eventInfo, "Men's Boulder Final", '2024-05-19T10:00:00+08:00'),
+            $this->round($eventInfo, "Men's Lead Final", '2024-05-19T12:05:00+08:00'),
+            $this->round($eventInfo, "Women's Boulder Final", '2024-05-19T15:25:00+08:00'),
+            $this->round($eventInfo, "Women's Lead Final", '2024-05-19T17:30:00+08:00'),
         ];
     }
 
@@ -88,7 +88,7 @@ final readonly class Season2024PostProcessor
     {
         $schedule = $this->scheduleFactory->create(
             name: $title,
-            startsAt: (new DateTimeImmutable($startsAt))->setTimezone(new DateTimeZone('Europe/Madrid')),
+            startsAt: (new DateTimeImmutable($startsAt))->setTimezone(new DateTimeZone('Asia/Shanghai')),
             endsAt: null,
         );
 
