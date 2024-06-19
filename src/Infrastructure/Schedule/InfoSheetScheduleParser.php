@@ -124,6 +124,7 @@ final readonly class InfoSheetScheduleParser
         // Year is missing!!
 
         $day = preg_replace('~(\d{1,2})(?:st|nd|rd|th|ve)~', '$1', $day);
+        $day = str_replace(',', '', $day);
 
         return DateTimeImmutable::createFromFormat(
             'l j M Y H:i',
