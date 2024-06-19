@@ -190,9 +190,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
     private function roundIsStreamable(IFSCRound $round): bool
     {
-        return
-            !$round->kind->isQualification() ||
-            ($round->disciplines->isSpeed() && $round->liveStream->hasUrl());
+        return !$round->kind->isQualification() || $round->liveStream->hasUrl();
     }
 
     private function createAlarmOneHourBefore(IFSCEvent $event, string $name): Alarm
