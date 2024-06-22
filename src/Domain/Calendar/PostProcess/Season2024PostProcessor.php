@@ -108,8 +108,8 @@ final readonly class Season2024PostProcessor
 
             // 22/6
             $this->budapestRound($eventInfo, "Men's & Women's Boulder Semifinal", '2024-06-22T10:00:00+02:00'),
-            $this->budapestRound($eventInfo, "Men's & Women's Lead Semifinal", '2024-06-22T14:00:00+02:00'),
-            $this->budapestRound($eventInfo, "Men's & Women's Speed Final", '2024-06-22T18:15:00+02:00'),
+            $this->budapestRound($eventInfo, "Men's & Women's Lead Semifinal", '2024-06-22T16:00:00+02:00'),
+            $this->budapestRound($eventInfo, "Men's & Women's Speed Final", '2024-06-22T18:45:00+02:00'),
 
             // 23/6
             $this->budapestRound($eventInfo, "Women's Boulder Final", '2024-06-23T10:00:00+02:00'),
