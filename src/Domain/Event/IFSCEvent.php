@@ -54,7 +54,7 @@ final class IFSCEvent
     /** @throws InvalidLeagueName */
     private function leagueName(): string
     {
-        if (preg_match('~(?<name>(?:World|Continental)\s+(?:Cup|Championships?))~', $this->eventName, $match)) {
+        if (preg_match('~(?<name>(Paraclimbing\s+)?(?:World|Continental)\s+(?:Cup|Championships?))~', $this->eventName, $match)) {
             return $match['name'];
         }
 
