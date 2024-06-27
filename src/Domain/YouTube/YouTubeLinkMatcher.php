@@ -50,13 +50,13 @@ final readonly class YouTubeLinkMatcher
 
         $videoTags = $this->fetchTagsFromTitle($videoTitle);
 
-        if ($this->videoIsHighlights($videoTags)) {
+        if ($this->videoIsHighlights($videoTags) || $this->videoIsParaclimbing($videoTags)) {
             return false;
         }
 
         $eventTags = $this->fetchTagsFromTitle($roundName);
 
-        if ($this->videoIsMensAndWomensCombined($videoTags, $eventTags) || $this->videoIsParaclimbing($eventTags)) {
+        if ($this->videoIsMensAndWomensCombined($videoTags, $eventTags)) {
             return true;
         }
 
@@ -128,8 +128,8 @@ final readonly class YouTubeLinkMatcher
         return (new DateTimeImmutable($event->localStartDate))->format('Y');
     }
 
-    private function videoIsParaclimbing(array $eventTags): bool
+    private function videoIsParaclimbing(array $videoTags): bool
     {
-        return $this->hasTag($eventTags, Tag::PARACLIMBING);
+        return $this->hasTag($videoTags, Tag::PARACLIMBING);
     }
 }

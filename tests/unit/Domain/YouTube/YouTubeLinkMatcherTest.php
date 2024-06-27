@@ -124,6 +124,7 @@ final class YouTubeLinkMatcherTest extends TestCase
     private function createVideoCollection(): YouTubeVideoCollection
     {
         $titles = [
+            "n6YyV2ddb00" => "Paraclimbing Speed qualification || Salt Lake City 2023",
             "n6YyV2ddbb4" => "Women's Speed qualification || Salt Lake City 2023",
             "emrHdLsJTk5" => "Men's Boulder qualification highlights || Seoul 2023",
             "emrHdLsJTk4" => "IFSC World Cup Seoul 2023 || Men's qualification review",
