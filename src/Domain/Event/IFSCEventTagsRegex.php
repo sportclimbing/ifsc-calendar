@@ -15,7 +15,7 @@ enum IFSCEventTagsRegex: string
     case BOULDER = 'boulder(ing)?';
     case SPEED = 'speed';
     case COMBINED = 'combined';
-    case PARACLIMBING = 'paraclimbing';
+    case PARACLIMBING = 'para[\s-]?climbing';
     case QUALIFICATION = 'qualifications?';
     case SEMI_FINAL = 'semi[-\s]*finals?';
     case FINAL = '(?<!semi[-\s])fi?nals?'; // "i" is optional because someone at the IFSC can't spell 🥲

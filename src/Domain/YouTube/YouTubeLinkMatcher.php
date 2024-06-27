@@ -50,7 +50,7 @@ final readonly class YouTubeLinkMatcher
 
         $videoTags = $this->fetchTagsFromTitle($videoTitle);
 
-        if ($this->videoIsHighlights($videoTags)) {
+        if ($this->videoIsHighlights($videoTags) || $this->videoIsParaclimbing($videoTags)) {
             return false;
         }
 
@@ -126,5 +126,10 @@ final readonly class YouTubeLinkMatcher
     private function eventSeason(IFSCEventInfo $event): string
     {
         return (new DateTimeImmutable($event->localStartDate))->format('Y');
+    }
+
+    private function videoIsParaclimbing(array $videoTags): bool
+    {
+        return $this->hasTag($videoTags, Tag::PARACLIMBING);
     }
 }
