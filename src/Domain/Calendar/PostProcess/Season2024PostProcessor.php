@@ -27,6 +27,8 @@ final readonly class Season2024PostProcessor
     private const int OLYMPIC_QUALIFIERS_BUDAPEST_ID = 1385;
     private const string OLYMPIC_QUALIFIERS_BUDAPEST_LIVE_STREAM = 'https://olympics.com/en/sport-events/olympic-qualifier-series-2024-budapest/broadcasting-schedule';
 
+    private const int CHAMONIX_IFSC_EVENT_ID = 1357;
+
     public function __construct(
         private IFSCRoundFactory $roundFactory,
         private IFSCScheduleFactory $scheduleFactory,
@@ -46,6 +48,8 @@ final readonly class Season2024PostProcessor
                $event->rounds = $this->fetchOlympicQualifiersShanghaiRounds($event);
             } elseif ($this->isOlympicQualifiersBudapest($event)) {
                $event->rounds = $this->fetchOlympicQualifiersBudapestRounds($event);
+            } elseif ($this->isChamonixEvent($event)) {
+               $event->rounds = $this->fetchChamonixRounds($event);
             }
         }
 
@@ -65,6 +69,11 @@ final readonly class Season2024PostProcessor
     private function isOlympicQualifiersBudapest(IFSCEvent $event): bool
     {
         return $event->eventId === self::OLYMPIC_QUALIFIERS_BUDAPEST_ID;
+    }
+
+    private function isChamonixEvent(IFSCEvent $event): bool
+    {
+        return $event->eventId === self::CHAMONIX_IFSC_EVENT_ID;
     }
 
     private function fetchOlympicQualifiersShanghaiRounds(IFSCEvent $event): array
@@ -119,6 +128,23 @@ final readonly class Season2024PostProcessor
         ];
     }
 
+    /** @return IFSCRound[] */
+    private function fetchChamonixRounds(IFSCEvent $event): array
+    {
+        $eventInfo = IFSCEventInfo::fromEvent($event);
+
+        return [
+            // 13/07
+            $this->chamonixRound($eventInfo, "Men's & Women's Lead Qualification", '2024-07-13T09:00:00+02:00'),
+            $this->chamonixRound($eventInfo, "Men's & Women's Speed Qualification", '2024-07-13T18:45:00+02:00', 'https://youtu.be/X-jMhtf_svQ'),
+            $this->chamonixRound($eventInfo, "Men's & Women's Speed Final", '2024-07-13T20:55:00+02:00', 'https://youtu.be/EZkv2RIQe94'),
+
+            // 14/07
+            $this->chamonixRound($eventInfo, "Men's & Women's Lead Semi-Final", '2024-07-14T10:00:00+02:00', 'https://youtu.be/K7T8E2_cCB0'),
+            $this->chamonixRound($eventInfo, "Men's & Women's Lead Final", '2024-07-14T20:30:00+02:00', 'https://youtu.be/UVp79oxI4Uc'),
+        ];
+    }
+
     private function shanghaiRound(IFSCEventInfo $eventInfo, string $title, string $startsAt): IFSCRound
     {
         return $this->round($eventInfo, $title, $startsAt, 'Asia/Shanghai', self::OLYMPIC_QUALIFIERS_SHANGHAI_LIVE_STREAM);
@@ -129,7 +155,12 @@ final readonly class Season2024PostProcessor
         return $this->round($eventInfo, $title, $startsAt, 'Europe/Budapest', self::OLYMPIC_QUALIFIERS_BUDAPEST_LIVE_STREAM);
     }
 
-    private function round(IFSCEventInfo $eventInfo, string $title, string $startsAt, string $timeZone, string $streamUrl): IFSCRound
+    private function chamonixRound(IFSCEventInfo $eventInfo, string $title, string $startsAt, ?string $streamUrl = null): IFSCRound
+    {
+        return $this->round($eventInfo, $title, $startsAt, 'Europe/Paris', $streamUrl);
+    }
+
+    private function round(IFSCEventInfo $eventInfo, string $title, string $startsAt, string $timeZone, ?string $streamUrl): IFSCRound
     {
         $schedule = $this->scheduleFactory->create(
             name: $title,
