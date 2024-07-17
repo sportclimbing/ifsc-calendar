@@ -71,7 +71,7 @@ final readonly class YouTubeLinkMatcher
     private function videoTitleContainsSameLocationAndSeason(string $videoTitle, IFSCEventInfo $event): bool
     {
         return
-            str_contains($videoTitle, mb_strtolower($event->location)) &&
+            str_contains($this->normalize($videoTitle), $this->normalize($event->location)) &&
             str_contains($videoTitle, $this->eventSeason($event));
     }
 
@@ -132,5 +132,10 @@ final readonly class YouTubeLinkMatcher
         $eventTags = $this->fetchTagsFromTitle($event->eventName);
 
         return $this->hasTag($eventTags, Tag::PARACLIMBING);
+    }
+
+    private function normalize(string $text): string
+    {
+        return strtr(mb_strtolower($text), ['ç' => 'c']);
     }
 }

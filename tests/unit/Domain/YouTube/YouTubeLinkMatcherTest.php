@@ -121,9 +121,21 @@ final class YouTubeLinkMatcherTest extends TestCase
         $this->assertSame('https://youtu.be/ZNgbe8vi2OI', $liveStream->url);
     }
 
+    #[Test] public function briancon_speed_qualification(): void
+    {
+        $liveStream = $this->createEventWithNameAndDescription(
+            roundName: 'Men\'s Speed Qualification',
+            eventName: 'IFSC World Cup Briancon 2023',
+            location: 'Briancon',
+        );
+
+        $this->assertSame('https://youtu.be/n6YyV2ddb11', $liveStream->url);
+    }
+
     private function createVideoCollection(): YouTubeVideoCollection
     {
         $titles = [
+            "n6YyV2ddb11" => "Men's Speed qualification || Briançon 2023",
             "n6YyV2ddb00" => "Paraclimbing Speed qualification || Salt Lake City 2023",
             "n6YyV2ddbb4" => "Women's Speed qualification || Salt Lake City 2023",
             "emrHdLsJTk5" => "Men's Boulder qualification highlights || Seoul 2023",
