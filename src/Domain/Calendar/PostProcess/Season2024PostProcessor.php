@@ -26,8 +26,8 @@ final readonly class Season2024PostProcessor
     private const string OLYMPIC_QUALIFIERS_SHANGHAI_LIVE_STREAM = 'https://olympics.com/en/sport-events/olympic-qualifier-series-2024-shanghai/broadcasting-schedule';
     private const int OLYMPIC_QUALIFIERS_BUDAPEST_ID = 1385;
     private const string OLYMPIC_QUALIFIERS_BUDAPEST_LIVE_STREAM = 'https://olympics.com/en/sport-events/olympic-qualifier-series-2024-budapest/broadcasting-schedule';
-
     private const int CHAMONIX_IFSC_EVENT_ID = 1357;
+    private const int BRIANCON_IFSC_EVENT_ID = 1358;
 
     public function __construct(
         private IFSCRoundFactory $roundFactory,
@@ -50,6 +50,8 @@ final readonly class Season2024PostProcessor
                $event->rounds = $this->fetchOlympicQualifiersBudapestRounds($event);
             } elseif ($this->isChamonixEvent($event)) {
                $event->rounds = $this->fetchChamonixRounds($event);
+            } elseif ($this->isBrianconEvent($event)) {
+               $event->rounds = $this->fetchBrianconRounds($event);
             }
         }
 
@@ -74,6 +76,11 @@ final readonly class Season2024PostProcessor
     private function isChamonixEvent(IFSCEvent $event): bool
     {
         return $event->eventId === self::CHAMONIX_IFSC_EVENT_ID;
+    }
+
+    private function isBrianconEvent(IFSCEvent $event): bool
+    {
+        return $event->eventId === self::BRIANCON_IFSC_EVENT_ID;
     }
 
     private function fetchOlympicQualifiersShanghaiRounds(IFSCEvent $event): array
@@ -142,6 +149,25 @@ final readonly class Season2024PostProcessor
             // 14/07
             $this->chamonixRound($eventInfo, "Men's & Women's Lead Semi-Final", '2024-07-14T10:00:00+02:00', 'https://youtu.be/K7T8E2_cCB0'),
             $this->chamonixRound($eventInfo, "Men's & Women's Lead Final", '2024-07-14T20:30:00+02:00', 'https://youtu.be/UVp79oxI4Uc'),
+        ];
+    }
+
+    /** @return IFSCRound[] */
+    private function fetchBrianconRounds(IFSCEvent $event): array
+    {
+        $eventInfo = IFSCEventInfo::fromEvent($event);
+
+        return [
+            // 17/07
+            $this->chamonixRound($eventInfo, "Men's & Women's Speed Qualification", '2024-07-17T12:00:00+02:00', 'https://youtu.be/Nvb0aEkzXpg'),
+            $this->chamonixRound($eventInfo, "Men's & Women's Speed Final", '2024-07-17T20:00:00+02:00', 'https://youtu.be/eHn5JkhN6Kg'),
+
+            // 18/07
+            $this->chamonixRound($eventInfo, "Men's & Women's Lead Qualification", '2024-07-18T09:00:00+02:00'),
+            $this->chamonixRound($eventInfo, "Men's & Women's Lead Semi-Final", '2024-07-18T20:30:00+02:00', 'https://youtu.be/O3XKLAglDZw'),
+
+            // 19/07
+            $this->chamonixRound($eventInfo, "Men's & Women's Lead Final", '2024-07-19T20:30:00+02:00', 'https://youtu.be/a9htHC6KagA'),
         ];
     }
 
