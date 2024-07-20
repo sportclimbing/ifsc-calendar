@@ -28,6 +28,8 @@ final readonly class Season2024PostProcessor
     private const string OLYMPIC_QUALIFIERS_BUDAPEST_LIVE_STREAM = 'https://olympics.com/en/sport-events/olympic-qualifier-series-2024-budapest/broadcasting-schedule';
     private const int CHAMONIX_IFSC_EVENT_ID = 1357;
     private const int BRIANCON_IFSC_EVENT_ID = 1358;
+    private const int OLYMPICS_EVENT_ID = 1386;
+
 
     public function __construct(
         private IFSCRoundFactory $roundFactory,
@@ -52,6 +54,8 @@ final readonly class Season2024PostProcessor
                $event->rounds = $this->fetchChamonixRounds($event);
             } elseif ($this->isBrianconEvent($event)) {
                $event->rounds = $this->fetchBrianconRounds($event);
+            } elseif ($this->isOlympicsEvent($event)) {
+               $event->rounds = $this->fetchOlympicsRounds($event);
             }
         }
 
@@ -81,6 +85,11 @@ final readonly class Season2024PostProcessor
     private function isBrianconEvent(IFSCEvent $event): bool
     {
         return $event->eventId === self::BRIANCON_IFSC_EVENT_ID;
+    }
+
+    private function isOlympicsEvent(IFSCEvent $event): bool
+    {
+        return $event->eventId === self::OLYMPICS_EVENT_ID;
     }
 
     private function fetchOlympicQualifiersShanghaiRounds(IFSCEvent $event): array
@@ -168,6 +177,38 @@ final readonly class Season2024PostProcessor
 
             // 19/07
             $this->chamonixRound($eventInfo, "Men's & Women's Lead Final", '2024-07-19T20:30:00+02:00', 'https://youtu.be/a9htHC6KagA'),
+        ];
+    }
+
+    /** @return IFSCRound[] */
+    private function fetchOlympicsRounds(IFSCEvent $event): array
+    {
+        $eventInfo = IFSCEventInfo::fromEvent($event);
+
+        return [
+            // 05/08
+            $this->chamonixRound($eventInfo, "Men's Boulder Semi-Final", '2024-08-05T10:00:00+02:00', 'https://peacocktv.smart.link/836kod50a'),
+            $this->chamonixRound($eventInfo, "Women's Speed Qualification", '2024-08-05T13:00:00+02:00', 'https://peacocktv.smart.link/zgc1owtmz'),
+
+            // 06/08
+            $this->chamonixRound($eventInfo, "Women's Boulder Semi-Final", '2024-08-06T10:00:00+02:00', 'https://peacocktv.smart.link/w7hgjbhvn'),
+            $this->chamonixRound($eventInfo, "Men's Speed Qualification", '2024-08-06T13:30:00+02:00', 'https://peacocktv.smart.link/112ddz8sl'),
+
+            // 07/08
+            $this->chamonixRound($eventInfo, "Men's Lead Semi-Final", '2024-08-07T10:00:00+02:00', 'https://peacocktv.smart.link/902a0tf6y'),
+            $this->chamonixRound($eventInfo, "Women's Speed Final", '2024-08-07T12:35:00+02:00', 'https://peacocktv.smart.link/zgc1owtmz'),
+
+            // 08/08
+            $this->chamonixRound($eventInfo, "Women's Lead Semi-Final", '2024-08-08T10:00:00+02:00', 'https://peacocktv.smart.link/cb1l4nxko'),
+            $this->chamonixRound($eventInfo, "Men's Speed Final", '2024-08-07T12:35:00+02:00', 'https://peacocktv.smart.link/112ddz8sl'),
+
+            // 09/08
+            $this->chamonixRound($eventInfo, "Men's Boulder Final", '2024-08-09T10:15:00+02:00', 'https://peacocktv.smart.link/ku613of3g'),
+            $this->chamonixRound($eventInfo, "Men's Lead Final", '2024-08-09T12:35:00+02:00', 'https://peacocktv.smart.link/ku613of3g'),
+
+            // 10/08
+            $this->chamonixRound($eventInfo, "Women's Boulder Final", '2024-08-10T10:15:00+02:00', 'https://peacocktv.smart.link/emsr7olbq'),
+            $this->chamonixRound($eventInfo, "Women's Lead Final", '2024-08-10T12:35:00+02:00', 'https://peacocktv.smart.link/emsr7olbq'),
         ];
     }
 
