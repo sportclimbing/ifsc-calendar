@@ -200,7 +200,7 @@ final readonly class Season2024PostProcessor
 
             // 08/08
             $this->chamonixRound($eventInfo, "Women's Lead Semi-Final", '2024-08-08T10:00:00+02:00', 'https://peacocktv.smart.link/cb1l4nxko'),
-            $this->chamonixRound($eventInfo, "Men's Speed Final", '2024-08-07T12:35:00+02:00', 'https://peacocktv.smart.link/112ddz8sl'),
+            $this->chamonixRound($eventInfo, "Men's Speed Final", '2024-08-08T12:35:00+02:00', 'https://peacocktv.smart.link/112ddz8sl'),
 
             // 09/08
             $this->chamonixRound($eventInfo, "Men's Boulder Final", '2024-08-09T10:15:00+02:00', 'https://peacocktv.smart.link/ku613of3g'),
