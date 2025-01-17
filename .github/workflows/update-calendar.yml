@@ -33,7 +33,7 @@ jobs:
           options: -v ${{ github.workspace }}:/calendar
           run: |
             ifsc-calendar \
-              --season 2024 \
+              --season 2025 \
               --output "/calendar/${{ env.CALENDAR_FILE_ICS }}" \
               --format "ics,json"
 
