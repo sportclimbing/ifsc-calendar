@@ -15,7 +15,10 @@ final readonly class Command
 
     private const int EXIT_SUCCESS = 0;
 
-    /** @throws CommandFailedException */
+    /**
+     * @param string[] $args
+     * @throws CommandFailedException
+     */
     public function exec(string $command, ?array $args = []): string
     {
         $process = $this->execCommand($command, $args, $pipes);
@@ -39,7 +42,10 @@ final readonly class Command
         return $response;
     }
 
-    /** @return resource|false */
+    /**
+     * @param string[] $args
+     * @return resource|false
+     */
     private function execCommand(string $command, array $args, mixed &$pipes): mixed
     {
         return proc_open(
@@ -51,6 +57,7 @@ final readonly class Command
         );
     }
 
+    /** @param string[] $args */
     private function escapeShellArgs(array $args): array
     {
         return array_map(static fn (string $arg): string => escapeshellarg($arg), $args);

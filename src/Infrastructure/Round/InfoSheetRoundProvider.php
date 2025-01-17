@@ -13,6 +13,7 @@ use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundProviderInterface;
+use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpException;
 use nicoSWD\IfscCalendar\Infrastructure\Shell\Command;
@@ -52,6 +53,7 @@ final readonly class InfoSheetRoundProvider implements IFSCRoundProviderInterfac
         return $this->fetchRoundsFromInfoSheet($event, $infoSheetUrl);
     }
 
+    /** @return IFSCSchedule[] */
     #[Override] public function fetchRoundsFromInfoSheet(IFSCEventInfo $event, string $infoSheetUrl): array
     {
         try {

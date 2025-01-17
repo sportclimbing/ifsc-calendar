@@ -15,5 +15,6 @@ interface IFSCRoundProviderInterface
     /** @return IFSCSchedule[] */
     public function fetchRounds(IFSCEventInfo $event): array;
 
+    /** @return IFSCSchedule[] */
     public function fetchRoundsFromInfoSheet(IFSCEventInfo $event, string $infoSheetUrl): array;
 }

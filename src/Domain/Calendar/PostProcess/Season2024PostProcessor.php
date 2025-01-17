@@ -92,6 +92,7 @@ final readonly class Season2024PostProcessor
         return $event->eventId === self::OLYMPICS_EVENT_ID;
     }
 
+    /** @return IFSCRound[] */
     private function fetchOlympicQualifiersShanghaiRounds(IFSCEvent $event): array
     {
         $eventInfo = IFSCEventInfo::fromEvent($event);
@@ -118,6 +119,7 @@ final readonly class Season2024PostProcessor
         ];
     }
 
+    /** @return IFSCRound[] */
     private function fetchOlympicQualifiersBudapestRounds(IFSCEvent $event): array
     {
         $eventInfo = IFSCEventInfo::fromEvent($event);

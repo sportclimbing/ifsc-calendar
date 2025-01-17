@@ -27,7 +27,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
 
     private const string IFSC_LEAGUE_API_ENDPOINT = 'https://ifsc.results.info/api/v1/season_leagues/%d';
 
-    private const string IFSC_SEASON_INFO_API_URL = 'https://ifsc.results.info/api/v1/seasons/36';
+    private const string IFSC_SEASON_INFO_API_URL = 'https://ifsc.results.info/api/v1/seasons/37';
 
     public function __construct(
         private IFSCApiClient $apiClient,
