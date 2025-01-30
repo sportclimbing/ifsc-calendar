@@ -8,7 +8,7 @@ require __DIR__ . '/../vendor/autoload.php';
 /**
  * @license  http://opensource.org/licenses/mit-license.php MIT
  * @link     https://github.com/nicoSWD
- * @author   Nicolas Oelgart <nico@oelgart.com>
+ * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
 
 $events = json_decode(file_get_contents($argv[1]));

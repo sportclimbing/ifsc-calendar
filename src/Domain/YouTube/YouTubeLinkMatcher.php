@@ -3,7 +3,7 @@
 /**
  * @license  http://opensource.org/licenses/mit-license.php MIT
  * @link     https://github.com/nicoSWD
- * @author   Nicolas Oelgart <nico@oelgart.com>
+ * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
 namespace nicoSWD\IfscCalendar\Domain\YouTube;
 
@@ -43,17 +43,16 @@ final readonly class YouTubeLinkMatcher
     {
         $videoTitle = mb_strtolower($video->title);
         $roundName = mb_strtolower($roundName);
-
-        if (!$this->videoTitleContainsSameLocationAndSeason($videoTitle, $event)) {
-            return false;
-        }
-
         $videoTags = $this->fetchTagsFromTitle($videoTitle);
-        $eventTags = $this->fetchTagsFromTitle($roundName);
 
-        if ($this->videoIsHighlights($videoTags) || $this->isParaclimbingEvent($event)) {
+        if (!$this->videoTitleContainsSameLocationAndSeason($videoTitle, $event) ||
+            $this->videoIsHighlights($videoTags) ||
+            $this->isParaclimbingEvent($event)
+        ) {
             return false;
         }
+
+        $eventTags = $this->fetchTagsFromTitle($roundName);
 
         if ($this->videoIsMensAndWomensCombined($videoTags, $eventTags)) {
             return true;
