@@ -1,5 +1,5 @@
 <div align="center">
-   <h1>IFSC Climbing Calendar and Live-Streams for 2024</h1>
+   <h1>IFSC Climbing Calendar and Live-Streams for 2025</h1>
    <img src="resources/images/ifsc-logo.png" alt="ifsc logo" width="50%" />
 
 <br /><br />
