@@ -17,7 +17,7 @@ final readonly class InfoSheetScheduleParser
 {
     private const string REGEX_DAY_SCHEDULE = '~
         # day name
-        (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s*
+        ((Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s*)?
         # day
         (\d{1,2}(st|nd|rd|th|ve)?,?\s+
         # month
@@ -125,9 +125,9 @@ final readonly class InfoSheetScheduleParser
 
         $day = preg_replace('~(\d{1,2})(?:st|nd|rd|th|ve)~', '$1', $day);
         $day = str_replace(',', '', $day);
+        $day = str_replace('2025', '', $day);
 
-        return DateTimeImmutable::createFromFormat(
-            'l j M Y H:i',
+        return new DateTimeImmutable(
             sprintf(
                 '%s 2025 %s',
                 trim($day),
