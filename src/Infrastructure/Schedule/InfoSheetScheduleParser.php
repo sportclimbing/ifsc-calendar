@@ -129,7 +129,7 @@ final readonly class InfoSheetScheduleParser
         return DateTimeImmutable::createFromFormat(
             'l j M Y H:i',
             sprintf(
-                '%s 2024 %s',
+                '%s 2025 %s',
                 trim($day),
                 trim($time),
             ),
