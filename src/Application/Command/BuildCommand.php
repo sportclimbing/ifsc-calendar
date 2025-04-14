@@ -43,7 +43,7 @@ class BuildCommand extends Command
     /** @throws InvalidURLException */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $seasons = [2024];
+        $seasons = [2025];
         $selectedSeason = $this->getSelectedSeason($seasons, $input, $output);
         $formats = $this->getFormats($input);
 
