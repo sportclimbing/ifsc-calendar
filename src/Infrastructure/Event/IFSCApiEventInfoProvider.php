@@ -105,7 +105,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
             localStartDate: $event->local_start_date,
             localEndDate: $event->local_end_date,
             timeZone: $this->fixTimeZone($response),
-            location: $this->fixFatFinger($response->location),
+            location: $this->removeCountryCode($response->location),
             country: $response->country,
             disciplines: $this->getDisciplines($response->disciplines),
             categories: $this->buildCategories($response),
@@ -190,8 +190,8 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
         return new DateTimeZone($timeZone);
     }
 
-    private function fixFatFinger(string $location): string
+    private function removeCountryCode(string $location): string
     {
-        return str_replace('CIty', 'City', $location);
+        return preg_replace('~, ([A-Z]){3}$~', '', trim($location));
     }
 }
