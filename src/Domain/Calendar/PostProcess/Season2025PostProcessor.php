@@ -59,18 +59,18 @@ final readonly class Season2025PostProcessor
             $this->keqiaoRound($eventInfo, "Men's Boulder Qualification", '2025-04-18T16:00:00+08:00'),
 
             // 19/4
-            $this->keqiaoRound($eventInfo, "Women's Boulder Semi-Final", '2025-04-19T12:00:00+08:00'),
+            $this->keqiaoRound($eventInfo, "Women's Boulder Semi-Final", '2025-04-19T12:00:00+08:00', 'https://youtu.be/-CSZqzed9PQ'),
             $this->keqiaoRound($eventInfo, "Men's Boulder Semi-Final", '2025-04-19T19:00:00+08:00'),
 
             // 20/4
-            $this->keqiaoRound($eventInfo, "Women's Boulder Final", '2025-04-20T12:00:00+08:00'),
+            $this->keqiaoRound($eventInfo, "Women's Boulder Final", '2025-04-20T12:00:00+08:00', 'https://youtu.be/kr-MYvpn7zM'),
             $this->keqiaoRound($eventInfo, "Men's Boulder Final", '2025-04-20T19:00:00+08:00'),
         ];
     }
 
-    private function keqiaoRound(IFSCEventInfo $eventInfo, string $title, string $startsAt): IFSCRound
+    private function keqiaoRound(IFSCEventInfo $eventInfo, string $title, string $startsAt, string $streamUrl = ''): IFSCRound
     {
-        return $this->round($eventInfo, $title, $startsAt, 'Asia/Shanghai', null);
+        return $this->round($eventInfo, $title, $startsAt, 'Asia/Shanghai', $streamUrl);
     }
 
     private function round(IFSCEventInfo $eventInfo, string $title, string $startsAt, string $timeZone, ?string $streamUrl): IFSCRound
