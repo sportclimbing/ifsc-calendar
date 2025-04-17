@@ -8,7 +8,7 @@
 namespace nicoSWD\IfscCalendar\Domain\Calendar;
 
 use Exception;
-use nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2024PostProcessor;
+use nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2025PostProcessor;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
@@ -17,7 +17,7 @@ final readonly class IFSCCalendarPostProcess
 {
     public function __construct(
         private IFSCEventSorter $eventSorter,
-        private Season2024PostProcessor $season2024PostProcessor,
+        private Season2025PostProcessor $season2025PostProcessor,
     ) {
     }
 
@@ -37,10 +37,10 @@ final readonly class IFSCCalendarPostProcess
             case IFSCSeasonYear::SEASON_2021:
             case IFSCSeasonYear::SEASON_2022:
             case IFSCSeasonYear::SEASON_2023:
-            case IFSCSeasonYear::SEASON_2025:
-                break;
             case IFSCSeasonYear::SEASON_2024:
-                $events = $this->season2024PostProcessor->process($events);
+                break;
+            case IFSCSeasonYear::SEASON_2025:
+                $events = $this->season2025PostProcessor->process($events);
                 break;
         }
 
