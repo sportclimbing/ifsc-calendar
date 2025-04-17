@@ -16,7 +16,7 @@
         "ext-libxml": "*",
         "eluceo/ical": "^2.13",
         "guzzlehttp/guzzle": "^7.8",
-        "sportclimbing/ifsc-youtube-videos": "v0.0.263",
+        "sportclimbing/ifsc-youtube-videos": "*",
         "symfony/console": "7.0.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.0.*",
