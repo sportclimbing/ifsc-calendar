@@ -60,11 +60,11 @@ final readonly class Season2025PostProcessor
 
             // 19/4
             $this->keqiaoRound($eventInfo, "Women's Boulder Semi-Final", '2025-04-19T12:00:00+08:00', 'https://youtu.be/-CSZqzed9PQ'),
-            $this->keqiaoRound($eventInfo, "Men's Boulder Semi-Final", '2025-04-19T19:00:00+08:00'),
+            $this->keqiaoRound($eventInfo, "Men's Boulder Semi-Final", '2025-04-19T19:00:00+08:00', 'https://youtu.be/tvubZ1KsX50'),
 
             // 20/4
             $this->keqiaoRound($eventInfo, "Women's Boulder Final", '2025-04-20T12:00:00+08:00', 'https://youtu.be/kr-MYvpn7zM'),
-            $this->keqiaoRound($eventInfo, "Men's Boulder Final", '2025-04-20T19:00:00+08:00'),
+            $this->keqiaoRound($eventInfo, "Men's Boulder Final", '2025-04-20T19:00:00+08:00', 'https://youtu.be/eLdRhRqQ2D0'),
         ];
     }
 
