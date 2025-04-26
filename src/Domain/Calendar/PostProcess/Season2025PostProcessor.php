@@ -86,16 +86,16 @@ final readonly class Season2025PostProcessor
         $eventInfo = IFSCEventInfo::fromEvent($event);
 
         return [
-            // 24/04
-            $this->keqiaoRound($eventInfo, "Men's & Women's Lead Qualification", '2025-04-24T09:00:00+08:00'),
-            $this->keqiaoRound($eventInfo, "Men's & Women's Speed Qualification", '2025-04-24T19:00:00+08:00', 'https://youtu.be/4r8ACfHiY2c'),
-
             // 25/04
-            $this->keqiaoRound($eventInfo, "Men's & Women's Lead Semi-Final", '2025-04-25T15:00:00+08:00', 'https://youtu.be/UvAg3PkAl9A'),
-            $this->keqiaoRound($eventInfo, "Men's & Women's Speed Finals", '2025-04-25T19:30:00+08:00', 'https://youtu.be/UFjA5sIiCTc'),
+            $this->keqiaoRound($eventInfo, "Men's & Women's Lead Qualification", '2025-04-25T09:00:00+08:00'),
+            $this->keqiaoRound($eventInfo, "Men's & Women's Speed Qualification", '2025-04-25T19:00:00+08:00', 'https://youtu.be/4r8ACfHiY2c'),
 
             // 26/04
-            $this->keqiaoRound($eventInfo, "Women's & Men's Lead Final", '2025-04-26T19:00:00+08:00', 'https://youtu.be/MWIG2oPt6xA'),
+            $this->keqiaoRound($eventInfo, "Men's & Women's Lead Semi-Final", '2025-04-26T15:00:00+08:00', 'https://youtu.be/UvAg3PkAl9A'),
+            $this->keqiaoRound($eventInfo, "Men's & Women's Speed Finals", '2025-04-26T19:30:00+08:00', 'https://youtu.be/UFjA5sIiCTc'),
+
+            // 27/04
+            $this->keqiaoRound($eventInfo, "Women's & Men's Lead Final", '2025-04-27T19:00:00+08:00', 'https://youtu.be/MWIG2oPt6xA'),
         ];
     }
 
