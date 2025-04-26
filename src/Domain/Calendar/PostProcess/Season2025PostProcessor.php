@@ -22,6 +22,8 @@ final readonly class Season2025PostProcessor
 {
     private const int KEQIAO_IFSC_EVENT_ID = 1405;
 
+    private const int WUJIANG_IFSC_EVENT_ID = 1406;
+
     public function __construct(
         private IFSCRoundFactory $roundFactory,
         private IFSCScheduleFactory $scheduleFactory,
@@ -37,6 +39,8 @@ final readonly class Season2025PostProcessor
         foreach ($events as $event) {
             if ($this->isKeqiaoEvent($event)) {
                $event->rounds = $this->fetchKeqiaoRounds($event);
+            } elseif ($this->isWujiangEvent($event)) {
+                $event->rounds = $this->fetchWujiangRounds($event);
             }
         }
 
@@ -46,6 +50,13 @@ final readonly class Season2025PostProcessor
     private function isKeqiaoEvent(IFSCEvent $event): bool
     {
         return $event->eventId === self::KEQIAO_IFSC_EVENT_ID;
+    }
+
+
+
+    private function isWujiangEvent(IFSCEvent $event): bool
+    {
+        return $event->eventId === self::WUJIANG_IFSC_EVENT_ID;
     }
 
     /** @return IFSCRound[] */
@@ -68,7 +79,33 @@ final readonly class Season2025PostProcessor
         ];
     }
 
+
+    /** @return IFSCRound[] */
+    private function fetchWujiangRounds(IFSCEvent $event): array
+    {
+        $eventInfo = IFSCEventInfo::fromEvent($event);
+
+        return [
+            // 24/04
+            $this->keqiaoRound($eventInfo, "Men's & Women's Lead Qualification", '2025-04-24T09:00:00+08:00'),
+            $this->keqiaoRound($eventInfo, "Men's & Women's Speed Qualification", '2025-04-24T19:00:00+08:00', 'https://youtu.be/4r8ACfHiY2c'),
+
+            // 25/04
+            $this->keqiaoRound($eventInfo, "Men's & Women's Lead Semi-Final", '2025-04-25T15:00:00+08:00', 'https://youtu.be/UvAg3PkAl9A'),
+            $this->keqiaoRound($eventInfo, "Men's & Women's Speed Finals", '2025-04-25T19:30:00+08:00', 'https://youtu.be/UFjA5sIiCTc'),
+
+            // 26/04
+            $this->keqiaoRound($eventInfo, "Women's & Men's Lead Final", '2025-04-26T19:00:00+08:00', 'https://youtu.be/MWIG2oPt6xA'),
+        ];
+    }
+
     private function keqiaoRound(IFSCEventInfo $eventInfo, string $title, string $startsAt, string $streamUrl = ''): IFSCRound
+    {
+        return $this->round($eventInfo, $title, $startsAt, 'Asia/Shanghai', $streamUrl);
+    }
+
+
+    private function wujiangRound(IFSCEventInfo $eventInfo, string $title, string $startsAt, string $streamUrl = ''): IFSCRound
     {
         return $this->round($eventInfo, $title, $startsAt, 'Asia/Shanghai', $streamUrl);
     }
