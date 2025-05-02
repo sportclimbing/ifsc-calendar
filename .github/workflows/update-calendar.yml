@@ -76,8 +76,8 @@ jobs:
         with:
           publish_latest_tag: true
 
-      - name: "Notify update"
-        if: steps.check_diff.outputs.has_changes == 'true'
-        run: php bin/notify-update
-        env:
-          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+      #- name: "Notify update"
+      #  if: steps.check_diff.outputs.has_changes == 'true'
+      #  run: php bin/notify-update
+      #  env:
+      #    WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
