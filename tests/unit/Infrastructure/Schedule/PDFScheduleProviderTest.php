@@ -85,31 +85,35 @@ final class PDFScheduleProviderTest extends TestCase
     {
         $schedule = $this->parseScheduleFromFile('Bali.pdf.html', 'Asia/Makassar');
 
-        $this->assertCount(6, $schedule);
+        $this->assertCount(7, $schedule);
 
         $this->assertSame("Men's & Women's Lead Qualification", $schedule[0]->name);
         $this->assertSameDate("2025-05-02T14:00:00+08:00", $schedule[0]->startsAt);
-        $this->assertSameDate("2025-05-02T21:30:00+08:00", $schedule[0]->endsAt);
+        $this->assertSameDate("2025-05-02T19:00:00+08:00", $schedule[0]->endsAt);
 
-        $this->assertSame("Men's & Women's Speed Qualification", $schedule[1]->name);
-        $this->assertSameDate("2025-05-03T11:00:00+08:00", $schedule[1]->startsAt);
+        $this->assertSame("Women's Speed Qualification", $schedule[1]->name);
+        $this->assertSameDate("2025-05-03T10:58:00+08:00", $schedule[1]->startsAt);
         $this->assertNull($schedule[1]->endsAt);
 
-        $this->assertSame("Men's & Women's Speed Final", $schedule[2]->name);
-        $this->assertSameDate("2025-05-03T15:00:00+08:00", $schedule[2]->startsAt);
-        $this->assertNull($schedule[2]->endsAt);
+        $this->assertSame("Men's Speed Qualification", $schedule[2]->name);
+        $this->assertSameDate("2025-05-03T11:45:00+08:00", $schedule[2]->startsAt);
+        $this->assertSameDate("2025-05-03T12:57:00+08:00", $schedule[2]->endsAt);
 
-        $this->assertSame("Men's & Women's Lead Semi-Final", $schedule[3]->name);
-        $this->assertSameDate("2025-05-04T10:00:00+08:00", $schedule[3]->startsAt);
-        $this->assertSameDate("2025-05-04T12:30:00+08:00", $schedule[3]->endsAt);
+        $this->assertSame("Men's & Women's Speed Final", $schedule[3]->name);
+        $this->assertSameDate("2025-05-03T15:00:00+08:00", $schedule[3]->startsAt);
+        $this->assertSameDate("2025-05-03T16:00:00+08:00", $schedule[3]->endsAt);
 
-        $this->assertSame("Men's Lead Final", $schedule[4]->name);
-        $this->assertSameDate("2025-05-04T20:30:00+08:00", $schedule[4]->startsAt);
-        $this->assertNull($schedule[4]->endsAt);
+        $this->assertSame("Men's & Women's Lead Semi-Final", $schedule[4]->name);
+        $this->assertSameDate("2025-05-04T10:00:00+08:00", $schedule[4]->startsAt);
+        $this->assertSameDate("2025-05-04T12:30:00+08:00", $schedule[4]->endsAt);
 
-        $this->assertSame("Women's Lead Final", $schedule[5]->name);
-        $this->assertSameDate("2025-05-04T21:25:00+08:00", $schedule[5]->startsAt);
+        $this->assertSame("Men's Lead Final", $schedule[5]->name);
+        $this->assertSameDate("2025-05-04T20:30:00+08:00", $schedule[5]->startsAt);
         $this->assertNull($schedule[5]->endsAt);
+
+        $this->assertSame("Women's Lead Final", $schedule[6]->name);
+        $this->assertSameDate("2025-05-04T21:25:00+08:00", $schedule[6]->startsAt);
+        $this->assertNull($schedule[6]->endsAt);
     }
 
     #[Test] public function curitiba_schedule_is_found(): void
