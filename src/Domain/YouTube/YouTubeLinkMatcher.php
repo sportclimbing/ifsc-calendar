@@ -123,7 +123,7 @@ final readonly class YouTubeLinkMatcher
 
     private function eventSeason(IFSCEventInfo $event): string
     {
-        return (new DateTimeImmutable($event->localStartDate))->format('Y');
+        return new DateTimeImmutable($event->localStartDate)->format('Y');
     }
 
     private function isParaclimbingEvent(IFSCEventInfo $event): bool
