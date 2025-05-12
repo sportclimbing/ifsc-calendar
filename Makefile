@@ -6,7 +6,7 @@ install-composer:
 
 build-phar: install-composer
 	build/composer.phar install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd
-	build/composer.phar update sportclimbing/ifsc-youtube-videos --no-progress --no-interaction
+	build/composer.phar update sportclimbing/ifsc-youtube-videos --no-progress --no-interaction --ignore-platform-req=ext-gd
 	bin/create-phar build/ifsc-calendar.phar
 	chmod u+x build/ifsc-calendar.phar
 
