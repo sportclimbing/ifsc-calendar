@@ -14,12 +14,12 @@ $tagsParser = new IFSCTagsParser();
 $videoDurations = [];
 
 foreach ($videos as $video) {
-    if (!in_array(substr($video->published_at, 0, 4), ['2022', '2023', '2024'])) {
+    if (!in_array(substr($video->published_at, 0, 4), ['2022', '2023', '2024', '2025'])) {
         continue;
     }
 
     $tags = $tagsParser->fromString($video->title);
-    $lookupKey = (new IFSCAverageRoundDurationLookupKey())->generate($tags);
+    $lookupKey = new IFSCAverageRoundDurationLookupKey()->generate($tags);
     $videoDurations[$lookupKey][] = $video->duration;
 }
 

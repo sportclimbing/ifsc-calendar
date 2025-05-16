@@ -10,25 +10,25 @@
         }
     ],
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "ext-ctype": "*",
         "ext-dom": "*",
         "ext-iconv": "*",
         "ext-libxml": "*",
-        "eluceo/ical": "^2.13",
-        "guzzlehttp/guzzle": "^7.8",
+        "eluceo/ical": "^2.14.0",
+        "guzzlehttp/guzzle": "^7.9.3",
         "sportclimbing/ifsc-youtube-videos": "dev-main",
-        "symfony/console": "7.0.*",
-        "symfony/flex": "^2",
-        "symfony/framework-bundle": "7.0.*",
-        "symfony/property-access": "7.0.*",
-        "symfony/runtime": "7.0.*",
-        "symfony/serializer": "7.0.*",
-        "symfony/yaml": "7.0.*"
+        "symfony/console": "^7.2.0",
+        "symfony/flex": "^2.5.0",
+        "symfony/framework-bundle": "^7.2.5",
+        "symfony/property-access": "^7.2.3",
+        "symfony/runtime": "^v7.2.3",
+        "symfony/serializer": "^v7.2.6",
+        "symfony/yaml": "^v7.2.5"
     },
     "require-dev": {
-        "phpstan/phpstan": "^1.10",
-        "phpunit/phpunit": "^11.0.6"
+        "phpstan/phpstan": "^2.1.13",
+        "phpunit/phpunit": "^12.1.4"
     },
     "config": {
         "allow-plugins": {
@@ -57,7 +57,8 @@
         "symfony/polyfill-php80": "*",
         "symfony/polyfill-php81": "*",
         "symfony/polyfill-php82": "*",
-        "symfony/polyfill-php83": "*"
+        "symfony/polyfill-php83": "*",
+        "symfony/polyfill-php84": "*"
     },
     "scripts": {
         "auto-scripts": {
@@ -76,7 +77,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "7.0.*"
+            "require": "7.2.*"
         },
         "runtime": {
             "autoload_template": "config/autoload_runtime.template"

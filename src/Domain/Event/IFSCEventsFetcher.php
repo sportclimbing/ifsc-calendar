@@ -151,6 +151,6 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
 
     private function createLocalDate(string $date, DateTimeZone $timeZone): DateTimeImmutable
     {
-        return (new DateTimeImmutable($date))->setTimezone($timeZone);
+        return new DateTimeImmutable($date)->setTimezone($timeZone);
     }
 }

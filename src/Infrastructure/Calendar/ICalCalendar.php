@@ -88,7 +88,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     /** @throws InvalidLeagueName */
     private function createEvent(IFSCEvent $event, IFSCRound $round): Event
     {
-        $calendarEvent = (new Event())
+        $calendarEvent = new Event()
             ->setSummary(sprintf("IFSC: %s - %s (%s)", $round->name, $event->location, $event->country))
             ->setDescription($this->buildDescription($event, $round))
             ->setUrl(new Uri($event->siteUrl))
@@ -108,7 +108,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     /** @throws Exception */
     private function createEventWithoutRounds(IFSCEvent $event): Event
     {
-        $calendarEvent = (new Event())
+        $calendarEvent = new Event()
             ->setSummary(sprintf('%s (%s)', $event->normalizedName(), $event->country))
             ->setDescription($this->buildDescription($event))
             ->setUrl(new Uri($event->siteUrl))

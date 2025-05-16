@@ -154,6 +154,6 @@ final class IFSCRoundFactoryTest extends TestCase
 
     private function createDateTime(string $dateTime): DateTimeImmutable
     {
-        return (new DateTimeImmutable($dateTime))->setTimezone(new DateTimeZone('Asia/Shanghai'));
+        return new DateTimeImmutable($dateTime)->setTimezone(new DateTimeZone('Asia/Shanghai'));
     }
 }

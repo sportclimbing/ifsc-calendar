@@ -104,17 +104,11 @@ final readonly class Season2025PostProcessor
         return $this->round($eventInfo, $title, $startsAt, 'Asia/Shanghai', $streamUrl);
     }
 
-
-    private function wujiangRound(IFSCEventInfo $eventInfo, string $title, string $startsAt, string $streamUrl = ''): IFSCRound
-    {
-        return $this->round($eventInfo, $title, $startsAt, 'Asia/Shanghai', $streamUrl);
-    }
-
     private function round(IFSCEventInfo $eventInfo, string $title, string $startsAt, string $timeZone, ?string $streamUrl): IFSCRound
     {
         $schedule = $this->scheduleFactory->create(
             name: $title,
-            startsAt: (new DateTimeImmutable($startsAt))->setTimezone(new DateTimeZone($timeZone)),
+            startsAt: new DateTimeImmutable($startsAt)->setTimezone(new DateTimeZone($timeZone)),
             endsAt: null,
         );
 
