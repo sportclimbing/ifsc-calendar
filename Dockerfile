@@ -15,7 +15,7 @@ RUN apk update && apk add --no-cache wget git unzip make
 RUN echo "phar.readonly=0" > /usr/local/etc/php/conf.d/phar.ini && \
     mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
     make clean && make && \
-    echo $CACHEBUST && echo 1
+    echo $CACHEBUST && echo 11
 
 FROM php:8.3.4-cli-alpine
 
