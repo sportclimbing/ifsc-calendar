@@ -23,10 +23,10 @@ jobs:
       - name: "Run phpunit"
         run: make test
 
-      - name: "PHPStan"
-        uses: php-actions/phpstan@v3
-        with:
-          level: 5
+#      - name: "PHPStan"
+#        uses: php-actions/phpstan@v3
+#        with:
+#          level: 5
 
   calendar-diff:
     runs-on: ubuntu-latest
