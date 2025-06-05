@@ -20,3 +20,4 @@ jobs:
           github_token: ${{ secrets.GH_PACKAGES_TOKEN }}
           docker_io_token: ${{ secrets.DOCKER_IO_ACCESS_TOKEN }}
           docker_io_user: sportclimbing
+          extra_args: --no-cache
