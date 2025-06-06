@@ -90,7 +90,7 @@ final readonly class IFSCRoundFactory
             DateTimeInterface::RFC3339,
         );
 
-        return (new DateTimeImmutable($schedulesStartTime))
+        return new DateTimeImmutable($schedulesStartTime)
             ->modify('+5 minutes')
             ->setTimezone($event->timeZone);
     }

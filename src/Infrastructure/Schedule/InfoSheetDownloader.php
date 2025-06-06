@@ -20,7 +20,7 @@ final readonly class InfoSheetDownloader
     }
 
     /** @throws InfoSheetDownloadFailedException */
-    public function downloadInfoSheet(string $infoSheetUrl): ?string
+    public function downloadInfoSheet(string $infoSheetUrl): string
     {
         try {
             $tmpFile = $this->getTempFileName();

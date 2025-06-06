@@ -57,7 +57,10 @@ final readonly class Command
         );
     }
 
-    /** @param string[] $args */
+    /**
+     * @param string[] $args
+     * @return string[]
+     */
     private function escapeShellArgs(array $args): array
     {
         return array_map(static fn (string $arg): string => escapeshellarg($arg), $args);
