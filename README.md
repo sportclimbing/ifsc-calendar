@@ -72,7 +72,7 @@ Using the pre-built Docker image
 ```shell
 $ docker run -it --volume "$PWD:/calendar" \
     ghcr.io/sportclimbing/ifsc-calendar:latest \ 
-    --season 2024 \
+    --season 2025 \
     --output "/calendar/ifsc-calendar.ics"
 ```
 
@@ -92,14 +92,14 @@ $ docker build --tag ifsc-calendar .
 Generate `.ics` calendar file
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
-    --season 2024 \
+    --season 2025 \
     --output "/calendar/ifsc-calendar.ics"
 ```
 
 Generate `.json` calendar file
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
-    --season 2024 \
+    --season 2025 \
     --output "/calendar/ifsc-calendar.json" \
     --format json
 ```
@@ -107,7 +107,7 @@ $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
 Export multiple formats
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
-    --season 2024 \
+    --season 2025 \
     --output "/calendar/ifsc-calendar.json" \
     --format json,ics
 ```
@@ -123,7 +123,7 @@ $ make
 Generate `.ics` calendar file using the generated `.phar`
 ```shell
 $ ./build/ifsc-calendar.phar \
-  --season 2024 \
+  --season 2025 \
   --output "ifsc-calendar.ics"
 ```
 
@@ -154,7 +154,7 @@ $ ./build/ifsc-calendar.phar \
 - [ ] ~~Fix scraper for older seasons (formatting changes drastically)~~
 
 ## Requirements
-- PHP 8.3
+- PHP 8.4
 - ext-dom
 - ext-libxml
 
