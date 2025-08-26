@@ -56,6 +56,10 @@ final readonly class InfoSheetRoundProvider implements IFSCRoundProviderInterfac
     /** @return IFSCSchedule[] */
     #[Override] public function fetchRoundsFromInfoSheet(IFSCEventInfo $event, string $infoSheetUrl): array
     {
+        if ($event->isParaClimbing()) {
+            return [];
+        }
+
         try {
             $pdfPath = $this->downloader->downloadInfoSheet($infoSheetUrl);
 

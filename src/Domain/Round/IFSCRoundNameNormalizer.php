@@ -20,7 +20,7 @@ final readonly class IFSCRoundNameNormalizer
 
         if (!$tags->isPreRound() && $disciplines && $kind) {
             $roundName = $this->buildCategories($tags);
-            $roundName .= $this->buildDisciplines($disciplines);
+            $roundName .= " {$this->buildDisciplines($disciplines)}";
             $roundName .= " {$kind->value}";
 
             $originalName = $roundName;
@@ -65,9 +65,9 @@ final readonly class IFSCRoundNameNormalizer
             $lastDiscipline = array_pop($disciplines);
             $disciplines = $this->disciplineNames($disciplines);
 
-            return " " . implode(', ', $disciplines) . ' & ' . $lastDiscipline->value;
+            return implode(', ', $disciplines) . ' & ' . $lastDiscipline->value;
         } else {
-            return " {$disciplines[0]->value}";
+            return $disciplines[0]->value;
         }
     }
 }

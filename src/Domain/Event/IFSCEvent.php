@@ -62,6 +62,10 @@ final class IFSCEvent
             return $match['name'];
         }
 
+        if (preg_match('~(?<name>(Para Climbing Master))~', $this->eventName, $match)) {
+            return $match['name'];
+        }
+
         throw new InvalidLeagueName("Unable to parse league name from: {$this->eventName}");
     }
 }

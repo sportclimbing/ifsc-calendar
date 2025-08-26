@@ -50,4 +50,9 @@ final readonly class IFSCEventInfo
             categories: [],
         );
     }
+
+    public function isParaClimbing(): bool
+    {
+        return str_contains($this->leagueName, 'Paraclimbing');
+    }
 }

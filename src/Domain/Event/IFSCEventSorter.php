@@ -14,7 +14,7 @@ final class IFSCEventSorter
     /** @param IFSCEvent[] $events */
     public function sortByDate(array &$events): void
     {
-        $events = array_filter($events, static fn (IFSCEvent $event): bool => count($event->rounds) > 0);
+        $events = array_filter($events, $this->eventHasRounds());
 
         usort($events, $this->sortEventsByDate());
     }
@@ -24,5 +24,10 @@ final class IFSCEventSorter
         return static function (IFSCEvent $event1, IFSCEvent $event2): int {
             return $event1->rounds[0]->startTime <=> $event2->rounds[0]->startTime;
         };
+    }
+
+    private function eventHasRounds(): Closure
+    {
+        return static fn (IFSCEvent $event): bool => count($event->rounds) > 0;
     }
 }

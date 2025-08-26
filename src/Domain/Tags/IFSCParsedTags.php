@@ -51,7 +51,7 @@ final readonly class IFSCParsedTags
 
         foreach (self::DISCIPLINES as $name => $tag) {
             if ($this->hasTag($tag)) {
-                if ($tag === Tag::COMBINED) {
+                if ($tag === IFSCDiscipline::COMBINED) {
                     $disciplines[] = IFSCDiscipline::BOULDER;
                     $disciplines[] = IFSCDiscipline::LEAD;
                 } else {
