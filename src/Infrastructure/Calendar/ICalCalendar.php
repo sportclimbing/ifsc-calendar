@@ -18,7 +18,6 @@ use Eluceo\iCal\Domain\ValueObject\DateTime;
 use Eluceo\iCal\Domain\ValueObject\Location;
 use Eluceo\iCal\Domain\ValueObject\TimeSpan;
 use Eluceo\iCal\Domain\ValueObject\Uri;
-use Eluceo\iCal\Presentation\Factory\CalendarFactory;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidLeagueName;
@@ -34,6 +33,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         private CalendarFactory $calendarFactory,
         private string $productIdentifier,
         private string $publishedTtl,
+        private string $calendarName,
     ) {
     }
 
@@ -43,8 +43,9 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
      */
     #[Override] public function generateForEvents(array $events): string
     {
-        return (string) $this->calendarFactory->createCalendar(
+        return (string) $this->calendarFactory->createNamedCalendar(
             $this->createCalenderFromEvents($events),
+            $this->calendarName,
         );
     }
 
