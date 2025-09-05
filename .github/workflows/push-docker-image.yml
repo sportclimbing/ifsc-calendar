@@ -21,3 +21,15 @@ jobs:
           docker_io_token: ${{ secrets.DOCKER_IO_ACCESS_TOKEN }}
           docker_io_user: sportclimbing
           extra_args: --no-cache
+
+      - name: "Update calendar"
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PAT_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: 'sportclimbing',
+              repo: 'ifsc-calendar',
+              workflow_id: 'update-calendar.yml',
+              ref: 'main'
+            })
