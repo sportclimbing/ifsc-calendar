@@ -30,9 +30,12 @@ services:
   nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar:
     class: nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar
     arguments:
-      - '@Eluceo\iCal\Presentation\Factory\CalendarFactory'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Calendar\CalendarFactory'
       - '%calendar_product_identifier%'
       - '%calendar_published_ttl%'
+      - '%calendar_name%'
+
+  nicoSWD\IfscCalendar\Infrastructure\Calendar\CalendarFactory: ~
 
   # Raking
   nicoSWD\IfscCalendar\Infrastructure\Ranking\IFSCApiWorldRankingProvider:
@@ -92,5 +95,4 @@ services:
 
   # Vendor services
   Symfony\Component\EventDispatcher\EventDispatcher: ~
-  Eluceo\iCal\Presentation\Factory\CalendarFactory: ~
   GuzzleHttp\Client: ~
