@@ -186,12 +186,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     /** @return IFSCRound[] */
     private function getStreamableRounds(IFSCEvent $event): array
     {
-        return array_filter($event->rounds, fn (IFSCRound $round): bool => $this->roundIsStreamable($round));
-    }
-
-    private function roundIsStreamable(IFSCRound $round): bool
-    {
-        return !$round->kind->isQualification() || $round->liveStream->hasUrl();
+        return array_filter($event->rounds, fn (IFSCRound $round): bool => $round->isStreamable());
     }
 
     private function createAlarmOneHourBefore(IFSCEvent $event, string $name): Alarm
