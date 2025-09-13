@@ -51,7 +51,6 @@ final class IFSCEvent
         return sprintf('IFSC: %s - %s', $this->leagueName(), $this->location);
     }
 
-    /** @throws InvalidLeagueName */
     private function leagueName(): string
     {
         if (preg_match('~(?<name>(Paraclimbing\s+)?(?:(The )?World|Continental)\s+(?:Cup|Championships?|Games))~', $this->eventName, $match)) {
@@ -66,6 +65,6 @@ final class IFSCEvent
             return $match['name'];
         }
 
-        throw new InvalidLeagueName("Unable to parse league name from: {$this->eventName}");
+        return $this->eventName;
     }
 }
