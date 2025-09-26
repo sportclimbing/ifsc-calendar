@@ -11,18 +11,31 @@ use DateTimeImmutable;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDisciplines;
 use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
 
-final readonly class IFSCRound
+final class IFSCRound
 {
     /** @param IFSCRoundCategory[] $categories */
     public function __construct(
-        public string $name,
-        public array $categories,
-        public IFSCDisciplines $disciplines,
-        public IFSCRoundKind $kind,
-        public LiveStream $liveStream,
-        public DateTimeImmutable $startTime,
-        public DateTimeImmutable $endTime,
-        public IFSCRoundStatus $status,
+        public readonly string $name,
+        public private(set) array $categories,
+        public readonly IFSCDisciplines $disciplines,
+        public readonly IFSCRoundKind $kind,
+        public readonly LiveStream $liveStream,
+        public readonly DateTimeImmutable $startTime,
+        public readonly DateTimeImmutable $endTime,
+        public readonly IFSCRoundStatus $status,
     ) {
+    }
+
+    public function makeMensAndWomens(): void
+    {
+        $this->categories = [
+            IFSCRoundCategory::MEN,
+            IFSCRoundCategory::WOMEN,
+        ];
+    }
+
+    public function isStreamable(): bool
+    {
+        return !$this->kind->isQualification() || $this->liveStream->hasUrl();
     }
 }

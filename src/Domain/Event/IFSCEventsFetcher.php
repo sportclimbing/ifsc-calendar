@@ -57,7 +57,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
             $events[] = $this->eventFactory->create(
                 season: $season,
                 event: $event,
-                rounds: $rounds,
+                rounds: $this->mergeRounds($rounds),
                 posterUrl: null,
             );
         }
@@ -85,6 +85,32 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         }
 
         return $rounds;
+    }
+
+    /**
+     * @param IFSCRound[] $rounds
+     * @return IFSCRound[]
+     */
+    private function mergeRounds(array $rounds): array
+    {
+        /** @var IFSCRound[] $cleanRounds */
+        $cleanRounds = [];
+
+        foreach ($rounds as $round) {
+            if ($round->isStreamable() && !$round->liveStream->hasUrl()) {
+                return $rounds;
+            }
+
+            $url = $round->liveStream->url;
+
+            if (isset($cleanRounds[$url])) {
+                $cleanRounds[$url]->makeMensAndWomens();
+            } else {
+                $cleanRounds[$url] = $round;
+            }
+        }
+
+        return array_values($cleanRounds);
     }
 
     private function normalizeRoundName(IFSCEventRound $round): string
