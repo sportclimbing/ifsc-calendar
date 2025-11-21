@@ -43,7 +43,7 @@ jobs:
       - name: "Install dependencies"
         run: |
           sudo apt-get update && sudo apt-get install poppler-utils -y
-          composer install --no-dev
+          composer install --no-dev --ignore-platform-reqs --optimize-autoloader
 
       - name: "Generate Calendar"
         run: php app/run.php --season 2026 --output new-calendar.json --format json
