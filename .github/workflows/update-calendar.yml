@@ -23,7 +23,7 @@ jobs:
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.5'
           extensions: curl
 
       - name: "Generate calendar files"
@@ -33,7 +33,7 @@ jobs:
           options: -v ${{ github.workspace }}:/calendar
           run: |
             ifsc-calendar \
-              --season 2025 \
+              --season 2026 \
               --output "/calendar/${{ env.CALENDAR_FILE_ICS }}" \
               --format "ics,json"
 

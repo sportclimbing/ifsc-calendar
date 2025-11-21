@@ -54,7 +54,7 @@ final readonly class IFSCRoundNameNormalizer
         if (count($categories) === 2) {
             return "Men's & Women's";
         } else {
-            return "{$categories[0]->value}'s";
+            return array_first($categories)->value . "'s";
         }
     }
 
@@ -67,7 +67,7 @@ final readonly class IFSCRoundNameNormalizer
 
             return implode(', ', $disciplines) . ' & ' . $lastDiscipline->value;
         } else {
-            return $disciplines[0]->value;
+            return array_first($disciplines)->value;
         }
     }
 }

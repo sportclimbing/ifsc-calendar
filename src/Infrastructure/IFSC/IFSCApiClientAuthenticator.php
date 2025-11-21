@@ -44,8 +44,9 @@ final readonly class IFSCApiClientAuthenticator
      */
     private function getCookies(): array
     {
-        $headers = $this->httpClient->getHeaders(self::IFSC_RESULTS_INFO_PAGE);
-        $headers = array_change_key_case($headers);
+        $headers = self::IFSC_RESULTS_INFO_PAGE
+            |> $this->httpClient->getHeaders(...)
+            |> array_change_key_case(...);
 
         return $headers['set-cookie'] ?? [];
     }

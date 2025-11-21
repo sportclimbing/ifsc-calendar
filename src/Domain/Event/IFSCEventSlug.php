@@ -11,10 +11,35 @@ final readonly class IFSCEventSlug
 {
     public function create(string $eventName): string
     {
-        $eventName = mb_convert_encoding($eventName, mb_detect_encoding($eventName, strict: true), 'UTF-8');
-        $eventName = mb_strtolower($eventName);
-        $eventName = strtr($eventName, ['ç' => 'c']);
+        return $eventName
+            |> $this->toUtf8(...)
+            |> $this->toLowerCase(...)
+            |> $this->normalize(...)
+            |> $this->replaceNonAlphaChars(...);
+    }
 
+    private function toUtf8(string $eventName): string
+    {
+        return mb_convert_encoding($eventName, $this->detectEncoding($eventName), 'UTF-8');
+    }
+
+    private function toLowerCase(string $eventName): string
+    {
+        return mb_strtolower($eventName);
+    }
+
+    private function detectEncoding(string $eventName): string
+    {
+        return mb_detect_encoding($eventName, strict: true);
+    }
+
+    private function normalize(string $eventName): string
+    {
+        return strtr($eventName, ['ç' => 'c']);
+    }
+
+    private function replaceNonAlphaChars(string $eventName): string
+    {
         return preg_replace('~\W+~u', '-', $eventName);
     }
 }

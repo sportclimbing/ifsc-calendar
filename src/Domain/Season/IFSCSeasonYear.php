@@ -19,4 +19,5 @@ enum IFSCSeasonYear: int
     case SEASON_2023 = 2023;
     case SEASON_2024 = 2024;
     case SEASON_2025 = 2025;
+    case SEASON_2026 = 2026;
 }
