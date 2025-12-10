@@ -7,7 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\Event;
 
-use DateTimeZone;
+use Generator;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventInfoProviderInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventCategory;
@@ -27,7 +27,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
 
     private const string IFSC_LEAGUE_API_ENDPOINT = 'https://ifsc.results.info/api/v1/season_leagues/%d';
 
-    private const string IFSC_SEASON_INFO_API_URL = 'https://ifsc.results.info/api/v1/seasons/37';
+    private const string IFSC_SEASON_INFO_API_URL = 'https://ifsc.results.info/api/v1/seasons/38';
 
     public function __construct(
         private IFSCApiClient $apiClient,
@@ -35,10 +35,8 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
     }
 
     /** @inheritdoc */
-    #[Override] public function fetchEventsForLeagues(array $leagues): array
+    #[Override] public function fetchEventsForLeagues(array $leagues): Generator
     {
-        $events = [];
-
         foreach ($leagues as $league) {
             try {
                 $response = $this->apiClient->authenticatedGet(
@@ -46,7 +44,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
                 );
 
                 foreach ($response->events as $event) {
-                    $events[] = $this->fetchEventInfo($event, $league);
+                    yield $this->fetchEventInfo($event, $league);
                 }
             } catch (HttpException $e) {
                 throw new IFSCApiClientException(
@@ -54,8 +52,6 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
                 );
             }
         }
-
-        return $events;
     }
 
     /** @inheritdoc */
@@ -104,7 +100,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
             leagueSeasonId: $response->league_season_id,
             localStartDate: $event->local_start_date,
             localEndDate: $event->local_end_date,
-            timeZone: $this->fixTimeZone($response),
+            timeZone: new \DateTimeZone($response->timezone->value),
             location: $this->removeCountryCode($response->location),
             country: $response->country,
             disciplines: $this->getDisciplines($response->disciplines),
@@ -161,9 +157,9 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
             $rounds = [];
 
             foreach ($category->category_rounds as $round) {
-                $normalizedRoundName = strtolower(
-                    str_replace(' ', '-', $round->name)
-                );
+                $normalizedRoundName = (string) $round->name
+                    |> $this->normalizeName(...)
+                    |> strtolower(...);
 
                 $rounds[] = new IFSCEventRound(
                     discipline: $round->kind,
@@ -178,20 +174,19 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
         return $categories;
     }
 
-    private function fixTimeZone(object $response): DateTimeZone
-    {
-        // ffs ifsc
-        $timeZone = match ($response->location) {
-            'Innsbruck' => 'Europe/Vienna',
-            'Koper' => 'Europe/Ljubljana',
-            default => $response->timezone->value,
-        };
-
-        return new DateTimeZone($timeZone);
-    }
-
     private function removeCountryCode(string $location): string
     {
-        return preg_replace('~, ([A-Z]){3}$~', '', trim($location));
+        $replace = function (string $location): string {
+            return preg_replace('~, ([A-Z]){3}$~', '', $location);
+        };
+
+        return $location
+            |> trim(...)
+            |> $replace;
+    }
+
+    private function normalizeName(string $name): string
+    {
+        return str_replace(' ', '-', $name);
     }
 }

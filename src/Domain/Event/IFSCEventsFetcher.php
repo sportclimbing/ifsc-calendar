@@ -7,9 +7,11 @@
  */
 namespace nicoSWD\IfscCalendar\Domain\Event;
 
+use DateMalformedStringException;
 use DateTimeImmutable;
 use DateTimeZone;
 use Exception;
+use Generator;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\EventScrapingStartedEvent;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
@@ -39,6 +41,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
      * @inheritdoc
      * @throws IFSCEventsScraperException
      * @throws IFSCApiClientException
+     * @throws DateMalformedStringException
      */
     #[Override] public function fetchEventsForSeason(IFSCSeasonYear $season, array $selectedLeagues): array
     {
@@ -65,7 +68,10 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         return $events;
     }
 
-    /** @return IFSCRound[] */
+    /**
+     * @return IFSCRound[]
+     * @throws DateMalformedStringException
+     */
     private function generateRounds(IFSCEventInfo $event): array
     {
         $rounds = [];
@@ -95,7 +101,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
             subject: $round->discipline,
         );
 
-        return ucwords(sprintf("%s's %s %s", $round->category, $discipline, $round->kind->value));
+        return sprintf("%s's %s %s", $round->category, $discipline, $round->kind->value) |> ucwords(...);
     }
 
     /**
@@ -129,10 +135,10 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
 
     /**
      * @param string[] $selectedLeagues
-     * @return IFSCEventInfo[]
+     * @return Generator<IFSCEventInfo>
      * @throws IFSCApiClientException
      */
-    private function fetchEventsForLeagues(IFSCSeasonYear $season, array $selectedLeagues): array
+    private function fetchEventsForLeagues(IFSCSeasonYear $season, array $selectedLeagues): Generator
     {
         return $this->eventInfoProvider->fetchEventsForLeagues(
             leagues: $this->fetchLeaguesForSeason($season, $selectedLeagues),

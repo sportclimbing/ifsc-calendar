@@ -17,7 +17,7 @@ jobs:
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
           tools: composer
 
       - name: "Run phpunit"
@@ -37,16 +37,16 @@ jobs:
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
           tools: composer
 
       - name: "Install dependencies"
         run: |
           sudo apt-get update && sudo apt-get install poppler-utils -y
-          composer install --no-dev
+          composer install --no-dev --ignore-platform-reqs --optimize-autoloader
 
       - name: "Generate Calendar"
-        run: php app/run.php --season 2025 --output new-calendar.json --format json
+        run: php app/run.php --season 2026 --output new-calendar.json --format json
 
       - name: "Check diff"
         run: |

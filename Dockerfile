@@ -1,4 +1,4 @@
-FROM php:8.4-cli-alpine AS builder
+FROM php:8.5-cli-alpine AS builder
 
 WORKDIR /calendar
 
@@ -19,7 +19,7 @@ RUN echo "phar.readonly=0" > /usr/local/etc/php/conf.d/phar.ini && \
     mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
     make clean && make
 
-FROM php:8.4-cli-alpine
+FROM php:8.5-cli-alpine
 
 WORKDIR /calendar
 VOLUME /calendar/

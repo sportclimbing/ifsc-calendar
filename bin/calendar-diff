@@ -49,24 +49,12 @@ function normalize_value(mixed $value): string
 
 function find_round_by_name(array $oldRounds, string $name): ?array
 {
-    foreach ($oldRounds as $oldRound) {
-        if ($oldRound['name'] === $name) {
-            return $oldRound;
-        }
-    }
-
-    return null;
+    return array_find($oldRounds, fn (array $oldRound): bool => $oldRound['name'] === $name);
 }
 
 function get_event_by_id(array $events, int $eventId): ?array
 {
-    foreach ($events as $event) {
-        if ($event['id'] === $eventId) {
-            return $event;
-        }
-    }
-
-    return null;
+    return array_find($events, fn (array $event): bool => $event['id'] === $eventId);
 }
 
 function normalize_events_from_file(string $fileName): array

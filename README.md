@@ -1,5 +1,5 @@
 <div align="center">
-   <h1>IFSC Climbing Calendar and Live-Streams for 2025</h1>
+   <h1>IFSC Climbing Calendar and Live-Streams for 2026</h1>
    <img src="resources/images/ifsc-logo.png" alt="ifsc logo" width="50%" />
 
 <br /><br />
@@ -72,7 +72,7 @@ Using the pre-built Docker image
 ```shell
 $ docker run -it --volume "$PWD:/calendar" \
     ghcr.io/sportclimbing/ifsc-calendar:latest \ 
-    --season 2025 \
+    --season 2026 \
     --output "/calendar/ifsc-calendar.ics"
 ```
 
@@ -92,14 +92,14 @@ $ docker build --tag ifsc-calendar .
 Generate `.ics` calendar file
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
-    --season 2025 \
+    --season 2026 \
     --output "/calendar/ifsc-calendar.ics"
 ```
 
 Generate `.json` calendar file
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
-    --season 2025 \
+    --season 2026 \
     --output "/calendar/ifsc-calendar.json" \
     --format json
 ```
@@ -107,7 +107,7 @@ $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
 Export multiple formats
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
-    --season 2025 \
+    --season 2026 \
     --output "/calendar/ifsc-calendar.json" \
     --format json,ics
 ```
@@ -123,7 +123,7 @@ $ make
 Generate `.ics` calendar file using the generated `.phar`
 ```shell
 $ ./build/ifsc-calendar.phar \
-  --season 2025 \
+  --season 2026 \
   --output "ifsc-calendar.ics"
 ```
 
@@ -154,9 +154,9 @@ $ ./build/ifsc-calendar.phar \
 - [ ] ~~Fix scraper for older seasons (formatting changes drastically)~~
 
 ## Requirements
-- PHP 8.4
+- PHP 8.5
 - ext-dom
 - ext-libxml
 
 ## Legal note
-This is in no way affiliated with, or endorsed by the IFSC.
+This is in no way affiliated with or endorsed by the IFSC.

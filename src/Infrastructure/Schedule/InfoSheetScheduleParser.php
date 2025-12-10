@@ -53,7 +53,7 @@ final readonly class InfoSheetScheduleParser
         $html = $this->htmlNormalizer->normalize($html);
 
         if (preg_match_all(self::REGEX_DAY_SCHEDULE, $html, $matches)) {
-            return $matches[0];
+            return array_first($matches);
         }
 
         return [];
@@ -125,11 +125,11 @@ final readonly class InfoSheetScheduleParser
 
         $day = preg_replace('~(\d{1,2})(?:st|nd|rd|th|ve)~', '$1', $day);
         $day = str_replace(',', '', $day);
-        $day = str_replace('2025', '', $day);
+        $day = str_replace('2026', '', $day);
 
         return new DateTimeImmutable(
             sprintf(
-                '%s 2025 %s',
+                '%s 2026 %s',
                 trim($day),
                 trim($time),
             ),

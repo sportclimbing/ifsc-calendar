@@ -10,7 +10,6 @@ namespace nicoSWD\IfscCalendar\Domain\Event;
 use DateTimeImmutable;
 use DateTimeZone;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
-use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidLeagueName;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
 use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
@@ -45,7 +44,6 @@ final class IFSCEvent
         $this->rounds = $rounds;
     }
 
-    /** @throws InvalidLeagueName */
     public function normalizedName(): string
     {
         return sprintf('IFSC: %s - %s', $this->leagueName(), $this->location);

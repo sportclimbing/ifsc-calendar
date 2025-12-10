@@ -71,14 +71,17 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
 
     public function getRedirectLocation(string $url): ?string
     {
-        $headers = array_change_key_case(
-            $this->getHeaders(
-                url: $url,
-                options: ['allow_redirects' => false],
-            )
-        );
+        $headers = $url
+            |> $this->getHeadersNoRedirect(...)
+            |> array_change_key_case(...);
 
         return $headers['location'][0] ?? null;
+    }
+
+    /** @throws HttpException */
+    private function getHeadersNoRedirect(string $url): array
+    {
+        return $this->getHeaders(url: $url, options: ['allow_redirects' => false]);
     }
 
     private function emitRequestFailedEvent(string $url, int $errorCode, int $retryCount): void

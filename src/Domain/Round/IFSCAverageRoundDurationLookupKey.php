@@ -29,6 +29,6 @@ final readonly class IFSCAverageRoundDurationLookupKey
             $key[] = $tag->name;
         }
 
-        return strtolower(implode('_', $key));
+        return implode('_', $key) |> strtolower(...);
     }
 }
