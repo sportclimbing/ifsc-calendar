@@ -95,4 +95,5 @@ services:
 
   # Vendor services
   Symfony\Component\EventDispatcher\EventDispatcher: ~
+  Symfony\Component\Filesystem\Filesystem: ~
   GuzzleHttp\Client: ~

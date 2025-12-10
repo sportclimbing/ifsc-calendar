@@ -6,21 +6,26 @@
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
 use nicoSWD\IfscCalendar\Application\Command\BuildCommand;
-use nicoSWD\IfscCalendar\Application\Kernel;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
+use nicoSWD\IfscCalendar\Application\AppContainer;
+use Symfony\Component\Console\Application;
 
 require_once dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
 return function (array $context): Application {
-    $kernel = new Kernel('prod', (bool) $context['APP_DEBUG']);
-    $kernel->boot();
+    $container = AppContainer::build();
 
     /** @var BuildCommand $command */
-    $command = $kernel->getContainer()->get(id: BuildCommand::class);
+    $command = $container->get(BuildCommand::class);
 
-    $application = new Application($kernel);
+    $application = new Application('ifsc-calendar', '1.0.0');
+    $application->setAutoExit(false);
+
     $application->add($command);
-    $application->setDefaultCommand($command->getName(), isSingleCommand: true);
+    $application->setDefaultCommand($command->getName(), true);
+
+    if ($context['APP_DEBUG'] ?? false) {
+        $application->setCatchExceptions(false);
+    }
 
     return $application;
 };
