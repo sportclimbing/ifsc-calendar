@@ -30,7 +30,8 @@ ENV DEFAULT_URI=/
 
 RUN apk update && \
     apk add --no-cache poppler-utils && \
-    mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+    mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
+    echo "memory_limit=-1" > /usr/local/etc/php/conf.d/memory.ini
 
 COPY --from=builder /calendar/build/ifsc-calendar.phar /bin/ifsc-calendar
 
