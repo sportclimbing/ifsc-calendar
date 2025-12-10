@@ -27,6 +27,7 @@ VOLUME /calendar/
 ENV APP_DEBUG=0
 ENV APP_ENV=prod
 ENV DEFAULT_URI=/
+ENV APP_CACHE_DIR=/tmp
 
 RUN apk update && \
     apk add --no-cache poppler-utils && \
