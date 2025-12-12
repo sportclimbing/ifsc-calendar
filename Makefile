@@ -34,7 +34,11 @@ docker:
 	docker build --tag ifsc-calendar . --no-cache
 
 test: install-composer
-	build/composer.phar install --dev --quiet --ignore-platform-req=ext-gd --ignore-platform-req=php
+	build/composer.phar install \
+		--dev \
+		--quiet \
+		--ignore-platform-req=ext-gd \
+		--ignore-platform-req=php
 	vendor/bin/phpunit
 
 install:
@@ -44,4 +48,4 @@ clean:
 	rm -f build/ifsc-calendar.phar
 
 shell:
-	docker run -it --tty -v ".:/app" php:8.3.4-cli-alpine sh
+	docker run -it --tty -v ".:/app" php:8.5-cli-alpine sh
