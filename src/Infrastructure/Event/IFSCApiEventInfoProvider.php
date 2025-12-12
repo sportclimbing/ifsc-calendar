@@ -7,6 +7,7 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\Event;
 
+use DateInvalidTimeZoneException;
 use Generator;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventInfoProviderInterface;
@@ -79,7 +80,10 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
         return $seasons;
     }
 
-    /** @throws IFSCApiClientException */
+    /**
+     * @throws IFSCApiClientException
+     * @throws DateInvalidTimeZoneException
+     */
     private function fetchEventInfo(object $event, object $league): IFSCEventInfo
     {
         try {
