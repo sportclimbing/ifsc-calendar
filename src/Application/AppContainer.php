@@ -1,12 +1,17 @@
 <?php declare(strict_types=1);
 
+/**
+ * @license  http://opensource.org/licenses/mit-license.php MIT
+ * @link     https://github.com/nicoSWD
+ * @author   Nicolas Oelgart <nico@ifsc.stream>
+ */
 namespace nicoSWD\IfscCalendar\Application;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-final class AppContainer
+final readonly class AppContainer
 {
     public static function build(): ContainerBuilder
     {
