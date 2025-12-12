@@ -20,7 +20,7 @@ return function (array $context): Application {
     $application = new Application('ifsc-calendar', '1.0.0');
     $application->setAutoExit(false);
 
-    $application->add($command);
+    $application->addCommands([$command]);
     $application->setDefaultCommand($command->getName(), true);
 
     if ($context['APP_DEBUG'] ?? false) {
