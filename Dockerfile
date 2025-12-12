@@ -4,8 +4,6 @@ WORKDIR /calendar
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV APP_DEBUG=0
-ENV APP_ENV=prod
-ENV DEFAULT_URI=/
 
 COPY . .
 
@@ -25,8 +23,6 @@ WORKDIR /calendar
 VOLUME /calendar/
 
 ENV APP_DEBUG=0
-ENV APP_ENV=prod
-ENV DEFAULT_URI=/
 ENV APP_CACHE_DIR=/tmp
 
 RUN apk update && \
