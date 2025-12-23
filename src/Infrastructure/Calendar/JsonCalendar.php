@@ -20,7 +20,7 @@ use Override;
 
 final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
 {
-    private const string IFSC_EVENT_INFO_URL = 'https://www.ifsc-climbing.org/events/%s';
+    private const string WORLD_CLIMBING_INFO_URL = 'https://www.worldclimbing.com/events/%s';
 
     private const string GENERATED_BY_URL = 'https://github.com/sportclimbing/ifsc-calendar';
 
@@ -100,7 +100,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
 
     private function buildUrl(IFSCEvent $event): string
     {
-        return sprintf(self::IFSC_EVENT_INFO_URL, $event->slug);
+        return sprintf(self::WORLD_CLIMBING_INFO_URL, $event->slug);
     }
 
     /** @return string[] */
