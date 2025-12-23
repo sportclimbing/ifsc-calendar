@@ -110,7 +110,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     private function createEventWithoutRounds(IFSCEvent $event): Event
     {
         $calendarEvent = new Event()
-            ->setSummary(sprintf('%s (%s)', $event->normalizedName(), $event->country))
+            ->setSummary(sprintf('%s (%s)', $event->eventName, $event->country))
             ->setDescription($this->buildDescription($event))
             ->setUrl(new Uri($event->siteUrl))
             ->setStatus(EventStatus::TENTATIVE())
@@ -143,7 +143,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     /** @throws InvalidLeagueName */
     private function buildDescription(IFSCEvent $event, ?IFSCRound $round = null): string
     {
-        $description = "🏆 {$event->normalizedName()} ({$event->country})\n\n";
+        $description = "🏆 {$event->eventName} ({$event->country})\n\n";
 
         if ($round?->status->isProvisional()) {
             $description .= "⚠️ Schedule is provisional and might change. ";

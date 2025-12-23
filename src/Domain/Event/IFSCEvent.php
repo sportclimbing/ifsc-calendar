@@ -43,26 +43,4 @@ final class IFSCEvent
     ) {
         $this->rounds = $rounds;
     }
-
-    public function normalizedName(): string
-    {
-        return sprintf('IFSC: %s - %s', $this->leagueName(), $this->location);
-    }
-
-    private function leagueName(): string
-    {
-        if (preg_match('~(?<name>(Paraclimbing\s+)?(?:(The )?World|Continental)\s+(?:Cup|Championships?|Games))~', $this->eventName, $match)) {
-            return $match['name'];
-        }
-
-        if (preg_match('~(?<name>(?:Olympic|African|Oceania|European|(Pan|South) American)\s+(?:Games|Cup|Championships|(Qualifier(\sSeries)?)))~', $this->eventName, $match)) {
-            return $match['name'];
-        }
-
-        if (preg_match('~(?<name>(Para Climbing Master))~', $this->eventName, $match)) {
-            return $match['name'];
-        }
-
-        return $this->eventName;
-    }
 }
