@@ -12,7 +12,7 @@ use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpException;
 
 final readonly class IFSCApiClientAuthenticator
 {
-    public const string IFSC_SESSION_COOKIE_NAME = '_verticallife_resultservice_session';
+    public const string IFSC_SESSION_COOKIE_NAME = '_ifsc_resultservice_session';
 
     public const string IFSC_RESULTS_INFO_PAGE = 'https://ifsc.results.info/';
 
