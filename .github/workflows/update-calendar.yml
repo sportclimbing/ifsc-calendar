@@ -27,7 +27,7 @@ jobs:
           extensions: curl
 
       - name: "Generate calendar files"
-        uses: addnab/docker-run-action@v3
+        uses: maus007/docker-run-action-fork@v1
         with:
           image: ghcr.io/sportclimbing/ifsc-calendar:latest
           options: -v ${{ github.workspace }}:/calendar
