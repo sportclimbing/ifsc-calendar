@@ -9,24 +9,49 @@
 
 function generate_start_list_diff(array $oldStartList, array $newStartList): string
 {
-    if ($oldStartList === $newStartList) {
-        return '';
+    $diff = '';
+    $buildAthleteKey = static function (array $athlete): string {
+        return implode('|', [
+            (string) ($athlete['first_name'] ?? ''),
+            (string) ($athlete['last_name'] ?? ''),
+            (string) ($athlete['country'] ?? ''),
+        ]);
+    };
+
+    $oldLookup = [];
+    foreach ($oldStartList as $athlete) {
+        $oldLookup[$buildAthleteKey($athlete)] = $athlete;
     }
 
-    $diff = '';
+    $newLookup = [];
+    foreach ($newStartList as $athlete) {
+        $newLookup[$buildAthleteKey($athlete)] = $athlete;
+    }
 
-    foreach ($newStartList as $key => $athlete) {
-        if (isset($oldStartList[$key])) {
-            if ($athlete !== $oldStartList[$key]) {
-                $diff .= "|Replaced|<s>{$oldStartList[$key]['first_name']}</s>|<s>{$oldStartList[$key]['last_name']}</s>|{$athlete['first_name']}|{$athlete['last_name']}" . PHP_EOL;
-            }
-        } else {
+    foreach ($newLookup as $key => $athlete) {
+        if (!isset($oldLookup[$key])) {
             $diff .= "|Added|{$athlete['first_name']}|{$athlete['last_name']}|---|---|" . PHP_EOL;
+            continue;
+        }
+
+        $oldAthlete = $oldLookup[$key];
+        $oldPhotoUrl = normalize_value($oldAthlete['photo_url'] ?? null);
+        $newPhotoUrl = normalize_value($athlete['photo_url'] ?? null);
+
+        if ($oldPhotoUrl !== $newPhotoUrl) {
+            $diff .= "|Updated photo_url|{$athlete['first_name']}|{$athlete['last_name']}|{$oldPhotoUrl}|{$newPhotoUrl}|" . PHP_EOL;
+        }
+
+        $oldAthleteId = normalize_value($oldAthlete['athlete_id'] ?? null);
+        $newAthleteId = normalize_value($athlete['athlete_id'] ?? null);
+
+        if ($oldAthleteId === 'null' && $newAthleteId !== 'null') {
+            $diff .= "|Added athlete_id|{$athlete['first_name']}|{$athlete['last_name']}|---|{$newAthleteId}|" . PHP_EOL;
         }
     }
 
-    foreach ($oldStartList as $key => $athlete) {
-        if (!isset($newStartList[$key])) {
+    foreach ($oldLookup as $key => $athlete) {
+        if (!isset($newLookup[$key])) {
             $diff .= "|Removed|<s>{$athlete['first_name']}</s>|<s>{$athlete['last_name']}</s>|---|---|" . PHP_EOL;
         }
     }
@@ -257,7 +282,7 @@ foreach ($newEvents as $newEvent) {
         if ($startListDiff) {
             $changedEvents .= "| 📋 Start List |                 |               |                    |                   |" . PHP_EOL;
             $changedEvents .= "|---------------|-----------------|---------------|--------------------|-------------------|" . PHP_EOL;
-            $changedEvents .= "| **Status**    | **First Name**  | **Last Name** | **New First Name** | **New Last Name** |" . PHP_EOL;
+            $changedEvents .= "| **Status**    | **First Name**  | **Last Name** | **Old Value**      | **New Value**     |" . PHP_EOL;
             $changedEvents .= $startListDiff . PHP_EOL;
         }
 
