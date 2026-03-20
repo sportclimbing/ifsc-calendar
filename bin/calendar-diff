@@ -39,14 +39,14 @@ function generate_start_list_diff(array $oldStartList, array $newStartList): str
         $newPhotoUrl = normalize_value($athlete['photo_url'] ?? null);
 
         if ($oldPhotoUrl !== $newPhotoUrl) {
-            $diff .= "|Updated photo_url|{$athlete['first_name']}|{$athlete['last_name']}|{$oldPhotoUrl}|{$newPhotoUrl}|" . PHP_EOL;
+            $diff .= "|Changed|{$athlete['first_name']}|{$athlete['last_name']}|{$oldPhotoUrl}|{$newPhotoUrl}|" . PHP_EOL;
         }
 
         $oldAthleteId = normalize_value($oldAthlete['athlete_id'] ?? null);
         $newAthleteId = normalize_value($athlete['athlete_id'] ?? null);
 
         if ($oldAthleteId === 'null' && $newAthleteId !== 'null') {
-            $diff .= "|Added athlete_id|{$athlete['first_name']}|{$athlete['last_name']}|---|{$newAthleteId}|" . PHP_EOL;
+            $diff .= "|Changed|{$athlete['first_name']}|{$athlete['last_name']}|---|{$newAthleteId}|" . PHP_EOL;
         }
     }
 
