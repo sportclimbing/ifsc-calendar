@@ -18,7 +18,7 @@ enum IFSCEventTagsRegex: string
     case PARACLIMBING = 'para[\s-]?climbing';
     case QUALIFICATION = 'qualifications?';
     case SEMI_FINAL = 'semi[-\s]*finals?';
-    case FINAL = '(?<!semi[-\s])fi?nals?'; // "i" is optional because someone at the IFSC can't spell 🥲
+    case FINAL = '(?<!semi[-\s])finals?';
     case HIGHLIGHTS = 'highlights';
     case PRESS_CONFERENCE = 'press';
     case REVIEW = 'review';

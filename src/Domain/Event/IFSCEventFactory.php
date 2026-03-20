@@ -28,7 +28,7 @@ final readonly class IFSCEventFactory
     }
 
     /** @param IFSCRound[] $rounds */
-    public function create(IFSCSeasonYear $season, IFSCEventInfo $event, array $rounds, ?string $posterUrl): IFSCEvent
+    public function create(IFSCSeasonYear $season, IFSCEventInfo $event, array $rounds): IFSCEvent
     {
         [$startDate, $endDate] = $this->generateDateRangeFromRounds($rounds, $event);
 
@@ -41,7 +41,6 @@ final readonly class IFSCEventFactory
             eventName: $event->eventName,
             location: $event->location,
             country: $event->country,
-            poster: $posterUrl,
             siteUrl: $this->siteURLBuilder->build($season, $event->eventId),
             startsAt: $startDate,
             endsAt: $endDate,

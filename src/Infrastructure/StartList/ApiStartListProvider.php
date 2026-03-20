@@ -44,6 +44,7 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
     private function convertToStarterObject(): Closure
     {
         return static fn (object $athlete): IFSCStarter => new IFSCStarter(
+            athleteId: $athlete->athlete_id,
             firstName: $athlete->firstname,
             lastName: $athlete->lastname,
             country: $athlete->country,

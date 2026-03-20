@@ -10,6 +10,7 @@ namespace nicoSWD\IfscCalendar\Domain\StartList;
 final class IFSCStarter
 {
     public function __construct(
+        public readonly int $athleteId,
         public readonly string $firstName,
         public readonly string $lastName,
         public readonly string $country,
@@ -20,9 +21,6 @@ final class IFSCStarter
 
     public function equals(self $starter): bool
     {
-        return
-            $this->firstName === $starter->firstName &&
-            $this->lastName === $starter->lastName &&
-            $this->country === $starter->country;
+        return $this->athleteId === $starter->athleteId;
     }
 }
