@@ -8,6 +8,7 @@
 namespace nicoSWD\IfscCalendar\Infrastructure\Event;
 
 use DateInvalidTimeZoneException;
+use DateTimeZone;
 use Generator;
 use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use nicoSWD\IfscCalendar\Domain\Event\IFSCEventInfoProviderInterface;
@@ -80,10 +81,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
         return $seasons;
     }
 
-    /**
-     * @throws IFSCApiClientException
-     * @throws DateInvalidTimeZoneException
-     */
+    /** @throws IFSCApiClientException */
     private function fetchEventInfo(object $event, object $league): IFSCEventInfo
     {
         try {
@@ -104,7 +102,7 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
             leagueSeasonId: $response->league_season_id,
             localStartDate: $event->local_start_date,
             localEndDate: $event->local_end_date,
-            timeZone: new \DateTimeZone($response->timezone->value),
+            timeZone: $this->getTimeZone($response),
             location: $this->removeCountryCode($response->location),
             country: $response->country,
             disciplines: $this->getDisciplines($response->disciplines),
@@ -192,5 +190,17 @@ final readonly class IFSCApiEventInfoProvider implements IFSCEventInfoProviderIn
     private function normalizeName(string $name): string
     {
         return str_replace(' ', '-', $name);
+    }
+
+    /** @throws IFSCApiClientException */
+    private function getTimeZone(object $response): DateTimeZone
+    {
+        try {
+            return new DateTimeZone($response->timezone->value);
+        } catch (DateInvalidTimeZoneException) {
+            throw new IFSCApiClientException(
+                "Invalid timezone: {$response->timezone->value}"
+            );
+        }
     }
 }

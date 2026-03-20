@@ -90,7 +90,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     private function createEvent(IFSCEvent $event, IFSCRound $round): Event
     {
         $calendarEvent = new Event()
-            ->setSummary(sprintf("IFSC: %s - %s (%s)", $round->name, $event->location, $event->country))
+            ->setSummary(sprintf("%s - %s (%s)", $round->name, $event->location, $event->country))
             ->setDescription($this->buildDescription($event, $round))
             ->setUrl(new Uri($event->siteUrl))
             ->setStatus($this->getEventStatus($round))
@@ -140,7 +140,6 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         );
     }
 
-    /** @throws InvalidLeagueName */
     private function buildDescription(IFSCEvent $event, ?IFSCRound $round = null): string
     {
         $description = "🏆 {$event->eventName} ({$event->country})\n\n";
@@ -212,7 +211,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
         return new Alarm(
             new DisplayAction(
-                description: "Reminder: IFSC: {$name} - {$event->location} ({$event->country}) starts in {$timeBefore}!"
+                description: "Reminder: {$name} - {$event->location} ({$event->country}) starts in {$timeBefore}!"
             ),
             $trigger->withRelationToEnd(),
         );

@@ -61,7 +61,6 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
                 season: $season,
                 event: $event,
                 rounds: $rounds,
-                posterUrl: null,
             );
         }
 

@@ -46,7 +46,6 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
                 'name' => $event->eventName,
                 'country' => $event->country,
                 'location' => $event->location,
-                'poster' => $event->poster,
                 'site_url' => $event->siteUrl,
                 'event_url' => $this->buildUrl($event),
                 'disciplines' => $event->disciplines,
@@ -89,6 +88,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
     private function formatStarters(array $starters): array
     {
         $format = static fn (IFSCStarter $starter): array => [
+            'athlete_id' => $starter->athleteId,
             'first_name' => $starter->firstName,
             'last_name' => $starter->lastName,
             'country' => $starter->country,

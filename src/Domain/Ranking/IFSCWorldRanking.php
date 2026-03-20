@@ -35,6 +35,7 @@ final readonly class IFSCWorldRanking
                 $scores[$athlete->athlete_id] += $athlete->score;
 
                 $athletes[$athlete->athlete_id] = new IFSCStarter(
+                    athleteId: $athlete->athlete_id,
                     firstName: $athlete->firstname,
                     lastName: $athlete->lastname,
                     country: $athlete->country,
