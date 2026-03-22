@@ -5,10 +5,10 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\Shell;
+namespace nicoSWD\IfscCalendar\Infrastructure\Schedule;
 
 use Exception;
 
-final class CommandFailedException extends Exception
+final class InfoSheetChatGptScheduleParserException extends Exception
 {
 }

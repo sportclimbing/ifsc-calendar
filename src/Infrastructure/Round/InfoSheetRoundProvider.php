@@ -7,33 +7,31 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\Round;
 
-use Exception;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\InfoSheetDownloadFailedEvent;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\InfoSheetNotFoundEvent;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\InfoSheetParsingFailedEvent;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
-use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundProviderInterface;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpException;
-use nicoSWD\IfscCalendar\Infrastructure\Shell\Command;
-use nicoSWD\IfscCalendar\Infrastructure\Shell\CommandFailedException;
+use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetChatGptScheduleParserException;
+use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloadFailedException;
+use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetChatGptScheduleParser;
 use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader;
-use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleParser;
 use Override;
 use Symfony\Component\Filesystem\Filesystem;
+use Throwable;
 
 final readonly class InfoSheetRoundProvider implements IFSCRoundProviderInterface
 {
     private const string INFO_SHEET_URL = 'https://ifsc.results.info/events/%d/infosheet';
 
-    private const string COMMAND_PDF_TO_HTML = 'pdftohtml -noframes -i -stdout %s';
-
     public function __construct(
-        private InfoSheetScheduleParser $scheduleProvider,
+        private InfoSheetChatGptScheduleParser $scheduleProvider,
         private InfoSheetDownloader $downloader,
         private HttpClientInterface $httpClient,
-        private Command $command,
         private EventDispatcherInterface $eventDispatcher,
         private Filesystem $filesystem,
     ) {
@@ -60,30 +58,87 @@ final readonly class InfoSheetRoundProvider implements IFSCRoundProviderInterfac
             return [];
         }
 
+        $infoSheetHeaders = $this->getInfoSheetHeaders($infoSheetUrl);
+
+        $cachedSchedules = $this->fetchCachedSchedules(
+            event: $event,
+            infoSheetUrl: $infoSheetUrl,
+            infoSheetHeaders: $infoSheetHeaders,
+        );
+
+        if ($cachedSchedules !== null) {
+            return $cachedSchedules;
+        }
+
+        $pdfPath = $this->downloadInfoSheetOrEmitFailure($event, $infoSheetUrl);
+
+        if ($pdfPath === null) {
+            return [];
+        }
+
+        return $this->parseDownloadedInfoSheet(
+            event: $event,
+            infoSheetUrl: $infoSheetUrl,
+            infoSheetHeaders: $infoSheetHeaders,
+            pdfPath: $pdfPath,
+        );
+    }
+
+    /**
+     * @param array<array<string>> $infoSheetHeaders
+     * @return IFSCSchedule[]|null
+     */
+    private function fetchCachedSchedules(
+        IFSCEventInfo $event,
+        string $infoSheetUrl,
+        array $infoSheetHeaders,
+    ): ?array {
+        return $this->scheduleProvider->loadCachedSchedule(
+            event: $event,
+            infoSheetUrl: $infoSheetUrl,
+            infoSheetHeaders: $infoSheetHeaders,
+        );
+    }
+
+    private function downloadInfoSheetOrEmitFailure(IFSCEventInfo $event, string $infoSheetUrl): ?string
+    {
         try {
-            $pdfPath = $this->downloader->downloadInfoSheet($infoSheetUrl);
+            return $this->downloader->downloadInfoSheet($infoSheetUrl);
+        } catch (InfoSheetDownloadFailedException $e) {
+            $this->emitInfoSheetDownloadFailedEvent($event, $e);
+        } catch (Throwable $e) {
+            $this->emitInfoSheetDownloadFailedEvent($event, $e);
+        }
 
-            $html = $this->convertPdfToHtml($pdfPath);
+        return null;
+    }
+
+    /**
+     * @param array<array<string>> $infoSheetHeaders
+     * @return IFSCSchedule[]
+     */
+    private function parseDownloadedInfoSheet(
+        IFSCEventInfo $event,
+        string $infoSheetUrl,
+        array $infoSheetHeaders,
+        string $pdfPath,
+    ): array {
+        try {
+            return $this->scheduleProvider->parseScheduleFromPdf(
+                event: $event,
+                pdfPath: $pdfPath,
+                infoSheetUrl: $infoSheetUrl,
+                infoSheetHeaders: $infoSheetHeaders,
+            );
+        } catch (InfoSheetChatGptScheduleParserException $e) {
+            $this->emitInfoSheetParsingFailedEvent($event, $e);
+        } catch (Throwable $e) {
+            $this->emitInfoSheetParsingFailedEvent($event, $e);
+        } finally {
             $this->deleteTempFile($pdfPath);
-
-            return $this->scheduleProvider->parseSchedule($html, $event->timeZone);
-        } catch (Exception) {
-            $this->emitInfoSheetNotFoundEvent($event);
         }
 
         return [];
-    }
-
-    /** @throws IFSCEventsScraperException */
-    private function convertPdfToHtml(string $pdfPath): string
-    {
-        try {
-            return $this->command->exec(self::COMMAND_PDF_TO_HTML, [$pdfPath]);
-        } catch (CommandFailedException $e) {
-            throw new IFSCEventsScraperException(
-                "Unable to convert PDF to HTML: {$e->getMessage()}"
-            );
-        }
     }
 
     private function getInfoSheetUrl(IFSCEventInfo $event): ?string
@@ -97,9 +152,24 @@ final readonly class InfoSheetRoundProvider implements IFSCRoundProviderInterfac
         }
     }
 
+    /** @return array<array<string>> */
+    private function getInfoSheetHeaders(string $infoSheetUrl): array
+    {
+        try {
+            return $this->httpClient->getHeaders($infoSheetUrl);
+        } catch (HttpException) {
+            return [];
+        } catch (Throwable) {
+            return [];
+        }
+    }
+
     private function deleteTempFile(string $pdfPath): void
     {
-        $this->filesystem->remove($pdfPath);
+        try {
+            $this->filesystem->remove($pdfPath);
+        } catch (Throwable) {
+        }
     }
 
     private function buildInfoSheetUrl(IFSCEventInfo $event): string
@@ -110,5 +180,21 @@ final readonly class InfoSheetRoundProvider implements IFSCRoundProviderInterfac
     private function emitInfoSheetNotFoundEvent(IFSCEventInfo $event): void
     {
         $this->eventDispatcher->dispatch(new InfoSheetNotFoundEvent($event->eventName));
+    }
+
+    private function emitInfoSheetDownloadFailedEvent(IFSCEventInfo $event, Throwable $e): void
+    {
+        $this->eventDispatcher->dispatch(new InfoSheetDownloadFailedEvent(
+            eventName: $event->eventName,
+            reason: $e->getMessage(),
+        ));
+    }
+
+    private function emitInfoSheetParsingFailedEvent(IFSCEventInfo $event, Throwable $e): void
+    {
+        $this->eventDispatcher->dispatch(new InfoSheetParsingFailedEvent(
+            eventName: $event->eventName,
+            reason: $e->getMessage(),
+        ));
     }
 }

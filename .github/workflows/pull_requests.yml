@@ -11,8 +11,8 @@ jobs:
   code-quality:
     runs-on: ubuntu-latest
     steps:
-      - name: "Checkout code"
-        uses: actions/checkout@master
+      - name: "Checkout"
+        uses: actions/checkout@v6
 
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@master
+        uses: actions/checkout@v6
 
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
@@ -41,11 +41,11 @@ jobs:
           tools: composer
 
       - name: "Install dependencies"
-        run: |
-          sudo apt-get update && sudo apt-get install poppler-utils -y
-          composer install --no-dev --ignore-platform-reqs --optimize-autoloader
+        run: composer install --no-dev --ignore-platform-reqs --optimize-autoloader
 
       - name: "Generate Calendar"
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: php app/run.php --season 2026 --output new-calendar.json --format json
 
       - name: "Check diff"
