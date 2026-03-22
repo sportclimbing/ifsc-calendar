@@ -7,18 +7,22 @@
  */
 namespace nicoSWD\IfscCalendar\Infrastructure\Round;
 
-use Exception;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\InfoSheetDownloadFailedEvent;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\InfoSheetNotFoundEvent;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\InfoSheetParsingFailedEvent;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundProviderInterface;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpException;
+use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetChatGptScheduleParserException;
+use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloadFailedException;
 use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetChatGptScheduleParser;
 use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader;
 use Override;
 use Symfony\Component\Filesystem\Filesystem;
+use Throwable;
 
 final readonly class InfoSheetRoundProvider implements IFSCRoundProviderInterface
 {
@@ -56,17 +60,27 @@ final readonly class InfoSheetRoundProvider implements IFSCRoundProviderInterfac
 
         try {
             $pdfPath = $this->downloader->downloadInfoSheet($infoSheetUrl);
+        } catch (InfoSheetDownloadFailedException $e) {
+            $this->emitInfoSheetDownloadFailedEvent($event, $e);
 
-            try {
-                return $this->scheduleProvider->parseScheduleFromPdf(
-                    event: $event,
-                    pdfPath: $pdfPath,
-                );
-            } finally {
-                $this->deleteTempFile($pdfPath);
-            }
-        } catch (Exception) {
-            $this->emitInfoSheetNotFoundEvent($event);
+            return [];
+        } catch (Throwable $e) {
+            $this->emitInfoSheetDownloadFailedEvent($event, $e);
+
+            return [];
+        }
+
+        try {
+            return $this->scheduleProvider->parseScheduleFromPdf(
+                event: $event,
+                pdfPath: $pdfPath,
+            );
+        } catch (InfoSheetChatGptScheduleParserException $e) {
+            $this->emitInfoSheetParsingFailedEvent($event, $e);
+        } catch (Throwable $e) {
+            $this->emitInfoSheetParsingFailedEvent($event, $e);
+        } finally {
+            $this->deleteTempFile($pdfPath);
         }
 
         return [];
@@ -85,7 +99,10 @@ final readonly class InfoSheetRoundProvider implements IFSCRoundProviderInterfac
 
     private function deleteTempFile(string $pdfPath): void
     {
-        $this->filesystem->remove($pdfPath);
+        try {
+            $this->filesystem->remove($pdfPath);
+        } catch (Throwable) {
+        }
     }
 
     private function buildInfoSheetUrl(IFSCEventInfo $event): string
@@ -96,5 +113,21 @@ final readonly class InfoSheetRoundProvider implements IFSCRoundProviderInterfac
     private function emitInfoSheetNotFoundEvent(IFSCEventInfo $event): void
     {
         $this->eventDispatcher->dispatch(new InfoSheetNotFoundEvent($event->eventName));
+    }
+
+    private function emitInfoSheetDownloadFailedEvent(IFSCEventInfo $event, Throwable $e): void
+    {
+        $this->eventDispatcher->dispatch(new InfoSheetDownloadFailedEvent(
+            eventName: $event->eventName,
+            reason: $e->getMessage(),
+        ));
+    }
+
+    private function emitInfoSheetParsingFailedEvent(IFSCEventInfo $event, Throwable $e): void
+    {
+        $this->eventDispatcher->dispatch(new InfoSheetParsingFailedEvent(
+            eventName: $event->eventName,
+            reason: $e->getMessage(),
+        ));
     }
 }

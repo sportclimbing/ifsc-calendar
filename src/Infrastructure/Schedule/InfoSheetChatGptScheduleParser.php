@@ -13,6 +13,7 @@ use DateTimeZone;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
 use JsonException;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
@@ -26,7 +27,7 @@ final readonly class InfoSheetChatGptScheduleParser
     private const string OPENAI_FILE_DELETE_URL = 'https://api.openai.com/v1/files/%s';
     private const string OPENAI_FILE_PURPOSE = 'user_data';
     private const string DATE_TIME_FORMAT = 'Y-m-d H:i';
-    private const string DEFAULT_MODEL = 'gpt-4.1';
+    private const string DEFAULT_MODEL = 'gpt-5-mini';
 
     private string $openAiApiKey;
     private string $model;
@@ -47,7 +48,7 @@ final readonly class InfoSheetChatGptScheduleParser
     public function parseScheduleFromPdf(IFSCEventInfo $event, string $pdfPath): array
     {
         if ($this->openAiApiKey === '') {
-            throw new InfoSheetChatGptScheduleParserException('Missing OPENAI_API_KEY');
+            throw new InfoSheetChatGptScheduleParserException('Missing OPENAI_API_KEY. Set a valid OpenAI API key with available quota.');
         }
 
         $fileId = $this->uploadInfoSheet($pdfPath);
@@ -145,7 +146,10 @@ final readonly class InfoSheetChatGptScheduleParser
             );
         } catch (GuzzleException $e) {
             throw new InfoSheetChatGptScheduleParserException(
-                "Unable to parse infosheet with ChatGPT: {$e->getMessage()}",
+                $this->buildOpenAiExceptionMessage(
+                    operation: 'Unable to parse infosheet with ChatGPT',
+                    exception: $e,
+                ),
                 previous: $e,
             );
         }
@@ -197,7 +201,7 @@ final readonly class InfoSheetChatGptScheduleParser
                             [
                                 'name' => 'file',
                                 'contents' => $stream,
-                                'filename' => basename($pdfPath),
+                                'filename' => $this->asPdfFilename($pdfPath),
                                 'headers' => ['Content-Type' => 'application/pdf'],
                             ],
                         ],
@@ -205,7 +209,10 @@ final readonly class InfoSheetChatGptScheduleParser
                 );
             } catch (GuzzleException $e) {
                 throw new InfoSheetChatGptScheduleParserException(
-                    "Unable to upload infosheet PDF: {$e->getMessage()}",
+                    $this->buildOpenAiExceptionMessage(
+                        operation: 'Unable to upload infosheet PDF',
+                        exception: $e,
+                    ),
                     previous: $e,
                 );
             }
@@ -444,5 +451,78 @@ final readonly class InfoSheetChatGptScheduleParser
         $value = $_ENV[$name] ?? getenv($name);
 
         return is_string($value) ? trim($value) : '';
+    }
+
+    private function asPdfFilename(string $pdfPath): string
+    {
+        $filename = basename($pdfPath);
+
+        if (str_ends_with(strtolower($filename), '.pdf')) {
+            return $filename;
+        }
+
+        return "{$filename}.pdf";
+    }
+
+    private function buildOpenAiExceptionMessage(string $operation, GuzzleException $exception): string
+    {
+        if (!$exception instanceof RequestException) {
+            return "{$operation}: {$exception->getMessage()}";
+        }
+
+        $statusCode = $exception->getResponse()?->getStatusCode();
+        $apiError = $this->extractOpenAiErrorMessage($exception);
+
+        if ($statusCode === 429 && $this->isQuotaError($apiError)) {
+            return "{$operation}: OpenAI quota exceeded (HTTP 429). Check billing/project quota or use an API key with available quota.";
+        }
+
+        if ($statusCode !== null && $apiError !== null) {
+            return "{$operation}: HTTP {$statusCode} - {$apiError}";
+        }
+
+        if ($statusCode !== null) {
+            return "{$operation}: HTTP {$statusCode} - {$exception->getMessage()}";
+        }
+
+        return "{$operation}: {$exception->getMessage()}";
+    }
+
+    private function extractOpenAiErrorMessage(RequestException $exception): ?string
+    {
+        $response = $exception->getResponse();
+
+        if ($response === null) {
+            return null;
+        }
+
+        try {
+            $payload = $this->decodeJson((string) $response->getBody());
+        } catch (InfoSheetChatGptScheduleParserException) {
+            return null;
+        }
+
+        $error = $payload['error'] ?? null;
+
+        if (!is_array($error)) {
+            return null;
+        }
+
+        $message = $error['message'] ?? null;
+
+        return is_string($message) && trim($message) !== '' ? trim($message) : null;
+    }
+
+    private function isQuotaError(?string $message): bool
+    {
+        if ($message === null) {
+            return false;
+        }
+
+        $message = strtolower($message);
+
+        return str_contains($message, 'insufficient_quota')
+            || str_contains($message, 'exceeded your current quota')
+            || str_contains($message, 'billing');
     }
 }

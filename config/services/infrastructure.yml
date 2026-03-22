@@ -47,12 +47,6 @@ services:
   nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer:
     class: nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer
 
-  nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleParser:
-    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleParser
-    arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer'
-      - '@nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory'
-
   nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader:
     class: nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader
     arguments:

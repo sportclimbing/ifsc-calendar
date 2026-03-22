@@ -107,7 +107,7 @@ final class InfoSheetChatGptScheduleParserTest extends TestCase
     {
         return new IFSCScheduleFactory(
             tagsParser: new IFSCTagsParser(),
-            roundNameNormalizer: new IFSCRoundNameNormalizer(new IFSCTagsParser()),
+            roundNameNormalizer: new IFSCRoundNameNormalizer(),
         );
     }
 
