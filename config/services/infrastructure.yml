@@ -59,18 +59,20 @@ services:
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
       - '@Symfony\Component\Filesystem\Filesystem'
 
+  nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetChatGptScheduleParser:
+    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetChatGptScheduleParser
+    arguments:
+      - '@GuzzleHttp\Client'
+      - '@nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory'
+
   nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider:
     class: nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleParser'
+      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetChatGptScheduleParser'
       - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader'
       - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
-      - '@nicoSWD\IfscCalendar\Infrastructure\Shell\Command'
       - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
       - '@Symfony\Component\Filesystem\Filesystem'
-
-  # Process
-  nicoSWD\IfscCalendar\Infrastructure\Shell\Command: ~
 
   # Start List
   nicoSWD\IfscCalendar\Infrastructure\StartList\ApiStartListProvider:

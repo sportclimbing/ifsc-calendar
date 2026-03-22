@@ -70,7 +70,7 @@ to generate an always up-to-date calendar with all necessary info.
 
 Using the pre-built Docker image
 ```shell
-$ docker run -it --volume "$PWD:/calendar" \
+$ docker run -it -e OPENAI_API_KEY="$OPENAI_API_KEY" --volume "$PWD:/calendar" \
     ghcr.io/sportclimbing/ifsc-calendar:latest \ 
     --season 2026 \
     --output "/calendar/ifsc-calendar.ics"
@@ -91,14 +91,14 @@ $ docker build --tag ifsc-calendar .
 ```
 Generate `.ics` calendar file
 ```shell
-$ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
+$ docker run -it -e OPENAI_API_KEY="$OPENAI_API_KEY" --volume "$PWD:/calendar" ifsc-calendar \
     --season 2026 \
     --output "/calendar/ifsc-calendar.ics"
 ```
 
 Generate `.json` calendar file
 ```shell
-$ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
+$ docker run -it -e OPENAI_API_KEY="$OPENAI_API_KEY" --volume "$PWD:/calendar" ifsc-calendar \
     --season 2026 \
     --output "/calendar/ifsc-calendar.json" \
     --format json
@@ -106,7 +106,7 @@ $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
 
 Export multiple formats
 ```shell
-$ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
+$ docker run -it -e OPENAI_API_KEY="$OPENAI_API_KEY" --volume "$PWD:/calendar" ifsc-calendar \
     --season 2026 \
     --output "/calendar/ifsc-calendar.json" \
     --format json,ics
@@ -157,6 +157,8 @@ $ ./build/ifsc-calendar.phar \
 - PHP 8.5
 - ext-dom
 - ext-libxml
+- `OPENAI_API_KEY` environment variable (used to parse infosheet PDFs via ChatGPT API)
+- Optional: `OPENAI_MODEL` (defaults to `gpt-4.1`)
 
 ## Legal note
 This is in no way affiliated with or endorsed by the IFSC.

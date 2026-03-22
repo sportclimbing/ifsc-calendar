@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@master
+        uses: actions/checkout@v6
 
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
@@ -30,7 +30,7 @@ jobs:
         uses: maus007/docker-run-action-fork@v1
         with:
           image: ghcr.io/sportclimbing/ifsc-calendar:latest
-          options: -v ${{ github.workspace }}:/calendar
+          options: -v ${{ github.workspace }}:/calendar -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
           run: ifsc-calendar --season 2026 --output "/calendar/${{ env.CALENDAR_FILE_ICS }}" --format "ics,json"
 
       - name: "Validate calendar"

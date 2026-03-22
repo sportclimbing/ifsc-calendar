@@ -10,16 +10,13 @@ namespace nicoSWD\IfscCalendar\Infrastructure\Round;
 use Exception;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\InfoSheetNotFoundEvent;
 use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
-use nicoSWD\IfscCalendar\Domain\Event\Exceptions\IFSCEventsScraperException;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundProviderInterface;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCSchedule;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
 use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpException;
-use nicoSWD\IfscCalendar\Infrastructure\Shell\Command;
-use nicoSWD\IfscCalendar\Infrastructure\Shell\CommandFailedException;
+use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetChatGptScheduleParser;
 use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader;
-use nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleParser;
 use Override;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -27,13 +24,10 @@ final readonly class InfoSheetRoundProvider implements IFSCRoundProviderInterfac
 {
     private const string INFO_SHEET_URL = 'https://ifsc.results.info/events/%d/infosheet';
 
-    private const string COMMAND_PDF_TO_HTML = 'pdftohtml -noframes -i -stdout %s';
-
     public function __construct(
-        private InfoSheetScheduleParser $scheduleProvider,
+        private InfoSheetChatGptScheduleParser $scheduleProvider,
         private InfoSheetDownloader $downloader,
         private HttpClientInterface $httpClient,
-        private Command $command,
         private EventDispatcherInterface $eventDispatcher,
         private Filesystem $filesystem,
     ) {
@@ -63,27 +57,19 @@ final readonly class InfoSheetRoundProvider implements IFSCRoundProviderInterfac
         try {
             $pdfPath = $this->downloader->downloadInfoSheet($infoSheetUrl);
 
-            $html = $this->convertPdfToHtml($pdfPath);
-            $this->deleteTempFile($pdfPath);
-
-            return $this->scheduleProvider->parseSchedule($html, $event->timeZone);
+            try {
+                return $this->scheduleProvider->parseScheduleFromPdf(
+                    event: $event,
+                    pdfPath: $pdfPath,
+                );
+            } finally {
+                $this->deleteTempFile($pdfPath);
+            }
         } catch (Exception) {
             $this->emitInfoSheetNotFoundEvent($event);
         }
 
         return [];
-    }
-
-    /** @throws IFSCEventsScraperException */
-    private function convertPdfToHtml(string $pdfPath): string
-    {
-        try {
-            return $this->command->exec(self::COMMAND_PDF_TO_HTML, [$pdfPath]);
-        } catch (CommandFailedException $e) {
-            throw new IFSCEventsScraperException(
-                "Unable to convert PDF to HTML: {$e->getMessage()}"
-            );
-        }
     }
 
     private function getInfoSheetUrl(IFSCEventInfo $event): ?string
