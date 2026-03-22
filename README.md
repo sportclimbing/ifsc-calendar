@@ -158,7 +158,9 @@ $ ./build/ifsc-calendar.phar \
 - ext-dom
 - ext-libxml
 - `OPENAI_API_KEY` environment variable (used to parse infosheet PDFs via ChatGPT API)
-- Optional: `OPENAI_MODEL` (defaults to `gpt-4.1`)
+- Optional: `OPENAI_MODEL` (defaults to `gpt-5-mini`)
+- Optional: `IFSC_INFOSHEET_CACHE_DIR` (defaults to `.cache/infosheet`)
+- Optional: `IFSC_INFOSHEET_CACHE_LAST_MODIFIED_DAYS` (defaults to `21`)
 
 ## Legal note
 This is in no way affiliated with or endorsed by the IFSC.

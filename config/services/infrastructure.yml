@@ -58,6 +58,7 @@ services:
     arguments:
       - '@GuzzleHttp\Client'
       - '@nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory'
+      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
 
   nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider:
     class: nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider

@@ -47,9 +47,17 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
     #[Override] public function getHeaders(string $url, array $options = []): array
     {
         try {
-            return $this->client->request('GET', $url, $options)->getHeaders();
-        } catch (GuzzleException $e) {
-            throw new HttpException("Unable to retrieve HTTP headers: {$e->getMessage()}", $e->getCode(), $e);
+            return $this->client->request('HEAD', $url, $options)->getHeaders();
+        } catch (GuzzleException $headException) {
+            try {
+                return $this->client->request('GET', $url, $options)->getHeaders();
+            } catch (GuzzleException $getException) {
+                throw new HttpException(
+                    "Unable to retrieve HTTP headers: {$getException->getMessage()}",
+                    $getException->getCode(),
+                    $getException,
+                );
+            }
         }
     }
 
@@ -78,7 +86,10 @@ final readonly class HttpGuzzleClient implements HttpClientInterface
         return $headers['location'][0] ?? null;
     }
 
-    /** @throws HttpException */
+    /**
+     * @return array<string,array<string>>
+     * @throws HttpException
+     */
     private function getHeadersNoRedirect(string $url): array
     {
         return $this->getHeaders(url: $url, options: ['allow_redirects' => false]);

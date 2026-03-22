@@ -2,6 +2,7 @@
 /vendor/
 /build/*.phar
 /.composer
+/.cache/
 /composer.lock
 /pages/events/events.json
 .DS_Store

@@ -14,6 +14,9 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use JsonException;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\InfoSheetCacheUsedEvent;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\InfoSheetChatGptApiCalledEvent;
+use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer;
 use nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory;
@@ -30,6 +33,8 @@ final class InfoSheetChatGptScheduleParserTest extends TestCase
     {
         $previousApiKey = $this->setEnv('OPENAI_API_KEY', 'test-key');
         $previousModel = $this->setEnv('OPENAI_MODEL', 'gpt-test');
+        $cacheDirectory = $this->createTempDirectory();
+        $previousCacheDir = $this->setEnv('IFSC_INFOSHEET_CACHE_DIR', $cacheDirectory);
 
         $responsePayload = $this->toJson([
             'output_text' => $this->toJson([
@@ -48,6 +53,7 @@ final class InfoSheetChatGptScheduleParserTest extends TestCase
                 new Response(status: 200, body: $this->toJson(['deleted' => true])),
             ]),
             scheduleFactory: $this->createScheduleFactory(),
+            eventDispatcher: $this->expectSingleDispatchedEvent(InfoSheetChatGptApiCalledEvent::class),
         );
 
         $pdfPath = $this->createTempPdf();
@@ -60,7 +66,9 @@ final class InfoSheetChatGptScheduleParserTest extends TestCase
         } finally {
             $this->restoreEnv('OPENAI_API_KEY', $previousApiKey);
             $this->restoreEnv('OPENAI_MODEL', $previousModel);
+            $this->restoreEnv('IFSC_INFOSHEET_CACHE_DIR', $previousCacheDir);
             @unlink($pdfPath);
+            $this->removeDirectory($cacheDirectory);
         }
 
         $this->assertCount(1, $schedules);
@@ -74,10 +82,13 @@ final class InfoSheetChatGptScheduleParserTest extends TestCase
     {
         $previousApiKey = $this->setEnv('OPENAI_API_KEY', null);
         $previousModel = $this->setEnv('OPENAI_MODEL', null);
+        $cacheDirectory = $this->createTempDirectory();
+        $previousCacheDir = $this->setEnv('IFSC_INFOSHEET_CACHE_DIR', $cacheDirectory);
 
         $parser = new InfoSheetChatGptScheduleParser(
             httpClient: $this->createClient([]),
             scheduleFactory: $this->createScheduleFactory(),
+            eventDispatcher: $this->expectNoDispatchedEvents(),
         );
 
         $pdfPath = $this->createTempPdf();
@@ -91,8 +102,81 @@ final class InfoSheetChatGptScheduleParserTest extends TestCase
         } finally {
             $this->restoreEnv('OPENAI_API_KEY', $previousApiKey);
             $this->restoreEnv('OPENAI_MODEL', $previousModel);
+            $this->restoreEnv('IFSC_INFOSHEET_CACHE_DIR', $previousCacheDir);
             @unlink($pdfPath);
+            $this->removeDirectory($cacheDirectory);
         }
+    }
+
+    #[Test]
+    public function cached_schedule_is_used_when_etag_matches(): void
+    {
+        $cacheDirectory = $this->createTempDirectory();
+        $previousCacheDir = $this->setEnv('IFSC_INFOSHEET_CACHE_DIR', $cacheDirectory);
+        $previousModel = $this->setEnv('OPENAI_MODEL', 'gpt-test');
+        $previousApiKey = $this->setEnv('OPENAI_API_KEY', 'test-key');
+
+        $responsePayload = $this->toJson([
+            'output_text' => $this->toJson([
+                'rounds' => [[
+                    'name' => "Women's Lead Final",
+                    'starts_at' => '2026-07-03 18:00',
+                    'ends_at' => null,
+                ]],
+            ]),
+        ]);
+
+        $pdfPath1 = $this->createTempPdf();
+        $pdfPath2 = $this->createTempPdf();
+        $secondRun = [];
+
+        try {
+            $parserThatCallsApi = new InfoSheetChatGptScheduleParser(
+                httpClient: $this->createClient([
+                    new Response(status: 200, body: $this->toJson(['id' => 'file_123'])),
+                    new Response(status: 200, body: $responsePayload),
+                    new Response(status: 200, body: $this->toJson(['deleted' => true])),
+                ]),
+                scheduleFactory: $this->createScheduleFactory(),
+                eventDispatcher: $this->expectSingleDispatchedEvent(InfoSheetChatGptApiCalledEvent::class),
+            );
+
+            $firstRun = $parserThatCallsApi->parseScheduleFromPdf(
+                event: $this->createEventInfo(),
+                pdfPath: $pdfPath1,
+                infoSheetUrl: 'https://example.test/infosheet.pdf',
+                infoSheetHeaders: ['ETag' => ['"etag-123"']],
+            );
+
+            $this->assertCount(1, $firstRun);
+
+            $this->restoreEnv('OPENAI_API_KEY', $previousApiKey);
+            $previousApiKey = $this->setEnv('OPENAI_API_KEY', null);
+
+            $parserThatMustUseCache = new InfoSheetChatGptScheduleParser(
+                httpClient: $this->createClient([]),
+                scheduleFactory: $this->createScheduleFactory(),
+                eventDispatcher: $this->expectSingleDispatchedEvent(InfoSheetCacheUsedEvent::class),
+            );
+
+            $secondRun = $parserThatMustUseCache->parseScheduleFromPdf(
+                event: $this->createEventInfo(),
+                pdfPath: $pdfPath2,
+                infoSheetUrl: 'https://example.test/infosheet.pdf',
+                infoSheetHeaders: ['ETag' => ['"etag-123"']],
+            );
+        } finally {
+            $this->restoreEnv('OPENAI_API_KEY', $previousApiKey);
+            $this->restoreEnv('OPENAI_MODEL', $previousModel);
+            $this->restoreEnv('IFSC_INFOSHEET_CACHE_DIR', $previousCacheDir);
+            @unlink($pdfPath1);
+            @unlink($pdfPath2);
+            $this->removeDirectory($cacheDirectory);
+        }
+
+        $this->assertCount(1, $secondRun);
+        $this->assertSame("Women's Lead Final", $secondRun[0]->name);
+        $this->assertSame('2026-07-03T18:00:00+02:00', $secondRun[0]->startsAt->format(DateTimeInterface::RFC3339));
     }
 
     /** @param Response[] $responses */
@@ -142,6 +226,49 @@ final class InfoSheetChatGptScheduleParserTest extends TestCase
         return $tmpFile;
     }
 
+    private function createTempDirectory(): string
+    {
+        $tmpDir = tempnam('/tmp', 'infosheet_cache_');
+
+        if ($tmpDir === false) {
+            $this->fail('Unable to create temporary directory');
+        }
+
+        @unlink($tmpDir);
+        mkdir($tmpDir, 0777, true);
+
+        return $tmpDir;
+    }
+
+    private function removeDirectory(string $directory): void
+    {
+        if (!is_dir($directory)) {
+            return;
+        }
+
+        $items = scandir($directory);
+
+        if ($items === false) {
+            return;
+        }
+
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $path = "{$directory}/{$item}";
+
+            if (is_dir($path)) {
+                $this->removeDirectory($path);
+            } else {
+                @unlink($path);
+            }
+        }
+
+        @rmdir($directory);
+    }
+
     private function setEnv(string $name, ?string $value): string|false
     {
         $previousValue = getenv($name);
@@ -172,6 +299,27 @@ final class InfoSheetChatGptScheduleParserTest extends TestCase
         $_ENV[$name] = $value;
     }
 
+    private function expectSingleDispatchedEvent(string $eventClass): EventDispatcherInterface
+    {
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+
+        $eventDispatcher
+            ->expects(self::once())
+            ->method('dispatch')
+            ->with(self::callback(static fn (object $event): bool => $event instanceof $eventClass));
+
+        return $eventDispatcher;
+    }
+
+    private function expectNoDispatchedEvents(): EventDispatcherInterface
+    {
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $eventDispatcher->expects(self::never())->method('dispatch');
+
+        return $eventDispatcher;
+    }
+
+    /** @param array<string,mixed> $payload */
     private function toJson(array $payload): string
     {
         try {

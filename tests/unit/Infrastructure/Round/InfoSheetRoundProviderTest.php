@@ -38,6 +38,7 @@ final class InfoSheetRoundProviderTest extends TestCase
                 scheduleProvider: new InfoSheetChatGptScheduleParser(
                     httpClient: new Client(),
                     scheduleFactory: $this->createScheduleFactory(),
+                    eventDispatcher: $this->createSilentEventDispatcher(),
                 ),
                 downloader: new InfoSheetDownloader(
                     httpClient: $this->createDownloadSuccessHttpClient(),
@@ -68,6 +69,7 @@ final class InfoSheetRoundProviderTest extends TestCase
             scheduleProvider: new InfoSheetChatGptScheduleParser(
                 httpClient: new Client(),
                 scheduleFactory: $this->createScheduleFactory(),
+                eventDispatcher: $this->createSilentEventDispatcher(),
             ),
             downloader: new InfoSheetDownloader(
                 httpClient: $this->createDownloadFailureHttpClient(),
@@ -214,6 +216,11 @@ final class InfoSheetRoundProviderTest extends TestCase
             ->with(self::callback(static fn (object $event): bool => $event instanceof $eventClass));
 
         return $eventDispatcher;
+    }
+
+    private function createSilentEventDispatcher(): EventDispatcherInterface
+    {
+        return $this->createStub(EventDispatcherInterface::class);
     }
 
     private function setEnv(string $name, ?string $value): string|false

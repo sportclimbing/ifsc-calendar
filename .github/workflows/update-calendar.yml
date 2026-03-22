@@ -20,6 +20,16 @@ jobs:
       - name: "Checkout code"
         uses: actions/checkout@v6
 
+      - name: "Restore infosheet schedule cache"
+        id: infosheet_cache_restore
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/infosheet
+          key: infosheet-cache-v1-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: |
+            infosheet-cache-v1-${{ runner.os }}-${{ github.ref_name }}-
+            infosheet-cache-v1-${{ runner.os }}-
+
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
         with:
@@ -30,7 +40,7 @@ jobs:
         uses: maus007/docker-run-action-fork@v1
         with:
           image: ghcr.io/sportclimbing/ifsc-calendar:latest
-          options: -v ${{ github.workspace }}:/calendar -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          options: -v ${{ github.workspace }}:/calendar -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -e IFSC_INFOSHEET_CACHE_DIR=/calendar/.cache/infosheet
           run: ifsc-calendar --season 2026 --output "/calendar/${{ env.CALENDAR_FILE_ICS }}" --format "ics,json"
 
       - name: "Validate calendar"
@@ -84,9 +94,10 @@ jobs:
               workflow_id: 'static-deploy.yml',
               ref: 'main'
             })
-            
-      #- name: "Notify update"
-      #  if: steps.check_diff.outputs.has_changes == 'true'
-      #  run: php bin/notify-update
-      #  env:
-      #    WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+
+      - name: "Save infosheet schedule cache"
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/infosheet
+          key: ${{ steps.infosheet_cache_restore.outputs.cache-primary-key }}
