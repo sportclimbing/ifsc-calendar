@@ -1,5 +1,5 @@
 <div align="center">
-   <h1>World Climbing (IFSC) Calendar and Live-Streams for 2026</h1>
+   <h1>World Climbing Calendar and Live-Streams for 2026</h1>
    <img src="resources/images/ifsc-logo.png" alt="ifsc logo" width="50%" />
 
 <br /><br />
