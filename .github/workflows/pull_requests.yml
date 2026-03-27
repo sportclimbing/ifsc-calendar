@@ -69,5 +69,5 @@ jobs:
       - name: "Comment calendar diff in PR"
         uses: thollander/actions-comment-pull-request@v3
         with:
-          filePath: calendar.diff
-          comment_tag: calendar_diff
+          file-path: calendar.diff
+          comment-tag: calendar_diff

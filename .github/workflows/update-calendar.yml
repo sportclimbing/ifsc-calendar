@@ -36,12 +36,7 @@ jobs:
         with:
           image: ghcr.io/sportclimbing/ifsc-calendar:latest
           options: -v ${{ github.workspace }}:/calendar
-          run: |
-            ifsc-calendar \
-              --season ${{ env.YEAR }} \
-              --output "/calendar/${{ env.CALENDAR_FILE_ICS }}" \
-              --format "ics,json" \
-              --with-schedule "events-with-schedules.json"
+          run: ifsc-calendar --season ${{ env.YEAR }} --output "/calendar/${{ env.CALENDAR_FILE_ICS }}" --format "ics,json" --with-schedule "events-with-schedules.json"
 
       - name: "Validate calendar"
         run: php bin/validate-calendar "${{ env.CALENDAR_FILE_JSON }}"

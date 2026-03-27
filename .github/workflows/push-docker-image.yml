@@ -25,7 +25,7 @@ jobs:
       - name: "Update calendar"
         uses: actions/github-script@v8
         with:
-          github-token: ${{ secrets.PAT_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: '${{ github.repository_owner }}',
