@@ -17,7 +17,7 @@ jobs:
         uses: macbre/push-to-ghcr@v16
         with:
           image_name: ${{ github.repository }}
-          github_token: ${{ secrets.GH_PACKAGES_TOKEN }}
+          github_token: ${{ secrets.PAT_TOKEN }}
           docker_io_token: ${{ secrets.DOCKER_IO_ACCESS_TOKEN }}
           docker_io_user: sportclimbing
           extra_args: --no-cache
