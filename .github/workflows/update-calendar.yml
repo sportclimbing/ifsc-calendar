@@ -86,7 +86,7 @@ jobs:
         if: steps.check_diff.outputs.has_changes == 'true'
         uses: actions/github-script@v8
         with:
-          github-token: ${{ secrets.PAT_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: '${{ github.repository_owner }}',
