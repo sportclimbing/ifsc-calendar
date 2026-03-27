@@ -1,99 +1,82 @@
 services:
   # IFSC API Client
-  nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientFactory:
-    class: nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientFactory
+  SportClimbing\IfscCalendar\Infrastructure\IFSC\IFSCApiClientFactory:
+    class: SportClimbing\IfscCalendar\Infrastructure\IFSC\IFSCApiClientFactory
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
-      - '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientAuthenticator'
+      - '@SportClimbing\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
+      - '@SportClimbing\IfscCalendar\Infrastructure\IFSC\IFSCApiClientAuthenticator'
 
-  nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient:
-    factory: '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientFactory'
+  SportClimbing\IfscCalendar\Infrastructure\IFSC\IFSCApiClient:
+    factory: '@SportClimbing\IfscCalendar\Infrastructure\IFSC\IFSCApiClientFactory'
 
-  nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientAuthenticator:
+  SportClimbing\IfscCalendar\Infrastructure\IFSC\IFSCApiClientAuthenticator:
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
-
-  # Event
-  nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider:
-    class: nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider
-    arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient'
+      - '@SportClimbing\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
 
   # Domain Event
-  nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher:
-    class: nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher
+  SportClimbing\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher:
+    class: SportClimbing\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher
     autowire: true
 
   # Calendar
-  nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar: ~
+  SportClimbing\IfscCalendar\Infrastructure\Calendar\JsonCalendar: ~
 
-  nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar:
-    class: nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar
+  SportClimbing\IfscCalendar\Infrastructure\Calendar\ICalCalendar:
+    class: SportClimbing\IfscCalendar\Infrastructure\Calendar\ICalCalendar
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Calendar\CalendarFactory'
+      - '@SportClimbing\IfscCalendar\Infrastructure\Calendar\CalendarFactory'
       - '%calendar_product_identifier%'
       - '%calendar_published_ttl%'
       - '%calendar_name%'
 
-  nicoSWD\IfscCalendar\Infrastructure\Calendar\CalendarFactory: ~
-
-  # Raking
-  nicoSWD\IfscCalendar\Infrastructure\Ranking\IFSCApiWorldRankingProvider:
-    class: nicoSWD\IfscCalendar\Infrastructure\Ranking\IFSCApiWorldRankingProvider
-    arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient'
-
-  # Round
-  nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer:
-    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer
-
-  nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleParser:
-    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleParser
-    arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\HTMLNormalizer'
-      - '@nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory'
-
-  nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader:
-    class: nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader
-    arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
-      - '@Symfony\Component\Filesystem\Filesystem'
-
-  nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider:
-    class: nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider
-    arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetScheduleParser'
-      - '@nicoSWD\IfscCalendar\Infrastructure\Schedule\InfoSheetDownloader'
-      - '@nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient'
-      - '@nicoSWD\IfscCalendar\Infrastructure\Shell\Command'
-      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
-      - '@Symfony\Component\Filesystem\Filesystem'
-
-  # Process
-  nicoSWD\IfscCalendar\Infrastructure\Shell\Command: ~
+  SportClimbing\IfscCalendar\Infrastructure\Calendar\CalendarFactory: ~
 
   # Start List
-  nicoSWD\IfscCalendar\Infrastructure\StartList\ApiStartListProvider:
-    class: nicoSWD\IfscCalendar\Infrastructure\StartList\ApiStartListProvider
+  SportClimbing\IfscCalendar\Infrastructure\StartList\ApiStartListProvider:
+    class: SportClimbing\IfscCalendar\Infrastructure\StartList\ApiStartListProvider
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient'
+      - '@SportClimbing\IfscCalendar\Infrastructure\IFSC\IFSCApiClient'
+
+  # Athlete
+  SportClimbing\IfscCalendar\Infrastructure\Athlete\IFSCApiAthleteProvider:
+    class: SportClimbing\IfscCalendar\Infrastructure\Athlete\IFSCApiAthleteProvider
+    arguments:
+      - '@SportClimbing\IfscCalendar\Infrastructure\IFSC\IFSCApiClient'
+
+  SportClimbing\IfscCalendar\Infrastructure\Athlete\CachedAthleteProvider:
+    class: SportClimbing\IfscCalendar\Infrastructure\Athlete\CachedAthleteProvider
+    arguments:
+      - '@SportClimbing\IfscCalendar\Infrastructure\Athlete\IFSCApiAthleteProvider'
+      - '@ifsc.athlete.cache'
+      - '%ifsc_athlete_cache_ttl_seconds%'
 
   # YouTube
-  nicoSWD\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider:
-    class: nicoSWD\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider
+  SportClimbing\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider:
+    class: SportClimbing\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider
     arguments:
       - '@nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideoCollection'
 
   nicoSWD\IfscVideos\Infrastructure\YouTube\YouTubeVideoProvider: ~
 
   # HTTP Client
-  nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient:
-    class: nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient
+  SportClimbing\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient:
+    class: SportClimbing\IfscCalendar\Infrastructure\HttpClient\HttpGuzzleClient
     arguments:
       - '@GuzzleHttp\Client'
-      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
+      - '@SportClimbing\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
 
   # Vendor services
+  ifsc.athlete.cache:
+    class: Symfony\Component\Cache\Adapter\FilesystemAdapter
+    arguments:
+      - 'ifsc_athlete'
+      - 0
+
+  nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideoCollection:
+    class: nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideoCollection
+    arguments:
+      - '@nicoSWD\IfscVideos\Infrastructure\YouTube\YouTubeVideoProvider'
+
   Symfony\Component\EventDispatcher\EventDispatcher: ~
   Symfony\Component\Filesystem\Filesystem: ~
   GuzzleHttp\Client: ~

@@ -5,8 +5,8 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-use nicoSWD\IfscCalendar\Application\Command\BuildCommand;
-use nicoSWD\IfscCalendar\Application\AppContainer;
+use SportClimbing\IfscCalendar\Application\Command\BuildCommand;
+use SportClimbing\IfscCalendar\Application\AppContainer;
 use Symfony\Component\Console\Application;
 
 require_once dirname(__DIR__) . '/vendor/autoload_runtime.php';

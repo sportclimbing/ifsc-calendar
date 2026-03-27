@@ -5,13 +5,13 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\IFSC;
+namespace SportClimbing\IfscCalendar\Infrastructure\IFSC;
 
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\RequestOptions;
 use JsonException;
-use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
-use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpException;
+use SportClimbing\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
+use SportClimbing\IfscCalendar\Infrastructure\HttpClient\HttpException;
 
 readonly class IFSCApiClient
 {
@@ -22,9 +22,10 @@ readonly class IFSCApiClient
     }
 
     /**
-     * @return object|array<mixed>
-     * @throws IFSCApiClientException
+     * @param string $url
+     * @return object|array
      * @throws HttpException
+     * @throws IFSCApiClientException
      */
     public function authenticatedGet(string $url): object|array
     {

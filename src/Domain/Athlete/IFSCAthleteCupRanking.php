@@ -5,13 +5,16 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Ranking;
+namespace SportClimbing\IfscCalendar\Domain\Athlete;
 
-final readonly class IFSCWorldRankCategory
+final readonly class IFSCAthleteCupRanking
 {
     public function __construct(
-        public int $id,
         public string $name,
+        public int $id,
+        public string $season,
+        public ?IFSCAthleteCupDisciplineRanking $lead,
+        public ?IFSCAthleteCupDisciplineRanking $boulder,
     ) {
     }
 }

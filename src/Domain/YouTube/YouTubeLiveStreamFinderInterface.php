@@ -5,10 +5,10 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\YouTube;
+namespace SportClimbing\IfscCalendar\Domain\YouTube;
 
-use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
-use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
+use SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
+use SportClimbing\IfscCalendar\Domain\Stream\LiveStream;
 
 interface YouTubeLiveStreamFinderInterface
 {

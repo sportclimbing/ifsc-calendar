@@ -5,12 +5,12 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\YouTube;
+namespace SportClimbing\IfscCalendar\Infrastructure\YouTube;
 
-use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
-use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeApiClient;
-use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideo;
-use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
+use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use SportClimbing\IfscCalendar\Domain\YouTube\YouTubeApiClient;
+use SportClimbing\IfscCalendar\Domain\YouTube\YouTubeVideo;
+use SportClimbing\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
 use nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideo as IfscYouTubeVideo;
 use nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideoCollection as IfscYouTubeVideoCollection;
 use Override;

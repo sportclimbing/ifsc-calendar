@@ -5,10 +5,10 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\Schedule;
+namespace SportClimbing\IfscCalendar\Domain\Athlete;
 
 use Exception;
 
-final class InfoSheetDownloadFailedException extends Exception
+final class IFSCAthleteException extends Exception
 {
 }

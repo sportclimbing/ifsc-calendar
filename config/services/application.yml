@@ -1,13 +1,13 @@
 services:
-  nicoSWD\IfscCalendar\Application\Command\BuildCommand:
-    class: nicoSWD\IfscCalendar\Application\Command\BuildCommand
+  SportClimbing\IfscCalendar\Application\Command\BuildCommand:
+    class: SportClimbing\IfscCalendar\Application\Command\BuildCommand
     public: true
     tags: [ console.command ]
     lazy: true
     arguments:
-      - '@nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase'
+      - '@SportClimbing\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase'
 
-  nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase:
-    class: nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase
+  SportClimbing\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase:
+    class: SportClimbing\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase
     autowire: true
     public: true

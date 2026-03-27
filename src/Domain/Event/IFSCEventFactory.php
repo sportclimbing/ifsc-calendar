@@ -5,17 +5,17 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Event;
+namespace SportClimbing\IfscCalendar\Domain\Event;
 
 use DateTimeImmutable;
 use DateTimeZone;
 use Exception;
-use nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder;
-use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
-use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
-use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
-use nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator;
+use SportClimbing\IfscCalendar\Domain\Calendar\SiteURLBuilder;
+use SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
+use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
+use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListGenerator;
 use RuntimeException;
 
 final readonly class IFSCEventFactory

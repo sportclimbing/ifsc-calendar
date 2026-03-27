@@ -5,13 +5,13 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Calendar;
+namespace SportClimbing\IfscCalendar\Domain\Calendar;
 
 use Exception;
-use nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2026PostProcessor;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter;
-use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use SportClimbing\IfscCalendar\Domain\Calendar\PostProcess\Season2026PostProcessor;
+use SportClimbing\IfscCalendar\Domain\Event\IFSCEvent;
+use SportClimbing\IfscCalendar\Domain\Event\IFSCEventSorter;
+use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
 final readonly class IFSCCalendarPostProcess
 {

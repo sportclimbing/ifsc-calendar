@@ -5,17 +5,17 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\Calendar;
+namespace SportClimbing\IfscCalendar\Infrastructure\Calendar;
 
 use DateTime;
 use DateTimeInterface;
 use Exception;
-use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
-use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundCategory;
-use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
+use SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
+use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
+use SportClimbing\IfscCalendar\Domain\Event\IFSCEvent;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundCategory;
+use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
 use Override;
 
 final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
@@ -62,7 +62,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
 
     /**
      * @param IFSCRound[] $rounds
-     * @return array<mixed>
+     * @return array
      */
     private function formatRound(array $rounds): array
     {

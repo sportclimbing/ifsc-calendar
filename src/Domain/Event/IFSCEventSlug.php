@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Event;
+namespace SportClimbing\IfscCalendar\Domain\Event;
 
 final readonly class IFSCEventSlug
 {

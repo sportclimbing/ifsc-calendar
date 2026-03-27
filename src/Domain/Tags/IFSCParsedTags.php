@@ -5,12 +5,12 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Tags;
+namespace SportClimbing\IfscCalendar\Domain\Tags;
 
-use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundCategory;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundKind;
+use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
+use SportClimbing\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundCategory;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundKind;
 
 final readonly class IFSCParsedTags
 {
@@ -91,11 +91,6 @@ final readonly class IFSCParsedTags
         }
 
         return $categories;
-    }
-
-    public function isPreRound(): bool
-    {
-        return $this->hasTag(Tag::PRE_ROUND);
     }
 
     public function hasTag(Tag $tag): bool

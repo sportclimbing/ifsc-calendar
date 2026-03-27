@@ -5,9 +5,9 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\tests\Domain\Event;
+namespace SportClimbing\IfscCalendar\tests\Domain\Event;
 
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventSlug;
+use SportClimbing\IfscCalendar\Domain\Event\IFSCEventSlug;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

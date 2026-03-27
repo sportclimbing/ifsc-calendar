@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Schedule;
+namespace SportClimbing\IfscCalendar\Domain\Schedule;
 
 use DateTimeImmutable;
 
@@ -15,7 +15,6 @@ final readonly class IFSCSchedule
         public string $name,
         public DateTimeImmutable $startsAt,
         public ?DateTimeImmutable $endsAt,
-        public bool $isPreRound,
     ) {
     }
 }

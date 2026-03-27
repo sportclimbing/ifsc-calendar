@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php declare(strict_types=1);
 
-use nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey;
-use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey;
+use SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser;
 
 require __DIR__ . '/../vendor/autoload.php';
 

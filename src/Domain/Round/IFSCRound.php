@@ -5,11 +5,11 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Round;
+namespace SportClimbing\IfscCalendar\Domain\Round;
 
 use DateTimeImmutable;
-use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDisciplines;
-use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
+use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDisciplines;
+use SportClimbing\IfscCalendar\Domain\Stream\LiveStream;
 
 final readonly class IFSCRound
 {

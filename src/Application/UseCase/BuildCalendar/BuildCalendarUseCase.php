@@ -5,10 +5,10 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar;
+namespace SportClimbing\IfscCalendar\Application\UseCase\BuildCalendar;
 
-use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder;
-use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
+use SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder;
+use SportClimbing\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
 
 final readonly class BuildCalendarUseCase
 {
@@ -35,6 +35,7 @@ final readonly class BuildCalendarUseCase
             season: $buildCalendarRequest->season,
             leagues: $buildCalendarRequest->leagues,
             formats: $buildCalendarRequest->formats,
+            schedulePath: $buildCalendarRequest->schedulePath,
         );
     }
 }

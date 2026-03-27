@@ -5,15 +5,16 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Application\Command;
+namespace SportClimbing\IfscCalendar\Application\Command;
 
 use Closure;
-use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarRequest;
-use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarResponse;
-use nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase;
-use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarFormat;
-use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
-use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use JsonException;
+use SportClimbing\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarRequest;
+use SportClimbing\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarResponse;
+use SportClimbing\IfscCalendar\Application\UseCase\BuildCalendar\BuildCalendarUseCase;
+use SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarFormat;
+use SportClimbing\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
+use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,6 +35,7 @@ class BuildCommand extends Command
     {
         $this->setName('nicoswd:build-ifsc-calender')
             ->setDescription('Build a custom IFSC calender (.ics)')
+            ->addOption('with-schedule', mode: InputOption::VALUE_REQUIRED, description: 'Path to a schedule JSON file')
             ->addOption('season', mode: InputOption::VALUE_OPTIONAL, description: 'IFSC Season')
             ->addOption('format', mode: InputOption::VALUE_OPTIONAL, description: 'Output format', default: 'ics')
             ->addOption('output', mode: InputOption::VALUE_OPTIONAL, description: '.ics output file name', default: 'ifsc-calendar.ics')
@@ -43,11 +45,16 @@ class BuildCommand extends Command
     /** @throws InvalidURLException */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        if (!$this->validateSchedulePath($input, $output)) {
+            return self::FAILURE;
+        }
+
+        $schedulePath = $this->getSchedulePath($input);
         $seasons = [2026];
         $selectedSeason = $this->getSelectedSeason($seasons, $input, $output);
         $formats = $this->getFormats($input);
 
-        $calendar = $this->buildCalendar($selectedSeason, $formats, $output);
+        $calendar = $this->buildCalendar($selectedSeason, $formats, $schedulePath, $output);
         $this->saveCalendarToFile($calendar, $formats, $input, $output);
 
         $output->writeln('[+] Done!');
@@ -62,6 +69,7 @@ class BuildCommand extends Command
     private function buildCalendar(
         IFSCSeasonYear $selectedSeason,
         array $formats,
+        string $schedulePath,
         OutputInterface $output,
     ): BuildCalendarResponse {
         $output->writeln('[+] Started building calendar...');
@@ -71,6 +79,7 @@ class BuildCommand extends Command
                 season: $selectedSeason,
                 leagues: ['World Cups and World Championships', 'Games', 'IFSC Paraclimbing'],
                 formats: $formats,
+                schedulePath: $schedulePath,
             )
         );
     }
@@ -133,5 +142,56 @@ class BuildCommand extends Command
     private function createFormats(): Closure
     {
         return static fn (string $format): IFSCCalendarFormat => IFSCCalendarFormat::from($format);
+    }
+
+    private function validateSchedulePath(InputInterface $input, OutputInterface $output): bool
+    {
+        $schedulePath = $input->getOption('with-schedule');
+
+        if (!is_string($schedulePath) || trim($schedulePath) === '') {
+            $output->writeln('<error>[x] Missing required option --with-schedule=/path/to/schedule.json</error>');
+
+            return false;
+        }
+
+        if (strtolower((string) pathinfo($schedulePath, PATHINFO_EXTENSION)) !== 'json') {
+            $output->writeln("<error>[x] Schedule file must be a .json file: {$schedulePath}</error>");
+
+            return false;
+        }
+
+        if (!is_file($schedulePath)) {
+            $output->writeln("<error>[x] Schedule file not found: {$schedulePath}</error>");
+
+            return false;
+        }
+
+        if (!is_readable($schedulePath)) {
+            $output->writeln("<error>[x] Schedule file is not readable: {$schedulePath}</error>");
+
+            return false;
+        }
+
+        $json = file_get_contents($schedulePath);
+        if ($json === false) {
+            $output->writeln("<error>[x] Could not read schedule file: {$schedulePath}</error>");
+
+            return false;
+        }
+
+        try {
+            json_decode($json, associative: true, flags: JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            $output->writeln(sprintf('<error>[x] Invalid schedule JSON file: %s (%s)</error>', $schedulePath, $e->getMessage()));
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function getSchedulePath(InputInterface $input): string
+    {
+        return (string) $input->getOption('with-schedule');
     }
 }

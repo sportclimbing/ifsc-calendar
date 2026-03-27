@@ -5,9 +5,9 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Event\Info;
+namespace SportClimbing\IfscCalendar\Domain\Event\Info;
 
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundKind;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundKind;
 
 final readonly class IFSCEventRound
 {

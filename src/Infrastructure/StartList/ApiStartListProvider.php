@@ -5,15 +5,15 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\StartList;
+namespace SportClimbing\IfscCalendar\Infrastructure\StartList;
 
 use Closure;
-use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
-use nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListException;
-use nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListProviderInterface;
-use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpException;
-use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
-use nicoSWD\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
+use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
+use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListException;
+use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListProviderInterface;
+use SportClimbing\IfscCalendar\Infrastructure\HttpClient\HttpException;
+use SportClimbing\IfscCalendar\Infrastructure\IFSC\IFSCApiClient;
+use SportClimbing\IfscCalendar\Infrastructure\IFSC\IFSCApiClientException;
 use Override;
 
 final readonly class ApiStartListProvider implements IFSCStartListProviderInterface

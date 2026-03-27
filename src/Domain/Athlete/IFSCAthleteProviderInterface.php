@@ -5,13 +5,10 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\League;
+namespace SportClimbing\IfscCalendar\Domain\Athlete;
 
-final readonly class IFSCLeague
+interface IFSCAthleteProviderInterface
 {
-    public function __construct(
-        public int $id,
-        public string $name,
-    ) {
-    }
+    /** @throws IFSCAthleteException */
+    public function fetchAthlete(int $athleteId): IFSCAthlete;
 }

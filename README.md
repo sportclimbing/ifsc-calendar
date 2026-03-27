@@ -1,6 +1,6 @@
 <div align="center">
    <h1>World Climbing Calendar and Live-Streams for 2026</h1>
-   <img src="resources/images/ifsc-logo.png" alt="ifsc logo" width="50%" />
+   <img src="resources/images/logo.png" alt="ifsc logo" width="50%" />
 
 <br /><br />
 <img src="https://img.shields.io/github/downloads/sportclimbing/ifsc-calendar/total?color=green&label=Downloads" alt="downloads" />
@@ -72,6 +72,7 @@ Using the pre-built Docker image
 ```shell
 $ docker run -it --volume "$PWD:/calendar" \
     ghcr.io/sportclimbing/ifsc-calendar:latest \ 
+    --with-schedule "/calendar/events-with-schedule.json" \
     --season 2026 \
     --output "/calendar/ifsc-calendar.ics"
 ```
@@ -92,6 +93,7 @@ $ docker build --tag ifsc-calendar .
 Generate `.ics` calendar file
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
+    --with-schedule "/calendar/events-with-schedule.json" \
     --season 2026 \
     --output "/calendar/ifsc-calendar.ics"
 ```
@@ -99,6 +101,7 @@ $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
 Generate `.json` calendar file
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
+    --with-schedule "/calendar/events-with-schedule.json" \
     --season 2026 \
     --output "/calendar/ifsc-calendar.json" \
     --format json
@@ -107,6 +110,7 @@ $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
 Export multiple formats
 ```shell
 $ docker run -it --volume "$PWD:/calendar" ifsc-calendar \
+    --with-schedule "/calendar/events-with-schedule.json" \
     --season 2026 \
     --output "/calendar/ifsc-calendar.json" \
     --format json,ics
@@ -123,6 +127,7 @@ $ make
 Generate `.ics` calendar file using the generated `.phar`
 ```shell
 $ ./build/ifsc-calendar.phar \
+  --with-schedule "events-with-schedule.json" \
   --season 2026 \
   --output "ifsc-calendar.ics"
 ```

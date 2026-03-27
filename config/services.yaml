@@ -9,3 +9,4 @@ parameters:
     calendar_published_ttl: 'PT1H'
     calendar_name: 'IFSC'
     site_event_url: 'https://calendar.ifsc.stream/view/{season}/{event_id}'
+    ifsc_athlete_cache_ttl_seconds: 86400

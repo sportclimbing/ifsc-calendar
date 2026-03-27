@@ -5,10 +5,10 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\IFSC;
+namespace SportClimbing\IfscCalendar\Infrastructure\IFSC;
 
-use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
-use nicoSWD\IfscCalendar\Infrastructure\HttpClient\HttpException;
+use SportClimbing\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
+use SportClimbing\IfscCalendar\Infrastructure\HttpClient\HttpException;
 
 final readonly class IFSCApiClientAuthenticator
 {
@@ -40,7 +40,6 @@ final readonly class IFSCApiClientAuthenticator
 
     /**
      * @return string[]
-     * @throws HttpException
      */
     private function getCookies(): array
     {

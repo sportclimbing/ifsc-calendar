@@ -5,10 +5,11 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Round;
+namespace SportClimbing\IfscCalendar\Domain\Round;
 
-use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
-use nicoSWD\IfscCalendar\Domain\Tags\IFSCParsedTags;
+use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
+use SportClimbing\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
+use SportClimbing\IfscCalendar\Domain\Tags\IFSCParsedTags;
 
 final readonly class IFSCRoundNameNormalizer
 {
@@ -18,7 +19,7 @@ final readonly class IFSCRoundNameNormalizer
         $disciplines = $tags->getDisciplines();
         $kind = $tags->getRoundKind();
 
-        if (!$tags->isPreRound() && $disciplines && $kind) {
+        if ($disciplines && $kind && !$tags->hasTag(Tag::PRE_ROUND)) {
             $roundName = $this->buildCategories($tags);
             $roundName .= " {$this->buildDisciplines($disciplines)}";
             $roundName .= " {$kind->value}";

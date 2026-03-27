@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Event;
+namespace SportClimbing\IfscCalendar\Domain\Event;
 
 use Closure;
 
@@ -14,20 +14,13 @@ final class IFSCEventSorter
     /** @param IFSCEvent[] $events */
     public function sortByDate(array &$events): void
     {
-        $events = array_filter($events, $this->eventHasRounds());
-
         usort($events, $this->sortEventsByDate());
     }
 
     private function sortEventsByDate(): Closure
     {
         return static function (IFSCEvent $event1, IFSCEvent $event2): int {
-            return $event1->rounds[0]->startTime <=> $event2->rounds[0]->startTime;
+            return $event1->startsAt <=> $event2->startsAt;
         };
-    }
-
-    private function eventHasRounds(): Closure
-    {
-        return static fn (IFSCEvent $event): bool => count($event->rounds) > 0;
     }
 }

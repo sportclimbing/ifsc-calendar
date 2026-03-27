@@ -5,16 +5,16 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\tests\Domain\YouTube;
+namespace SportClimbing\IfscCalendar\tests\Domain\YouTube;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
-use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
-use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
-use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher;
-use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideo;
-use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
+use SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
+use SportClimbing\IfscCalendar\Domain\Stream\LiveStream;
+use SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser;
+use SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher;
+use SportClimbing\IfscCalendar\Domain\YouTube\YouTubeVideo;
+use SportClimbing\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

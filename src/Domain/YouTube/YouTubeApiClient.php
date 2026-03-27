@@ -5,9 +5,9 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\YouTube;
+namespace SportClimbing\IfscCalendar\Domain\YouTube;
 
-use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
 interface YouTubeApiClient
 {

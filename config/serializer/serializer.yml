@@ -1,4 +1,4 @@
-nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo:
+SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventInfo:
   attributes:
     eventName:
       serialized_name: name
@@ -19,15 +19,15 @@ nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo:
       type: array
     categories:
       serialized_name: d_cats
-      type: array<nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventCategory>
+      type: array<SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventCategory>
 
-nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventCategory:
+SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventCategory:
   attributes:
     rounds:
-      type: array<nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventRound>
+      type: array<SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventRound>
       serialized_name: category_rounds
 
-nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventRound:
+SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventRound:
   attributes:
     discipline:
       serialized_name: kind

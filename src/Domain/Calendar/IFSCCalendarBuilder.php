@@ -5,13 +5,13 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Calendar;
+namespace SportClimbing\IfscCalendar\Domain\Calendar;
 
 use Exception;
-use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
-use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use SportClimbing\IfscCalendar\Domain\Event\Exceptions\InvalidURLException;
+use SportClimbing\IfscCalendar\Domain\Event\IFSCEvent;
+use SportClimbing\IfscCalendar\Domain\Event\IFSCEventFetcherInterface;
+use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
 final readonly class IFSCCalendarBuilder
 {
@@ -29,11 +29,11 @@ final readonly class IFSCCalendarBuilder
      * @throws Exception
      * @return array<string,string>
      */
-    public function generateForSeason(IFSCSeasonYear $season, array $leagues, array $formats): array
+    public function generateForSeason(IFSCSeasonYear $season, array $leagues, array $formats, string $schedulePath): array
     {
         $events = $this->calendarPostProcess->process(
             season: $season,
-            events: $this->fetchEvents($season, $leagues),
+            events: $this->fetchEvents($season, $leagues, $schedulePath),
         );
 
         return $this->buildCalendars($formats, $events);
@@ -43,9 +43,9 @@ final readonly class IFSCCalendarBuilder
      * @param string[] $leagues
      * @return IFSCEvent[]
      */
-    private function fetchEvents(IFSCSeasonYear $season, array $leagues): array
+    private function fetchEvents(IFSCSeasonYear $season, array $leagues, string $schedulePath): array
     {
-        return $this->eventFetcher->fetchEventsForSeason($season, $leagues);
+        return $this->eventFetcher->fetchEventsForSeason($season, $leagues, $schedulePath);
     }
 
     /**

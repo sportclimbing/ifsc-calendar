@@ -7,12 +7,15 @@ on:
 permissions:
   pull-requests: write
 
+env:
+  LATEST_SCHEDULE_URL: "https://github.com/sportclimbing/event-schedule/releases/latest/download/events-with-schedules.json"
+
 jobs:
   code-quality:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@master
+        uses: actions/checkout@v6
 
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
@@ -23,16 +26,11 @@ jobs:
       - name: "Run phpunit"
         run: make test
 
-#      - name: "PHPStan"
-#        uses: php-actions/phpstan@v3
-#        with:
-#          level: 5
-
   calendar-diff:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@master
+        uses: actions/checkout@v6
 
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
@@ -45,8 +43,16 @@ jobs:
           sudo apt-get update && sudo apt-get install poppler-utils -y
           composer install --no-dev --ignore-platform-reqs --optimize-autoloader
 
+      - name: "Download latest schedule"
+        run: curl -fsSL "${{ env.LATEST_SCHEDULE_URL }}" --output events-with-schedules.json
+
       - name: "Generate Calendar"
-        run: php app/run.php --season 2026 --output new-calendar.json --format json
+        run: |
+          php app/run.php \
+            --season 2026 \
+            --output new-calendar.json \
+            --with-schedule "events-with-schedules.json" \
+            --format json
 
       - name: "Check diff"
         run: |
@@ -61,7 +67,7 @@ jobs:
           fi
 
       - name: "Comment calendar diff in PR"
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v3
         with:
           filePath: calendar.diff
           comment_tag: calendar_diff

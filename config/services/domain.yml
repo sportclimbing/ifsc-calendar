@@ -1,125 +1,116 @@
 services:
   # Calendar
-  nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory:
-    class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory
+  SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory:
+    class: SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Calendar\ICalCalendar'
-      - '@nicoSWD\IfscCalendar\Infrastructure\Calendar\JsonCalendar'
+      - '@SportClimbing\IfscCalendar\Infrastructure\Calendar\ICalCalendar'
+      - '@SportClimbing\IfscCalendar\Infrastructure\Calendar\JsonCalendar'
 
-  nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder:
-    class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder
+  SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder:
+    class: SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarBuilder
     arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory'
-      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventsFetcher'
-      - '@nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess'
+      - '@SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarBuilderFactory'
+      - '@SportClimbing\IfscCalendar\Domain\Event\IFSCEventsFetcher'
+      - '@SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess'
 
-  nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess:
-    class: nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess
+  SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess:
+    class: SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarPostProcess
     arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter'
-      - '@nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2026PostProcessor'
+      - '@SportClimbing\IfscCalendar\Domain\Event\IFSCEventSorter'
+      - '@SportClimbing\IfscCalendar\Domain\Calendar\PostProcess\Season2026PostProcessor'
 
-  nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2026PostProcessor:
-    class: nicoSWD\IfscCalendar\Domain\Calendar\PostProcess\Season2026PostProcessor
+  SportClimbing\IfscCalendar\Domain\Calendar\PostProcess\Season2026PostProcessor:
+    class: SportClimbing\IfscCalendar\Domain\Calendar\PostProcess\Season2026PostProcessor
     arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
-      - '@nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory'
+      - '@SportClimbing\IfscCalendar\Domain\Round\IFSCRoundFactory'
+      - '@SportClimbing\IfscCalendar\Domain\Schedule\IFSCScheduleFactory'
 
-  nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder:
-    class: nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder
+  SportClimbing\IfscCalendar\Domain\Calendar\SiteURLBuilder:
+    class: SportClimbing\IfscCalendar\Domain\Calendar\SiteURLBuilder
     arguments:
       - '%site_event_url%'
 
-  # Raking
-  nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRanking:
-    class: nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRanking
-    arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\Ranking\IFSCApiWorldRankingProvider'
+  # Ranking
+  SportClimbing\IfscCalendar\Domain\Ranking\IFSCAthleteRankingCalculator: ~
 
   # Start List
-  nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator:
-    class: nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator
+  SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListGenerator:
+    class: SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListGenerator
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\StartList\ApiStartListProvider'
-      - '@nicoSWD\IfscCalendar\Domain\Ranking\IFSCWorldRanking'
+      - '@SportClimbing\IfscCalendar\Infrastructure\StartList\ApiStartListProvider'
+      - '@SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteService'
+      - '@SportClimbing\IfscCalendar\Domain\Ranking\IFSCAthleteRankingCalculator'
+
+  # Athlete
+  SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteService:
+    class: SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteService
+    arguments:
+      - '@SportClimbing\IfscCalendar\Infrastructure\Athlete\CachedAthleteProvider'
 
   # YouTube
-  nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoProvider:
-    class: nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoProvider
+  SportClimbing\IfscCalendar\Domain\YouTube\YouTubeVideoProvider:
+    class: SportClimbing\IfscCalendar\Domain\YouTube\YouTubeVideoProvider
     arguments:
-      - '@nicoSWD\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider'
+      - '@SportClimbing\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider'
 
-  nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher:
-    class: nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher
+  SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher:
+    class: SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher
     autowire: true
 
-  nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideoCollection:
-    class: nicoSWD\IfscVideos\Domain\YouTube\YouTubeVideoCollection
+  SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderFactory:
+    class: SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderFactory
     arguments:
-      - '@nicoSWD\IfscVideos\Infrastructure\YouTube\YouTubeVideoProvider'
+      - '@SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher'
+      - '@SportClimbing\IfscCalendar\Domain\YouTube\YouTubeVideoProvider'
 
-  nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderFactory:
-    class: nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderFactory
-    arguments:
-      - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher'
-      - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeVideoProvider'
-
-  nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder:
-    factory: [ '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderFactory', 'create']
+  SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder:
+    factory: [ '@SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderFactory', 'create']
 
   # Schedule
-  nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory:
-    class: nicoSWD\IfscCalendar\Domain\Schedule\IFSCScheduleFactory
+  SportClimbing\IfscCalendar\Domain\Schedule\IFSCScheduleFactory:
+    class: SportClimbing\IfscCalendar\Domain\Schedule\IFSCScheduleFactory
     arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser'
-      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer'
+      - '@SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser'
+      - '@SportClimbing\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer'
 
   # Events
-  nicoSWD\IfscCalendar\Domain\Event\IFSCEventsFetcher:
-    class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventsFetcher
+  SportClimbing\IfscCalendar\Domain\Event\IFSCEventsFetcher:
+    class: SportClimbing\IfscCalendar\Domain\Event\IFSCEventsFetcher
     arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper'
-      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory'
-      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
-      - '@nicoSWD\IfscCalendar\Infrastructure\Event\IFSCApiEventInfoProvider'
-      - '@nicoSWD\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
-      - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder'
+      - '@SportClimbing\IfscCalendar\Domain\Event\IFSCEventFactory'
+      - '@SportClimbing\IfscCalendar\Domain\Round\IFSCRoundFactory'
+      - '@SportClimbing\IfscCalendar\Domain\Schedule\IFSCScheduleFactory'
+      - '@SportClimbing\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
 
-  nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory:
-    class: nicoSWD\IfscCalendar\Domain\Event\IFSCEventFactory
+  SportClimbing\IfscCalendar\Domain\Event\IFSCEventFactory:
+    class: SportClimbing\IfscCalendar\Domain\Event\IFSCEventFactory
     arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Calendar\SiteURLBuilder'
-      - '@nicoSWD\IfscCalendar\Domain\Event\IFSCEventSlug'
-      - '@nicoSWD\IfscCalendar\Domain\StartList\IFSCStartListGenerator'
+      - '@SportClimbing\IfscCalendar\Domain\Calendar\SiteURLBuilder'
+      - '@SportClimbing\IfscCalendar\Domain\Event\IFSCEventSlug'
+      - '@SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListGenerator'
 
-  nicoSWD\IfscCalendar\Domain\Event\IFSCEventSlug: ~
-  nicoSWD\IfscCalendar\Domain\Event\IFSCEventSorter: ~
+  SportClimbing\IfscCalendar\Domain\Event\IFSCEventSlug: ~
+  SportClimbing\IfscCalendar\Domain\Event\IFSCEventSorter: ~
 
   # Round
-  nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper:
-    class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundsScraper
+  SportClimbing\IfscCalendar\Domain\Round\IFSCAverageRoundDuration:
+    class: SportClimbing\IfscCalendar\Domain\Round\IFSCAverageRoundDuration
     arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory'
-      - '@nicoSWD\IfscCalendar\Infrastructure\Round\InfoSheetRoundProvider'
+      - '@SportClimbing\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey'
 
-  nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDuration:
-    class: nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDuration
+  SportClimbing\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey: ~
+
+  SportClimbing\IfscCalendar\Domain\Round\IFSCRoundFactory:
+    class: SportClimbing\IfscCalendar\Domain\Round\IFSCRoundFactory
     arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey'
+      - '@SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser'
+      - '@SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder'
+      - '@SportClimbing\IfscCalendar\Domain\Round\IFSCAverageRoundDuration'
 
-  nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey: ~
-
-  nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory:
-    class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory
+  SportClimbing\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer:
+    class: SportClimbing\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer
     arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser'
-      - '@nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinder'
-      - '@nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDuration'
-
-  nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer:
-    class: nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer
-    arguments:
-      - '@nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser'
+      - '@SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser'
 
   # Tags
-  nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser: ~
+  SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser: ~

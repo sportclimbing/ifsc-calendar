@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\Calendar;
+namespace SportClimbing\IfscCalendar\Infrastructure\Calendar;
 
 use DateInterval;
 use Eluceo\iCal\Domain\Entity\Calendar;
@@ -19,10 +19,10 @@ use Eluceo\iCal\Domain\ValueObject\Location;
 use Eluceo\iCal\Domain\ValueObject\TimeSpan;
 use Eluceo\iCal\Domain\ValueObject\Uri;
 use Exception;
-use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
-use nicoSWD\IfscCalendar\Domain\Event\Exceptions\InvalidLeagueName;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
+use SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
+use SportClimbing\IfscCalendar\Domain\Event\Exceptions\InvalidLeagueName;
+use SportClimbing\IfscCalendar\Domain\Event\IFSCEvent;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
 use Override;
 
 final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface

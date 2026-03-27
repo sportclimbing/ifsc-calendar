@@ -5,12 +5,12 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\HttpClient;
+namespace SportClimbing\IfscCalendar\Infrastructure\HttpClient;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use nicoSWD\IfscCalendar\Domain\DomainEvent\Event\HTTPRequestFailedEvent;
-use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
+use SportClimbing\IfscCalendar\Domain\DomainEvent\Event\HTTPRequestFailedEvent;
+use SportClimbing\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use Override;
 
 final readonly class HttpGuzzleClient implements HttpClientInterface

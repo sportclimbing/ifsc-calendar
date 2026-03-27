@@ -5,12 +5,13 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Schedule;
+namespace SportClimbing\IfscCalendar\Domain\Schedule;
 
 use DateTimeImmutable;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer;
-use nicoSWD\IfscCalendar\Domain\Tags\IFSCParsedTags;
-use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
+use SportClimbing\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer;
+use SportClimbing\IfscCalendar\Domain\Tags\IFSCParsedTags;
+use SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser;
 
 final readonly class IFSCScheduleFactory
 {
@@ -31,7 +32,13 @@ final readonly class IFSCScheduleFactory
             name: $this->roundNameNormalizer->normalize($tags, $name),
             startsAt: $startsAt,
             endsAt: $endsAt,
-            isPreRound: !$this->isRound($tags),
+        );
+    }
+
+    public function isRoundName(string $name): bool
+    {
+        return $this->isRound(
+            $this->tagsParser->fromString($name),
         );
     }
 
@@ -39,7 +46,7 @@ final readonly class IFSCScheduleFactory
     {
         if (!$tags->getDisciplines() ||
             !$tags->getRoundKind() ||
-            $tags->isPreRound()
+            $tags->hasTag(Tag::PRE_ROUND)
         ) {
             return false;
         }

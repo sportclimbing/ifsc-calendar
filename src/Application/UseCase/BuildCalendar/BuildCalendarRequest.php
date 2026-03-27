@@ -5,10 +5,10 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar;
+namespace SportClimbing\IfscCalendar\Application\UseCase\BuildCalendar;
 
-use nicoSWD\IfscCalendar\Domain\Calendar\IFSCCalendarFormat;
-use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarFormat;
+use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
 final readonly class BuildCalendarRequest
 {
@@ -20,6 +20,7 @@ final readonly class BuildCalendarRequest
         public IFSCSeasonYear $season,
         public array $leagues,
         public array $formats,
+        public string $schedulePath,
     ) {
     }
 }

@@ -5,9 +5,9 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\DomainEvent\Event;
+namespace SportClimbing\IfscCalendar\Domain\DomainEvent\Event;
 
-use nicoSWD\IfscCalendar\Domain\DomainEvent\Event;
+use SportClimbing\IfscCalendar\Domain\DomainEvent\Event;
 use Override;
 
 final class EventScrapingStartedEvent extends Event
@@ -20,6 +20,6 @@ final class EventScrapingStartedEvent extends Event
     #[Override]
     public function getMessage(): string
     {
-        return sprintf("[+] Started scraping schedule for event '%s'... ", $this->eventName);
+        return sprintf("[+] Started building event '%s'... ", $this->eventName);
     }
 }

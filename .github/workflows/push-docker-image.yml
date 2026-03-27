@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@master
+        uses: actions/checkout@v6
 
       - name: "Build and publish a Docker image for ${{ github.repository }}"
-        uses: macbre/push-to-ghcr@master
+        uses: macbre/push-to-ghcr@v16
         with:
           image_name: ${{ github.repository }}
           github_token: ${{ secrets.GH_PACKAGES_TOKEN }}
@@ -23,12 +23,12 @@ jobs:
           extra_args: --no-cache
 
       - name: "Update calendar"
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.PAT_TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
-              owner: 'sportclimbing',
+              owner: '${{ github.repository_owner }}',
               repo: 'ifsc-calendar',
               workflow_id: 'update-calendar.yml',
               ref: 'main'

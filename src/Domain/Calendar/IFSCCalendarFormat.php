@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Calendar;
+namespace SportClimbing\IfscCalendar\Domain\Calendar;
 
 enum IFSCCalendarFormat: string
 {

@@ -5,19 +5,19 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\tests\Domain\Round;
+namespace SportClimbing\IfscCalendar\tests\Domain\Round;
 
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
-use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDuration;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundFactory;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundStatus;
-use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
-use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
-use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderInterface;
+use SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCAverageRoundDuration;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundFactory;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundStatus;
+use SportClimbing\IfscCalendar\Domain\Stream\LiveStream;
+use SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser;
+use SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderInterface;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

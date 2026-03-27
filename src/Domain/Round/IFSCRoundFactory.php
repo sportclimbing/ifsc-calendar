@@ -5,16 +5,16 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Round;
+namespace SportClimbing\IfscCalendar\Domain\Round;
 
 use DateTimeImmutable;
 use DateTimeInterface;
-use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDisciplines;
-use nicoSWD\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
-use nicoSWD\IfscCalendar\Domain\Stream\LiveStream;
-use nicoSWD\IfscCalendar\Domain\Tags\IFSCParsedTags;
-use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
-use nicoSWD\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderInterface;
+use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDisciplines;
+use SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
+use SportClimbing\IfscCalendar\Domain\Stream\LiveStream;
+use SportClimbing\IfscCalendar\Domain\Tags\IFSCParsedTags;
+use SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser;
+use SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLiveStreamFinderInterface;
 
 final readonly class IFSCRoundFactory
 {

@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Season;
+namespace SportClimbing\IfscCalendar\Domain\Season;
 
 enum IFSCSeasonYear: int
 {

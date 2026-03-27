@@ -5,9 +5,9 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Tags;
+namespace SportClimbing\IfscCalendar\Domain\Tags;
 
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
+use SportClimbing\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
 
 final readonly class IFSCTagsParser
 {

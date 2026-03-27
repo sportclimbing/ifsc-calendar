@@ -40,12 +40,12 @@
     },
     "autoload": {
         "psr-4": {
-            "nicoSWD\\IfscCalendar\\": "src/"
+            "SportClimbing\\IfscCalendar\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "nicoSWD\\IfscCalendar\\tests\\": "tests/unit"
+            "SportClimbing\\IfscCalendar\\tests\\": "tests/unit"
         }
     },
     "replace": {

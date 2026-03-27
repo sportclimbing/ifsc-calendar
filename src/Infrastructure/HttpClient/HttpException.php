@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\HttpClient;
+namespace SportClimbing\IfscCalendar\Infrastructure\HttpClient;
 
 use Exception;
 

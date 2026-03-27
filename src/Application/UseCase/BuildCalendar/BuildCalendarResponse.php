@@ -5,7 +5,7 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Application\UseCase\BuildCalendar;
+namespace SportClimbing\IfscCalendar\Application\UseCase\BuildCalendar;
 
 final readonly class BuildCalendarResponse
 {

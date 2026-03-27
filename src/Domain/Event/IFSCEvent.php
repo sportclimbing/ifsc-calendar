@@ -5,14 +5,14 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Event;
+namespace SportClimbing\IfscCalendar\Domain\Event;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRound;
-use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
-use nicoSWD\IfscCalendar\Domain\StartList\IFSCStarter;
+use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
+use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
 
 final class IFSCEvent
 {

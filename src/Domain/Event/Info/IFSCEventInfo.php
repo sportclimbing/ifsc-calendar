@@ -5,11 +5,11 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Event\Info;
+namespace SportClimbing\IfscCalendar\Domain\Event\Info;
 
 use DateTimeZone;
-use nicoSWD\IfscCalendar\Domain\Discipline\IFSCDiscipline;
-use nicoSWD\IfscCalendar\Domain\Event\IFSCEvent;
+use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
+use SportClimbing\IfscCalendar\Domain\Event\IFSCEvent;
 
 final readonly class IFSCEventInfo
 {

@@ -5,10 +5,10 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\tests\Domain\Round;
+namespace SportClimbing\IfscCalendar\tests\Domain\Round;
 
-use nicoSWD\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer;
-use nicoSWD\IfscCalendar\Domain\Tags\IFSCTagsParser;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer;
+use SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

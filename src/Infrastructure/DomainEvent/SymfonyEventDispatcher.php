@@ -5,10 +5,10 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Infrastructure\DomainEvent;
+namespace SportClimbing\IfscCalendar\Infrastructure\DomainEvent;
 
-use nicoSWD\IfscCalendar\Domain\DomainEvent\Event;
-use nicoSWD\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
+use SportClimbing\IfscCalendar\Domain\DomainEvent\Event;
+use SportClimbing\IfscCalendar\Domain\DomainEvent\EventDispatcherInterface;
 use Override;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 

@@ -5,9 +5,9 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace nicoSWD\IfscCalendar\Domain\Event;
+namespace SportClimbing\IfscCalendar\Domain\Event;
 
-use nicoSWD\IfscCalendar\Domain\Season\IFSCSeasonYear;
+use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
 interface IFSCEventFetcherInterface
 {
@@ -15,5 +15,5 @@ interface IFSCEventFetcherInterface
      * @param string[] $selectedLeagues
      * @return IFSCEvent[]
      */
-    public function fetchEventsForSeason(IFSCSeasonYear $season, array $selectedLeagues): array;
+    public function fetchEventsForSeason(IFSCSeasonYear $season, array $selectedLeagues, string $schedulePath): array;
 }
