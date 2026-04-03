@@ -160,6 +160,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
             country: $this->parseCountryCode($eventData),
             disciplines: $disciplines,
             categories: $this->parseCategories($eventData, $disciplines),
+            infosheetUrl: $this->optionalString($eventData, 'infosheet_url'),
         );
     }
 
@@ -491,6 +492,27 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
                 previous: $e,
             );
         }
+    }
+
+    /**
+     * @param array<string,mixed> $payload
+     * @throws RuntimeException
+     */
+    private function optionalString(array $payload, string $key): ?string
+    {
+        $value = $payload[$key] ?? null;
+
+        if ($value === null) {
+            return null;
+        }
+
+        if (!is_string($value)) {
+            throw new RuntimeException("Invalid '{$key}' in schedule payload");
+        }
+
+        $value = trim($value);
+
+        return $value === '' ? null : $value;
     }
 
     /**

@@ -34,6 +34,7 @@ final class IFSCEvent
         public readonly string $location,
         public readonly string $country,
         public readonly string $siteUrl,
+        public readonly ?string $infosheetUrl,
         public readonly DateTimeImmutable $startsAt,
         public readonly DateTimeImmutable $endsAt,
         public readonly array $disciplines,

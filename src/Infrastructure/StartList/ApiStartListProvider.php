@@ -38,7 +38,12 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
             );
         }
 
-        return array_map($this->convertToStarterObject(), $athletes);
+        $includedAthletes = array_filter(
+            $athletes,
+            fn (object $athlete): bool => $this->athleteShouldBeIncluded($athlete),
+        );
+
+        return array_values(array_map($this->convertToStarterObject(), $includedAthletes));
     }
 
     private function convertToStarterObject(): Closure
@@ -49,5 +54,34 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
             lastName: $athlete->lastname,
             country: $athlete->country,
         );
+    }
+
+    private function athleteShouldBeIncluded(object $athlete): bool
+    {
+        if (!isset($athlete->d_cats) || !is_array($athlete->d_cats)) {
+            return false;
+        }
+
+        $hasExplicitStatus = false;
+
+        foreach ($athlete->d_cats as $category) {
+            if (!isset($category->status) || !is_string($category->status)) {
+                continue;
+            }
+
+            $hasExplicitStatus = true;
+            $status = IFSCStartListStatus::tryFrom($category->status);
+
+            if ($this->isAttending($status)) {
+                return true;
+            }
+        }
+
+        return !$hasExplicitStatus;
+    }
+
+    private function isAttending(?IFSCStartListStatus $status): bool
+    {
+        return $status?->isAttending() ?? true;
     }
 }
