@@ -30,6 +30,7 @@ final readonly class IFSCEventInfo
         public string $country,
         public array $disciplines,
         public array $categories,
+        public ?string $infosheetUrl = null,
     ) {
     }
 
@@ -48,6 +49,7 @@ final readonly class IFSCEventInfo
             country: $event->country,
             disciplines: $event->disciplines,
             categories: [],
+            infosheetUrl: $event->infosheetUrl,
         );
     }
 

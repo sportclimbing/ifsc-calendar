@@ -44,9 +44,11 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
                 'league_name' => $event->leagueName,
                 'season' => $event->season->value,
                 'name' => $event->eventName,
+                'slug' => $event->slug,
                 'country' => $event->country,
                 'location' => $event->location,
                 'site_url' => $event->siteUrl,
+                'infosheet_url' => $event->infosheetUrl,
                 'event_url' => $this->buildUrl($event),
                 'disciplines' => $event->disciplines,
                 'starts_at' => $this->formatDate($event->startsAt),
@@ -57,7 +59,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
             ];
         }
 
-        return json_encode($jsonEvents, flags: JSON_PRETTY_PRINT);
+        return json_encode($jsonEvents, flags: JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     /**

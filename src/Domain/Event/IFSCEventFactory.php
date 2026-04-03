@@ -42,6 +42,7 @@ final readonly class IFSCEventFactory
             location: $event->location,
             country: $event->country,
             siteUrl: $this->siteURLBuilder->build($season, $event->eventId),
+            infosheetUrl: $event->infosheetUrl,
             startsAt: $startDate,
             endsAt: $endDate,
             disciplines: $event->disciplines,
