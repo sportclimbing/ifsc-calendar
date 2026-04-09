@@ -16,6 +16,7 @@ final class IFSCStarter
         public readonly string $country,
         public float $score = 0,
         public ?string $photoUrl = null,
+        public ?string $instagram = null,
     ) {
     }
 
