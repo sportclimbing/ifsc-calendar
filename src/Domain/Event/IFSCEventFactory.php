@@ -14,15 +14,14 @@ use SportClimbing\IfscCalendar\Domain\Calendar\SiteURLBuilder;
 use SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
 use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
-use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListGenerator;
+use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListResult;
 use RuntimeException;
 
 final readonly class IFSCEventFactory
 {
     public function __construct(
         private SiteURLBuilder $siteURLBuilder,
-        private IFSCEventSlug $eventsSlug,
         private IFSCStartListGenerator $startListGenerator,
     ) {
     }
@@ -35,19 +34,20 @@ final readonly class IFSCEventFactory
         return new IFSCEvent(
             season: $season,
             eventId: $event->eventId,
-            slug: $this->eventsSlug->create($event->eventName),
+            slug: $event->slug,
             leagueName: $event->leagueName,
             timeZone: $event->timeZone,
             eventName: $event->eventName,
             location: $event->location,
             country: $event->country,
-            siteUrl: $this->siteURLBuilder->build($season, $event->eventId),
+            siteUrl: $this->siteURLBuilder->build($season, $event),
             infosheetUrl: $event->infosheetUrl,
             startsAt: $startDate,
             endsAt: $endDate,
             disciplines: $event->disciplines,
             rounds: $rounds,
-            startList: $this->buildStartList($event->eventId),
+            startList: ($startListResult = $this->buildStartList($event->eventId))->starters,
+            startListTotal: $startListResult->total,
         );
     }
 
@@ -75,11 +75,8 @@ final readonly class IFSCEventFactory
         ];
     }
 
-    /**
-     * @return IFSCStarter[]
-     * @throws RuntimeException
-     */
-    private function buildStartList(int $eventId): array
+    /** @throws RuntimeException */
+    private function buildStartList(int $eventId): IFSCStartListResult
     {
         try {
             return $this->startListGenerator->buildStartList($eventId);

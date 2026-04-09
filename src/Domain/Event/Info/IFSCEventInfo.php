@@ -20,6 +20,7 @@ final readonly class IFSCEventInfo
     public function __construct(
         public int $eventId,
         public string $eventName,
+        public string $slug,
         public int $leagueId,
         public string $leagueName,
         public int $leagueSeasonId,
@@ -32,29 +33,5 @@ final readonly class IFSCEventInfo
         public array $categories,
         public ?string $infosheetUrl = null,
     ) {
-    }
-
-    public static function fromEvent(IFSCEvent $event): self
-    {
-        return new self(
-            eventId: $event->eventId,
-            eventName: $event->eventName,
-            leagueId: 0,
-            leagueName: $event->leagueName,
-            leagueSeasonId: 0,
-            localStartDate: '',
-            localEndDate: '',
-            timeZone: $event->timeZone,
-            location: $event->location,
-            country: $event->country,
-            disciplines: $event->disciplines,
-            categories: [],
-            infosheetUrl: $event->infosheetUrl,
-        );
-    }
-
-    public function isParaClimbing(): bool
-    {
-        return str_contains($this->leagueName, 'Paraclimbing');
     }
 }

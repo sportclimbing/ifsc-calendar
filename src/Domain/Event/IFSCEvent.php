@@ -40,6 +40,7 @@ final class IFSCEvent
         public readonly array $disciplines,
         array $rounds,
         public readonly array $startList = [],
+        public readonly int $startListTotal = 0,
     ) {
         $this->rounds = $rounds;
     }

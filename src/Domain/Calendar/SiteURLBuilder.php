@@ -8,6 +8,7 @@
 namespace SportClimbing\IfscCalendar\Domain\Calendar;
 
 use Closure;
+use SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
 
 final readonly class SiteURLBuilder
@@ -17,15 +18,16 @@ final readonly class SiteURLBuilder
     ) {
     }
 
-    public function build(IFSCSeasonYear $season, int $eventId): string
+    public function build(IFSCSeasonYear $season, IFSCEventInfo $event): string
     {
         $params = [
             'season' => $season->value,
-            'event_id' => $eventId,
+            'event_id' => $event->eventId,
+            'slug' => $event->slug,
         ];
 
         return preg_replace_callback(
-            '~{(?<var_name>season|event_id)}~',
+            '~{(?<var_name>season|event_id|slug)}~',
             $this->replaceVariables($params),
             $this->siteUrl,
         );
