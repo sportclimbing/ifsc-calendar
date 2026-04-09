@@ -14,7 +14,7 @@ use SportClimbing\IfscCalendar\Domain\Ranking\IFSCAthleteRankingCalculator;
 
 final readonly class IFSCStartListGenerator
 {
-    private const int LIST_MAX_SIZE = 20;
+    private const int LIST_MAX_SIZE = 40;
 
     public function __construct(
         private IFSCStartListProviderInterface $startListProvider,
@@ -24,11 +24,10 @@ final readonly class IFSCStartListGenerator
     }
 
     /**
-     * @return IFSCStarter[]
      * @throws IFSCStartListException
      * @throws IFSCAthleteException
      */
-    public function buildStartList(int $eventId): array
+    public function buildStartList(int $eventId): IFSCStartListResult
     {
         $startList = [];
 
@@ -36,13 +35,17 @@ final readonly class IFSCStartListGenerator
             $athlete = $this->athleteService->fetchAthlete($starter->athleteId);
             $starter->score = $this->rankingCalculator->calculateScore($athlete);
             $starter->photoUrl = $athlete->photoUrl;
+            $starter->instagram = $athlete->instagram;
 
             $startList[] = $starter;
         }
 
         usort($startList, $this->sortByScore());
 
-        return array_slice($startList, 0, self::LIST_MAX_SIZE);
+        return new IFSCStartListResult(
+            starters: array_slice($startList, 0, self::LIST_MAX_SIZE),
+            total: count($startList),
+        );
     }
 
     private function sortByScore(): Closure

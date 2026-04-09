@@ -134,6 +134,7 @@ final class IFSCRoundFactoryTest extends TestCase
         return new IFSCEventInfo(
             eventId: 1292,
             eventName: 'IFSC World Cup Salt Lake City 2024',
+            slug: 'ifsc-world-cup-salt-lake-city-2024',
             leagueId: 37,
             leagueName: 'World Cups and World Championships',
             leagueSeasonId: 12,

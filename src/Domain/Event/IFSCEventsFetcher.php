@@ -35,6 +35,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         private IFSCRoundFactory $roundFactory,
         private IFSCScheduleFactory $scheduleFactory,
         private EventDispatcherInterface $eventDispatcher,
+        private IFSCEventSlug $eventSlug,
     ) {
     }
 
@@ -146,10 +147,12 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
             $eventData,
         );
         $disciplines = $this->parseDisciplines($eventData);
+        $eventName = $this->requiredString($eventData, 'event_name');
 
         return new IFSCEventInfo(
             eventId: $this->requiredInt($eventData, 'event_id'),
-            eventName: $this->requiredString($eventData, 'event_name'),
+            eventName: $eventName,
+            slug: $this->eventSlug->create($eventName),
             leagueId: $this->optionalInt($eventData, 'league_id'),
             leagueName: $this->requiredString($eventData, 'league_name'),
             leagueSeasonId: $this->optionalInt($eventData, 'league_season_id'),

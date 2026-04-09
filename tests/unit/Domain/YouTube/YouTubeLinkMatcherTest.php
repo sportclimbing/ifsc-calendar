@@ -183,6 +183,7 @@ final class YouTubeLinkMatcherTest extends TestCase
         $event = new IFSCEventInfo(
             eventId: 1292,
             eventName: $eventName,
+            slug: 'ifsc-world-cup',
             leagueId: 37,
             leagueName: 'World Cups and World Championships',
             leagueSeasonId: 12,

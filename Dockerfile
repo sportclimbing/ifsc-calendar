@@ -9,11 +9,13 @@ COPY . .
 
 RUN apk update && apk add --no-cache \
     git \
+    icu-dev \
     make \
     unzip \
     wget
 
-RUN echo "phar.readonly=0" > /usr/local/etc/php/conf.d/phar.ini && \
+RUN docker-php-ext-install intl && \
+    echo "phar.readonly=0" > /usr/local/etc/php/conf.d/phar.ini && \
     mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
     make clean && make
 
@@ -26,7 +28,8 @@ ENV APP_DEBUG=0
 ENV APP_CACHE_DIR=/tmp
 
 RUN apk update && \
-    apk add --no-cache poppler-utils && \
+    apk add --no-cache icu-dev && \
+    docker-php-ext-install intl && \
     mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
     echo "memory_limit=-1" > /usr/local/etc/php/conf.d/memory.ini
 

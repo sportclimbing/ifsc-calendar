@@ -112,7 +112,8 @@ final class IFSCStartListGeneratorTest extends TestCase
             rankingCalculator: new IFSCAthleteRankingCalculator(),
         );
 
-        $startList = $generator->buildStartList(999);
+        $result = $generator->buildStartList(999);
+        $startList = $result->starters;
 
         $this->assertSame([3, 1, 2], $athleteProvider->requestedAthleteIds);
         $this->assertSame([1, 2, 3], array_map(static fn (IFSCStarter $starter): int => $starter->athleteId, $startList));

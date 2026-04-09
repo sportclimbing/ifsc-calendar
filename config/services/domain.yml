@@ -81,12 +81,12 @@ services:
       - '@SportClimbing\IfscCalendar\Domain\Round\IFSCRoundFactory'
       - '@SportClimbing\IfscCalendar\Domain\Schedule\IFSCScheduleFactory'
       - '@SportClimbing\IfscCalendar\Infrastructure\DomainEvent\SymfonyEventDispatcher'
+      - '@SportClimbing\IfscCalendar\Domain\Event\IFSCEventSlug'
 
   SportClimbing\IfscCalendar\Domain\Event\IFSCEventFactory:
     class: SportClimbing\IfscCalendar\Domain\Event\IFSCEventFactory
     arguments:
       - '@SportClimbing\IfscCalendar\Domain\Calendar\SiteURLBuilder'
-      - '@SportClimbing\IfscCalendar\Domain\Event\IFSCEventSlug'
       - '@SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListGenerator'
 
   SportClimbing\IfscCalendar\Domain\Event\IFSCEventSlug: ~

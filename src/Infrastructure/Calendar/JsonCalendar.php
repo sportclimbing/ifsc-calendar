@@ -46,6 +46,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
                 'name' => $event->eventName,
                 'slug' => $event->slug,
                 'country' => $event->country,
+                'country_name' => $this->countryName($event->country),
                 'location' => $event->location,
                 'site_url' => $event->siteUrl,
                 'infosheet_url' => $event->infosheetUrl,
@@ -56,6 +57,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
                 'timezone' => $event->timeZone->getName(),
                 'rounds' => $this->formatRound($event->rounds),
                 'start_list' => $this->formatStarters($event->startList),
+                'start_list_total' => $event->startListTotal,
             ];
         }
 
@@ -89,12 +91,13 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
      */
     private function formatStarters(array $starters): array
     {
-        $format = static fn (IFSCStarter $starter): array => [
+        $format = fn (IFSCStarter $starter): array => [
             'athlete_id' => $starter->athleteId,
             'first_name' => $starter->firstName,
             'last_name' => $starter->lastName,
             'country' => $starter->country,
             'photo_url' => $starter->photoUrl,
+            'instagram' => $this->normalizeInstagram($starter->instagram),
         ];
 
         return array_map($format, $starters);
@@ -115,6 +118,37 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
     private function buildCategories(IFSCRound $round): array
     {
         return array_map(static fn (IFSCRoundCategory $category): string => $category->value, $round->categories);
+    }
+
+    private function countryName(string $countryCode): string
+    {
+        // IOC codes that differ from ISO 3166-1 and aren't resolved by Locale
+        $iocToIso = [
+            'CHI' => 'CHL',
+            'GER' => 'DEU',
+            'NED' => 'NLD',
+            'PHI' => 'PHL',
+            'SLO' => 'SVN',
+            'SUI' => 'CHE',
+        ];
+
+        $isoCode = $iocToIso[$countryCode] ?? $countryCode;
+
+        return \Locale::getDisplayRegion("und-{$isoCode}", 'en');
+    }
+
+    private function normalizeInstagram(?string $instagram): ?string
+    {
+        if ($instagram === null || $instagram === '') {
+            return null;
+        }
+
+        if (str_contains($instagram, 'instagram.com/')) {
+            preg_match('~instagram\.com/([^/?#]+)~', $instagram, $matches);
+            return $matches[1] ?? null;
+        }
+
+        return ltrim($instagram, '@');
     }
 
     private function formatDate(DateTimeInterface $dateTime): string
