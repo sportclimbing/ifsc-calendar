@@ -45,7 +45,7 @@ services:
   SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteService:
     class: SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteService
     arguments:
-      - '@SportClimbing\IfscCalendar\Infrastructure\Athlete\CachedAthleteProvider'
+      - '@SportClimbing\IfscCalendar\Infrastructure\Athlete\InstagramEnrichedAthleteProvider'
 
   # YouTube
   SportClimbing\IfscCalendar\Domain\YouTube\YouTubeVideoProvider:

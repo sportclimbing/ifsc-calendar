@@ -1,0 +1,14 @@
+parameters:
+    instagram_handles:
+        # Map athlete IDs (from the IFSC API) to their Instagram handles.
+        # Only add entries here for athletes whose handle is missing from the API.
+        1811: 'brookeraboutou'
+        2276: 'tomoa_narasaki'
+        11871: 'sohta_amagasa'
+        2307: 'meichi_narasaki'
+        620: 'zelia_avezou'
+        12297: 'anon_matsufuji'
+        2327: 'mao___nakamura'
+        2357: 'futaba_ito'
+        3113: 'hannah_meul'
+        14008: 'melody_sekikawa'
