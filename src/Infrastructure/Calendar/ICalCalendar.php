@@ -92,7 +92,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         $calendarEvent = new Event()
             ->setSummary(sprintf("%s - %s (%s)", $round->name, $event->location, $event->country))
             ->setDescription($this->buildDescription($event, $round))
-            ->setUrl(new Uri($event->siteUrl))
+            ->setUrl(new Uri($this->buildSiteUrl($event)))
             ->setStatus($this->getEventStatus($round))
             ->setLocation(new Location("{$event->location} ({$event->country})"))
             ->setOccurrence($this->buildTimeSpan($round));
@@ -112,7 +112,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         $calendarEvent = new Event()
             ->setSummary(sprintf('%s (%s)', $event->eventName, $event->country))
             ->setDescription($this->buildDescription($event))
-            ->setUrl(new Uri($event->siteUrl))
+            ->setUrl(new Uri($this->buildSiteUrl($event)))
             ->setStatus(EventStatus::TENTATIVE())
             ->setLocation(new Location("{$event->location} ({$event->country})"))
             ->setOccurrence($this->buildGenericTimeSpan($event));
@@ -153,7 +153,12 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         }
 
         $description .= "🧗 League:\n{$event->leagueName}\n\n";
-        $description .= "🍿 Stream URL:\n{$event->siteUrl}\n\n";
+        $description .= "🍿 Stream URL:\n{$this->buildSiteUrl($event)}\n\n";
+
+        if ($event->ticketsPurchaseUrl) {
+            $description .= "🍿 Buy Tickets:\n{$event->ticketsPurchaseUrl}\n\n";
+        }
+
         $description .= "💬 Join Discord:\n" . self::DISCORD_URL . "\n";
 
         if ($event->startList) {
@@ -173,6 +178,17 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         $description .= "https://github.com/sportclimbing/ifsc-calendar/issues\n";
 
         return $description;
+    }
+
+    private function buildSiteUrl(IFSCEvent $event): string
+    {
+        $params = http_build_query([
+            'utm_source' => 'calendar',
+        ]);
+
+        $separator = str_contains($event->siteUrl, '?') ? '&' : '?';
+
+        return "{$event->siteUrl}{$separator}{$params}";
     }
 
     private function getEventStatus(IFSCRound $round): EventStatus

@@ -48,6 +48,8 @@ final readonly class IFSCEventFactory
             rounds: $rounds,
             startList: ($startListResult = $this->buildStartList($event->eventId))->starters,
             startListTotal: $startListResult->total,
+            ticketsSummary: $event->ticketsSummary,
+            ticketsPurchaseUrl: $event->ticketsPurchaseUrl,
         );
     }
 

@@ -202,6 +202,13 @@ foreach ($newEvents as $newEvent) {
                 continue;
             }
 
+            if ($key === 'tickets' && is_array($value)) {
+                foreach ($value as $ticketKey => $ticketValue) {
+                    $addedEvents .= "|tickets.{$ticketKey}|" . normalize_value($ticketValue) . "|" . PHP_EOL;
+                }
+                continue;
+            }
+
             $addedEvents .= "|$key|" . normalize_value($value) ."|" . PHP_EOL;
         }
 
@@ -287,6 +294,15 @@ foreach ($newEvents as $newEvent) {
             $oldStartList = is_array(event_value($oldEvent, $key, [])) ? event_value($oldEvent, $key, []) : [];
             $newStartList = is_array($value) ? $value : [];
             $startListDiff .= generate_start_list_diff($oldStartList, $newStartList);
+        } elseif ($key === 'tickets') {
+            $oldTickets = is_array(event_value($oldEvent, $key, [])) ? event_value($oldEvent, $key, []) : [];
+            $newTickets = is_array($value) ? $value : [];
+            foreach ($newTickets as $ticketKey => $newTicketValue) {
+                $oldTicketValue = $oldTickets[$ticketKey] ?? null;
+                if (normalize_value($oldTicketValue) !== normalize_value($newTicketValue)) {
+                    $newDiff .= "|tickets.{$ticketKey}|" . normalize_value($oldTicketValue) . "|" . normalize_value($newTicketValue) . "|" . PHP_EOL;
+                }
+            }
         } elseif (normalize_value($value) !== normalize_value(event_value($oldEvent, $key))) {
             $newDiff .= "|$key|" . normalize_value(event_value($oldEvent, $key)) ."|" . normalize_value($value) . "|" . PHP_EOL;
         }

@@ -41,6 +41,8 @@ final class IFSCEvent
         array $rounds,
         public readonly array $startList = [],
         public readonly int $startListTotal = 0,
+        public readonly ?string $ticketsSummary = null,
+        public readonly ?string $ticketsPurchaseUrl = null,
     ) {
         $this->rounds = $rounds;
     }

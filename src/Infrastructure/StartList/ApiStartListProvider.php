@@ -48,10 +48,10 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
 
     private function convertToStarterObject(): Closure
     {
-        return static fn (object $athlete): IFSCStarter => new IFSCStarter(
+        return fn (object $athlete): IFSCStarter => new IFSCStarter(
             athleteId: $athlete->athlete_id,
             firstName: $athlete->firstname,
-            lastName: $athlete->lastname,
+            lastName: $this->normalizeLastName($athlete->lastname),
             country: $athlete->country,
         );
     }
@@ -83,5 +83,10 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
     private function isAttending(?IFSCStartListStatus $status): bool
     {
         return $status?->isAttending() ?? true;
+    }
+
+    private function normalizeLastName(string $lastName): string
+    {
+        return mb_convert_case($lastName, MB_CASE_TITLE, 'UTF-8');
     }
 }
