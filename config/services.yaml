@@ -2,6 +2,7 @@ imports:
     - { resource: services/application.yml }
     - { resource: services/domain.yml }
     - { resource: services/infrastructure.yml }
+    - { resource: instagram_handles.yaml }
 
 parameters:
     ifsc_youtube_channel_id: 'UC2MGuhIaOP6YLpUx106kTQw'

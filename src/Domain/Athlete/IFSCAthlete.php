@@ -41,4 +41,11 @@ final readonly class IFSCAthlete
         public array $cupRankings,
     ) {
     }
+
+    public function withInstagram(string $instagram): self
+    {
+        return clone($this, [
+            'instagram' => $instagram,
+        ]);
+    }
 }

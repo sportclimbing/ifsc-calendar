@@ -50,6 +50,17 @@ services:
       - '@ifsc.athlete.cache'
       - '%ifsc_athlete_cache_ttl_seconds%'
 
+  SportClimbing\IfscCalendar\Infrastructure\Athlete\InstagramHandleOverrides:
+    class: SportClimbing\IfscCalendar\Infrastructure\Athlete\InstagramHandleOverrides
+    arguments:
+      - '%instagram_handles%'
+
+  SportClimbing\IfscCalendar\Infrastructure\Athlete\InstagramEnrichedAthleteProvider:
+    class: SportClimbing\IfscCalendar\Infrastructure\Athlete\InstagramEnrichedAthleteProvider
+    arguments:
+      - '@SportClimbing\IfscCalendar\Infrastructure\Athlete\CachedAthleteProvider'
+      - '@SportClimbing\IfscCalendar\Infrastructure\Athlete\InstagramHandleOverrides'
+
   # YouTube
   SportClimbing\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider:
     class: SportClimbing\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider
