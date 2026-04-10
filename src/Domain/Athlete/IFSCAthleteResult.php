@@ -15,7 +15,6 @@ final readonly class IFSCAthleteResult
         public string $discipline,
         public string $eventName,
         public int $eventId,
-        public string $eventLocation,
         public int $dCat,
         public string $date,
         public string $categoryName,

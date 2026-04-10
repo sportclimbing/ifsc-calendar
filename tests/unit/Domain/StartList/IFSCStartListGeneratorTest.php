@@ -97,7 +97,6 @@ final class IFSCStartListGeneratorTest extends TestCase
                     discipline: 'boulder',
                     eventName: "IFSC World Cup {$eventId}",
                     eventId: $eventId,
-                    eventLocation: 'City',
                     dCat: 7,
                     date: '2025-06-01',
                     categoryName: 'Women',

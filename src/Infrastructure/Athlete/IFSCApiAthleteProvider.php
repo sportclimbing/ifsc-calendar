@@ -166,7 +166,6 @@ final readonly class IFSCApiAthleteProvider implements IFSCAthleteProviderInterf
                 discipline: $this->requiredString($result, 'discipline'),
                 eventName: $this->requiredString($result, 'event_name'),
                 eventId: $this->requiredInt($result, 'event_id'),
-                eventLocation: $this->requiredString($result, 'event_location'),
                 dCat: $this->requiredInt($result, 'd_cat'),
                 date: $this->requiredString($result, 'date'),
                 categoryName: $this->requiredString($result, 'category_name'),
