@@ -164,6 +164,8 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
             disciplines: $disciplines,
             categories: $this->parseCategories($eventData, $disciplines),
             infosheetUrl: $this->optionalString($eventData, 'infosheet_url'),
+            ticketsSummary: $this->optionalString($eventData['tickets'] ?? [], 'summary'),
+            ticketsPurchaseUrl: $this->optionalString($eventData['tickets'] ?? [], 'purchase_url'),
         );
     }
 
