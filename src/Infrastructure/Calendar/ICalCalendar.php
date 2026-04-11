@@ -8,8 +8,11 @@
 namespace SportClimbing\IfscCalendar\Infrastructure\Calendar;
 
 use DateInterval;
+use DateTimeImmutable;
+use DateTimeZone;
 use Eluceo\iCal\Domain\Entity\Calendar;
 use Eluceo\iCal\Domain\Entity\Event;
+use Eluceo\iCal\Domain\Entity\TimeZone;
 use Eluceo\iCal\Domain\Enum\EventStatus;
 use Eluceo\iCal\Domain\ValueObject\Alarm;
 use Eluceo\iCal\Domain\ValueObject\Alarm\DisplayAction;
@@ -59,7 +62,34 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         $calendar->setProductIdentifier($this->productIdentifier);
         $calendar->setPublishedTTL(new DateInterval($this->publishedTtl));
 
+        $begin = new DateTimeImmutable('first day of January this year');
+        $end = new DateTimeImmutable('last day of December next year');
+
+        foreach ($this->collectTimeZones($events) as $timeZone) {
+            $calendar->addTimeZone(TimeZone::createFromPhpDateTimeZone($timeZone, $begin, $end));
+        }
+
         return $calendar;
+    }
+
+    /**
+     * @param IFSCEvent[] $events
+     * @return array<string, DateTimeZone>
+     */
+    private function collectTimeZones(array $events): array
+    {
+        $timeZones = [];
+
+        foreach ($events as $event) {
+            foreach ($event->rounds as $round) {
+                $tz = $round->startTime->getTimezone();
+                $timeZones[$tz->getName()] = $tz;
+            }
+            $tz = $event->startsAt->getTimezone();
+            $timeZones[$tz->getName()] = $tz;
+        }
+
+        return $timeZones;
     }
 
     /**
