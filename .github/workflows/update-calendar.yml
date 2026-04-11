@@ -2,8 +2,14 @@ name: "Update calendar release"
 
 on:
   workflow_dispatch:
-#  schedule:
-#    - cron:  '0 * * * *'
+    inputs:
+      force_release:
+        description: 'Force release even if no calendar changes are detected'
+        required: false
+        type: boolean
+        default: false
+  schedule:
+    - cron: '0 5 * * *'
 
 permissions:
   contents: write
@@ -53,16 +59,21 @@ jobs:
             echo "has_changes=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: "Add force release note"
+        if: inputs.force_release
+        run: |
+          printf '> [!NOTE]\n> This release was manually force-released.\n\n' | cat - diff.md > tmp.md && mv tmp.md diff.md
+
       - name: "Generate tag name"
         id: date
-        if: steps.check_diff.outputs.has_changes == 'true'
+        if: steps.check_diff.outputs.has_changes == 'true' || inputs.force_release
         run: |
           echo "tag_name=$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
           echo "name=$(date +'%Y/%m/%d, %H:%M') Release" >> $GITHUB_OUTPUT
 
       - name: "Add release"
         uses: softprops/action-gh-release@v2
-        if: steps.check_diff.outputs.has_changes == 'true'
+        if: steps.check_diff.outputs.has_changes == 'true' || inputs.force_release
         with:
           files: |
             ${{ env.CALENDAR_FILE_ICS }}
@@ -72,13 +83,13 @@ jobs:
           body_path: diff.md
 
       - name: "Run latest-tag"
-        if: steps.check_diff.outputs.has_changes == 'true'
+        if: steps.check_diff.outputs.has_changes == 'true' || inputs.force_release
         uses: Actions-R-Us/actions-tagger@latest
         with:
           publish_latest_tag: true
 
       - name: "Deploy Calendar Web"
-        if: steps.check_diff.outputs.has_changes == 'true'
+        if: steps.check_diff.outputs.has_changes == 'true' || inputs.force_release
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.PAT_TOKEN }}
