@@ -477,7 +477,12 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
     private function createDateTime(string $value, DateTimeZone $timeZone, array $eventData): DateTimeImmutable
     {
         try {
-            return new DateTimeImmutable($value, $timeZone);
+            // When $value contains an embedded offset (e.g. "2026-05-01T09:00:00+08:00"),
+            // PHP's DateTimeImmutable constructor ignores the $timeZone argument and
+            // creates a fixed-offset timezone (+08:00) instead of the IANA name.
+            // Using setTimezone() after construction ensures the IANA name is used,
+            // which is required for valid VTIMEZONE components in .ics output.
+            return (new DateTimeImmutable($value))->setTimezone($timeZone);
         } catch (Exception $e) {
             throw new RuntimeException(
                 sprintf("Invalid datetime '%s' for %s", $value, $this->eventReference($eventData)),
