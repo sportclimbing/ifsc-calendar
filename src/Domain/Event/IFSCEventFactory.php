@@ -99,6 +99,6 @@ final readonly class IFSCEventFactory
 
     private function createLocalDate(string $date, DateTimeZone $timeZone): DateTimeImmutable
     {
-        return new DateTimeImmutable($date)->setTimezone($timeZone);
+        return new DateTimeImmutable($date, $timeZone);
     }
 }

@@ -102,6 +102,10 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         $calendarEvents = [];
 
         foreach ($events as $event) {
+            if ($this->shouldIgnoreEvent($event)) {
+                continue;
+            }
+
             $rounds = $this->getStreamableRounds($event);
 
             if (!empty($rounds)) {
@@ -172,7 +176,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
     private function buildDescription(IFSCEvent $event, ?IFSCRound $round = null): string
     {
-        $description = "🏆 {$event->eventName} ({$event->country})\n\n";
+        $description = "{$event->eventName}\n\n";
 
         if ($round?->status->isProvisional()) {
             $description .= "⚠️ Schedule is provisional and might change. ";
@@ -261,5 +265,10 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
             ),
             $trigger->withRelationToEnd(),
         );
+    }
+
+    private function shouldIgnoreEvent(IFSCEvent $event): bool
+    {
+        return $event->leagueName === 'Games';
     }
 }
