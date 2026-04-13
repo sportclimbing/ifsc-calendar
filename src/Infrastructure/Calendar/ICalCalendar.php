@@ -23,7 +23,6 @@ use Eluceo\iCal\Domain\ValueObject\TimeSpan;
 use Eluceo\iCal\Domain\ValueObject\Uri;
 use Exception;
 use SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
-use SportClimbing\IfscCalendar\Domain\Event\Exceptions\InvalidLeagueName;
 use SportClimbing\IfscCalendar\Domain\Event\IFSCEvent;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
 use Override;
@@ -31,6 +30,9 @@ use Override;
 final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 {
     private const string DISCORD_URL = 'https://discord.gg/rbM5vjcVHM';
+    private const array SITE_URL_PARAMS = [
+        'utm_source' => 'calendar',
+    ];
 
     public function __construct(
         private CalendarFactory $calendarFactory,
@@ -120,7 +122,6 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         return $calendarEvents;
     }
 
-    /** @throws InvalidLeagueName */
     private function createEvent(IFSCEvent $event, IFSCRound $round): Event
     {
         $calendarEvent = new Event()
@@ -186,7 +187,6 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
             $description .= "This calendar will update automatically once it's published!\n\n";
         }
 
-        $description .= "🧗 League:\n{$event->leagueName}\n\n";
         $description .= "🍿 Stream URL:\n{$this->buildSiteUrl($event)}\n\n";
 
         if ($event->ticketsPurchaseUrl) {
@@ -216,11 +216,8 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
     private function buildSiteUrl(IFSCEvent $event): string
     {
-        $params = http_build_query([
-            'utm_source' => 'calendar',
-        ]);
-
         $separator = str_contains($event->siteUrl, '?') ? '&' : '?';
+        $params = http_build_query(self::SITE_URL_PARAMS);
 
         return "{$event->siteUrl}{$separator}{$params}";
     }
