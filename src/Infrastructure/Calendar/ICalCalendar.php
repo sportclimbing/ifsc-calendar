@@ -129,7 +129,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
             ->setDescription($this->buildDescription($event, $round))
             ->setUrl(new Uri($this->buildSiteUrl($event)))
             ->setStatus($this->getEventStatus($round))
-            ->setLocation(new Location("{$event->location} ({$event->country})"))
+            ->setLocation(new Location($this->buildLocation($event)))
             ->setOccurrence($this->buildTimeSpan($round));
 
         if ($round->status->isConfirmed()) {
@@ -149,7 +149,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
             ->setDescription($this->buildDescription($event))
             ->setUrl(new Uri($this->buildSiteUrl($event)))
             ->setStatus(EventStatus::TENTATIVE())
-            ->setLocation(new Location("{$event->location} ({$event->country})"))
+            ->setLocation(new Location($this->buildLocation($event)))
             ->setOccurrence($this->buildGenericTimeSpan($event));
 
         $calendarEvent->addAlarm(
@@ -212,6 +212,15 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         $description .= "https://github.com/sportclimbing/ifsc-calendar/issues\n";
 
         return $description;
+    }
+
+    private function buildLocation(IFSCEvent $event): string
+    {
+        if ($event->countryName !== '') {
+            return "{$event->location}, {$event->countryName}";
+        }
+
+        return "{$event->location} ({$event->country})";
     }
 
     private function buildSiteUrl(IFSCEvent $event): string
