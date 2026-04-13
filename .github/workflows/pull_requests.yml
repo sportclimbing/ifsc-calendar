@@ -41,7 +41,7 @@ jobs:
       - name: "Install dependencies"
         run: |
           sudo apt-get update && sudo apt-get install poppler-utils -y
-          composer install --no-dev --ignore-platform-reqs --optimize-autoloader
+          composer install --ignore-platform-reqs --optimize-autoloader
 
       - name: "Download latest schedule"
         run: curl -fsSL "${{ env.LATEST_SCHEDULE_URL }}" --output events-with-schedules.json
@@ -52,7 +52,10 @@ jobs:
             --season 2026 \
             --output new-calendar.json \
             --with-schedule "events-with-schedules.json" \
-            --format json
+            --format json,ics
+
+      - name: "Validate ICS"
+        run: ./vendor/bin/vobject validate new-calendar.ics
 
       - name: "Check diff"
         run: |
