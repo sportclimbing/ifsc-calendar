@@ -39,9 +39,7 @@ jobs:
           tools: composer
 
       - name: "Install dependencies"
-        run: |
-          sudo apt-get update && sudo apt-get install poppler-utils -y
-          composer install --ignore-platform-reqs --optimize-autoloader
+        run: composer install --ignore-platform-reqs --optimize-autoloader
 
       - name: "Download latest schedule"
         run: curl -fsSL "${{ env.LATEST_SCHEDULE_URL }}" --output events-with-schedules.json
