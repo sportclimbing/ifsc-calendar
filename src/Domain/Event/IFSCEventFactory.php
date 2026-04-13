@@ -50,6 +50,7 @@ final readonly class IFSCEventFactory
             startListTotal: $startListResult->total,
             ticketsSummary: $event->ticketsSummary,
             ticketsPurchaseUrl: $event->ticketsPurchaseUrl,
+            countryName: $event->countryName,
         );
     }
 

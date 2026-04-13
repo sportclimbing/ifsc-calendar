@@ -32,6 +32,7 @@ final readonly class IFSCEventInfo
         public array $disciplines,
         public array $categories,
         public ?string $infosheetUrl = null,
+        public string $countryName = '',
         public ?string $ticketsSummary = null,
         public ?string $ticketsPurchaseUrl = null,
     ) {

@@ -164,6 +164,7 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
             disciplines: $disciplines,
             categories: $this->parseCategories($eventData, $disciplines),
             infosheetUrl: $this->optionalString($eventData, 'infosheet_url'),
+            countryName: $this->parseCountryName($eventData),
             ticketsSummary: $this->optionalString($eventData['tickets'] ?? [], 'summary'),
             ticketsPurchaseUrl: $this->optionalString($eventData['tickets'] ?? [], 'purchase_url'),
         );
@@ -221,6 +222,23 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         }
 
         return $this->requiredString($eventData, 'country');
+    }
+
+    /** @param array<string,mixed> $eventData */
+    private function parseCountryName(array $eventData): string
+    {
+        $location = $eventData['location'] ?? null;
+
+        if (is_array($location)) {
+            foreach (['country_name', 'country'] as $key) {
+                $value = $location[$key] ?? null;
+                if (is_string($value) && trim($value) !== '') {
+                    return $value;
+                }
+            }
+        }
+
+        return '';
     }
 
     /**
