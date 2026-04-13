@@ -190,7 +190,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         $description .= "🍿 Stream URL:\n{$this->buildSiteUrl($event)}\n\n";
 
         if ($event->ticketsPurchaseUrl) {
-            $description .= "🍿 Buy Tickets:\n{$event->ticketsPurchaseUrl}\n\n";
+            $description .= "🎟️ Buy Tickets:\n{$event->ticketsPurchaseUrl}\n\n";
         }
 
         $description .= "💬 Join Discord:\n" . self::DISCORD_URL . "\n";
