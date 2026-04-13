@@ -85,9 +85,18 @@ function normalize_value(mixed $value): string
     return (string) $value;
 }
 
-function find_round_by_name(array $oldRounds, string $name): ?array
+function find_round_by_name(array $rounds, string $name, array &$matchedIndices): ?array
 {
-    return array_find($oldRounds, fn (array $oldRound): bool => ((string) event_value($oldRound, 'name', '')) === $name);
+    foreach ($rounds as $index => $round) {
+        if (in_array($index, $matchedIndices, true)) {
+            continue;
+        }
+        if (((string) event_value($round, 'name', '')) === $name) {
+            $matchedIndices[] = $index;
+            return $round;
+        }
+    }
+    return null;
 }
 
 function get_event_by_id(array $events, int $eventId): ?array
@@ -116,9 +125,11 @@ function generate_round_diff(array $oldRounds, array $newRounds): string
     $addedRounds = '';
     $removedRounds = '';
 
+    $matchedOldIndices = [];
+
     foreach ($newRounds as $newRound) {
         $roundName = (string) event_value($newRound, 'name', '');
-        $oldRound = find_round_by_name($oldRounds, $roundName);
+        $oldRound = find_round_by_name($oldRounds, $roundName, $matchedOldIndices);
 
         if (!$oldRound) {
             foreach ($newRound as $value) {
@@ -149,9 +160,11 @@ function generate_round_diff(array $oldRounds, array $newRounds): string
         }
     }
 
+    $matchedNewIndices = [];
+
     foreach ($oldRounds as $oldRound) {
         $roundName = (string) event_value($oldRound, 'name', '');
-        $newRound = find_round_by_name($newRounds, $roundName);
+        $newRound = find_round_by_name($newRounds, $roundName, $matchedNewIndices);
 
         if (!$newRound) {
             $removedRounds .= '|<s>' . normalize_value(event_value($oldRound, 'name')) . '</s>|<s>' . normalize_value(event_value($oldRound, 'starts_at')) . '</s>|<s>' . normalize_value(event_value($oldRound, 'ends_at')) . '</s>|' . PHP_EOL;
