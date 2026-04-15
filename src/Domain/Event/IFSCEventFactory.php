@@ -13,6 +13,7 @@ use Exception;
 use SportClimbing\IfscCalendar\Domain\Calendar\SiteURLBuilder;
 use SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCSameStreamRoundsMerger;
 use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListGenerator;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListResult;
@@ -23,12 +24,14 @@ final readonly class IFSCEventFactory
     public function __construct(
         private SiteURLBuilder $siteURLBuilder,
         private IFSCStartListGenerator $startListGenerator,
+        private IFSCSameStreamRoundsMerger $sameStreamRoundsMerger,
     ) {
     }
 
     /** @param IFSCRound[] $rounds */
     public function create(IFSCSeasonYear $season, IFSCEventInfo $event, array $rounds): IFSCEvent
     {
+        $rounds = $this->mergeSameStreamRounds($rounds);
         [$startDate, $endDate] = $this->generateDateRangeFromRounds($rounds, $event);
 
         return new IFSCEvent(
@@ -101,5 +104,10 @@ final readonly class IFSCEventFactory
     private function createLocalDate(string $date, DateTimeZone $timeZone): DateTimeImmutable
     {
         return new DateTimeImmutable($date, $timeZone);
+    }
+
+    private function mergeSameStreamRounds(array $rounds): array
+    {
+        return $this->sameStreamRoundsMerger->merge($rounds);
     }
 }
