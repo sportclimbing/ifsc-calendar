@@ -193,9 +193,15 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
             $description .= "🎟️ Buy Tickets:\n{$event->ticketsPurchaseUrl}\n\n";
         }
 
-        $description .= "💬 Join Discord:\n" . self::DISCORD_URL . "\n";
+        $description .= "💬 Join Discord:\n" . self::DISCORD_URL . "\n\n";
 
-        if ($event->startList) {
+        $description .= "☕️ If you find this useful, please consider buying me a coffee:\n";
+        $description .= "https://www.buymeacoffee.com/sportclimbing\n\n";
+
+        $description .= "🐛 Report a bug/problem:\n";
+        $description .= "https://github.com/sportclimbing/ifsc-calendar/issues\n";
+
+        if (array_slice($event->startList, 0, 20)) {
             $description .= "\n📋 Start List:\n";
 
             foreach ($event->startList as $athlete) {
@@ -204,12 +210,6 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 
             $description .= " - ...\n";
         }
-
-        $description .= "\n☕️ If you find this useful, please consider buying me a coffee:\n";
-        $description .= "https://www.buymeacoffee.com/sportclimbing\n\n";
-
-        $description .= "🐛 Report a bug/problem:\n";
-        $description .= "https://github.com/sportclimbing/ifsc-calendar/issues\n";
 
         return $description;
     }
