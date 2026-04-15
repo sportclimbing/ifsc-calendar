@@ -88,6 +88,7 @@ services:
     arguments:
       - '@SportClimbing\IfscCalendar\Domain\Calendar\SiteURLBuilder'
       - '@SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListGenerator'
+      - '@SportClimbing\IfscCalendar\Domain\Round\IFSCSameStreamRoundsMerger'
 
   SportClimbing\IfscCalendar\Domain\Event\IFSCEventSlug: ~
   SportClimbing\IfscCalendar\Domain\Event\IFSCEventSorter: ~
@@ -99,6 +100,12 @@ services:
       - '@SportClimbing\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey'
 
   SportClimbing\IfscCalendar\Domain\Round\IFSCAverageRoundDurationLookupKey: ~
+
+  SportClimbing\IfscCalendar\Domain\Round\IFSCSameStreamRoundsMerger:
+    class: SportClimbing\IfscCalendar\Domain\Round\IFSCSameStreamRoundsMerger
+    arguments:
+      - '@SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser'
+      - '@SportClimbing\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer'
 
   SportClimbing\IfscCalendar\Domain\Round\IFSCRoundFactory:
     class: SportClimbing\IfscCalendar\Domain\Round\IFSCRoundFactory
