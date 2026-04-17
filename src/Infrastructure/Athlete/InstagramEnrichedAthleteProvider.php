@@ -22,12 +22,7 @@ final readonly class InstagramEnrichedAthleteProvider implements IFSCAthleteProv
     #[Override] public function fetchAthlete(int $athleteId): IFSCAthlete
     {
         $athlete = $this->provider->fetchAthlete($athleteId);
-
-        if ($athlete->instagram !== null) {
-            return $athlete;
-        }
-
-        $handle = $this->instagramHandleOverrides->findHandleForAthlete($athleteId);
+        $handle = $this->instagramHandleOverrides->findHandleForAthlete($athleteId) ?? $athlete->instagram;
 
         if ($handle === null) {
             return $athlete;
