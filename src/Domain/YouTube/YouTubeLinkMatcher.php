@@ -9,132 +9,79 @@ namespace SportClimbing\IfscCalendar\Domain\YouTube;
 
 use DateTimeImmutable;
 use SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
-use SportClimbing\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
 use SportClimbing\IfscCalendar\Domain\Stream\LiveStream;
 use SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser;
 
 final readonly class YouTubeLinkMatcher
 {
+    private const int MIN_CONFIDENCE_SCORE = 14;
+    private const string YOUTUBE_BASE_URL = 'https://youtu.be/';
+
     public function __construct(
         private IFSCTagsParser $tagsParser,
+        private YouTubeMatchScorer $matchScorer,
     ) {
     }
 
-    private const string YOUTUBE_BASE_URL = 'https://youtu.be/';
-
     public function findStreamUrlForRound(IFSCEventInfo $event, string $roundName, YouTubeVideoCollection $videoCollection): LiveStream
     {
+        $roundTags = $this->tagsParser->fromString(mb_strtolower($roundName))->allTags();
+        $bestVideo = null;
+        $bestScore = PHP_INT_MIN;
+
         foreach ($videoCollection->getIterator() as $video) {
             /** @var YouTubeVideo $video */
-            if ($this->videoTitleMatchesRoundName($video, $roundName, $event)) {
-                return new LiveStream(
-                    url: self::YOUTUBE_BASE_URL . $video->videoId,
-                    scheduledStartTime: $video->scheduledStartTime,
-                    duration: $video->duration,
-                    restrictedRegions: $video->restrictedRegions,
-                );
+            $score = $this->matchScorer->score($video, $roundTags, $event);
+
+            if ($score === null) {
+                continue;
+            }
+
+            if ($bestVideo === null || $this->isBetterCandidate($video, $score, $bestVideo, $bestScore)) {
+                $bestVideo = $video;
+                $bestScore = $score;
             }
         }
 
-        return new LiveStream();
-    }
-
-    private function videoTitleMatchesRoundName(YouTubeVideo $video, string $roundName, IFSCEventInfo $event): bool
-    {
-        $videoTitle = mb_strtolower($video->title);
-        $roundName = mb_strtolower($roundName);
-        $videoTags = $this->fetchTagsFromTitle($videoTitle);
-
-        if (!$this->videoTitleContainsSameLocationAndSeason($videoTitle, $event) ||
-            $this->videoIsHighlights($videoTags) ||
-            $this->isParaclimbingEvent($event)
-        ) {
-            return false;
+        if ($bestVideo === null || $bestScore < self::MIN_CONFIDENCE_SCORE) {
+            return new LiveStream();
         }
 
-        $eventTags = $this->fetchTagsFromTitle($roundName);
+        return new LiveStream(
+            url: self::YOUTUBE_BASE_URL . $bestVideo->videoId,
+            scheduledStartTime: $bestVideo->scheduledStartTime,
+            duration: $bestVideo->duration,
+            restrictedRegions: $bestVideo->restrictedRegions,
+        );
+    }
 
-        if ($this->videoIsMensAndWomensCombined($videoTags, $eventTags)) {
+    private function isBetterCandidate(
+        YouTubeVideo $candidate,
+        int $candidateScore,
+        YouTubeVideo $currentBest,
+        int $currentBestScore,
+    ): bool {
+        if ($candidateScore > $currentBestScore) {
             return true;
         }
 
-        return $videoTags === $eventTags;
-    }
-
-    /** @return Tag[] */
-    private function fetchTagsFromTitle(string $title): array
-    {
-        return $this->tagsParser->fromString($title)->allTags();
-    }
-
-    private function videoTitleContainsSameLocationAndSeason(string $videoTitle, IFSCEventInfo $event): bool
-    {
-        return
-            str_contains($this->normalize($videoTitle), $this->normalize($event->location)) &&
-            str_contains($videoTitle, $this->eventSeason($event));
-    }
-
-    /** @param Tag[] $videoTags */
-    private function videoIsHighlights(array $videoTags): bool
-    {
-        return
-            $this->hasTag($videoTags, Tag::HIGHLIGHTS) ||
-            $this->hasTag($videoTags, Tag::PRESS_CONFERENCE) ||
-            $this->hasTag($videoTags, Tag::REVIEW);
-    }
-
-    /**
-     * @param Tag[] $videoTags
-     * @param Tag[] $eventTags
-     */
-    private function videoIsMensAndWomensCombined(array $videoTags, array $eventTags): bool
-    {
-        if (!$this->hasTag($videoTags, Tag::MEN) &&
-            !$this->hasTag($videoTags, Tag::WOMEN)
-        ) {
-            $eventTags = $this->removeTags(
-                $eventTags,
-                Tag::MEN,
-                Tag::WOMEN,
-            );
+        if ($candidateScore < $currentBestScore) {
+            return false;
         }
 
-        return $videoTags === $eventTags;
-    }
-
-    /** @param Tag[] $tags */
-    private function hasTag(array $tags, Tag $tag): bool
-    {
-        return in_array($tag, $tags, strict: true);
-    }
-
-    /**
-     * @param Tag[] $items
-     * @return Tag[]
-     */
-    private function removeTags(array $items, Tag ...$tags): array
-    {
-        foreach ($tags as $tag) {
-            unset($items[array_search($tag, $items)]);
+        if ($candidate->scheduledStartTime && !$currentBest->scheduledStartTime) {
+            return true;
         }
 
-        return array_values($items);
+        if (!$candidate->scheduledStartTime && $currentBest->scheduledStartTime) {
+            return false;
+        }
+
+        return $this->referenceDateTime($candidate) > $this->referenceDateTime($currentBest);
     }
 
-    private function eventSeason(IFSCEventInfo $event): string
+    private function referenceDateTime(YouTubeVideo $video): DateTimeImmutable
     {
-        return new DateTimeImmutable($event->localStartDate)->format('Y');
-    }
-
-    private function isParaclimbingEvent(IFSCEventInfo $event): bool
-    {
-        $eventTags = $this->fetchTagsFromTitle($event->eventName);
-
-        return $this->hasTag($eventTags, Tag::PARACLIMBING);
-    }
-
-    private function normalize(string $text): string
-    {
-        return strtr(mb_strtolower($text), ['ç' => 'c']);
+        return $video->scheduledStartTime ?? $video->publishedAt;
     }
 }

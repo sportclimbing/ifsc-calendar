@@ -13,6 +13,8 @@ use SportClimbing\IfscCalendar\Domain\Event\Info\IFSCEventInfo;
 use SportClimbing\IfscCalendar\Domain\Stream\LiveStream;
 use SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser;
 use SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher;
+use SportClimbing\IfscCalendar\Domain\YouTube\YouTubeMatchScorer;
+use SportClimbing\IfscCalendar\Domain\YouTube\YouTubeTextNormalizer;
 use SportClimbing\IfscCalendar\Domain\YouTube\YouTubeVideo;
 use SportClimbing\IfscCalendar\Domain\YouTube\YouTubeVideoCollection;
 use PHPUnit\Framework\Attributes\Test;
@@ -132,6 +134,144 @@ final class YouTubeLinkMatcherTest extends TestCase
         $this->assertSame('https://youtu.be/n6YyV2ddb11', $liveStream->url);
     }
 
+    #[Test] public function best_candidate_is_chosen_when_multiple_titles_match(): void
+    {
+        $event = $this->createEvent(
+            eventName: 'IFSC World Cup Salt Lake City 2023',
+            location: 'Salt Lake City',
+            localStartDate: '2023-05-19T08:00:00Z',
+            localEndDate: '2023-05-21T23:00:00Z',
+        );
+        $videoCollection = new YouTubeVideoCollection();
+
+        $videoCollection->add(new YouTubeVideo(
+            title: 'Women\'s Speed qualification || Salt Lake City 2023',
+            duration: 0,
+            videoId: 'older-id',
+            publishedAt: new DateTimeImmutable('2023-03-10T10:00:00Z'),
+            scheduledStartTime: null,
+            restrictedRegions: [],
+        ));
+        $videoCollection->add(new YouTubeVideo(
+            title: 'Women\'s Speed qualification || Salt Lake City 2023',
+            duration: 54,
+            videoId: 'better-id',
+            publishedAt: new DateTimeImmutable('2023-05-21T19:41:25Z'),
+            scheduledStartTime: null,
+            restrictedRegions: [],
+        ));
+
+        $liveStream = $this->linkMatcher->findStreamUrlForRound(
+            event: $event,
+            roundName: 'Women\'s Speed Qualification',
+            videoCollection: $videoCollection,
+        );
+
+        $this->assertSame('https://youtu.be/better-id', $liveStream->url);
+    }
+
+    #[Test] public function slc_alias_matches_salt_lake_city_location(): void
+    {
+        $event = $this->createEvent(
+            eventName: 'IFSC World Cup Salt Lake City 2023',
+            location: 'Salt Lake City',
+        );
+        $videoCollection = new YouTubeVideoCollection();
+        $videoCollection->add(new YouTubeVideo(
+            title: 'Women\'s Speed qualification || SLC 2023',
+            duration: 52,
+            videoId: 'slc-id',
+            publishedAt: new DateTimeImmutable('2023-05-20T08:00:00Z'),
+            scheduledStartTime: null,
+            restrictedRegions: [],
+        ));
+
+        $liveStream = $this->linkMatcher->findStreamUrlForRound(
+            event: $event,
+            roundName: 'Women\'s Speed Qualification',
+            videoCollection: $videoCollection,
+        );
+
+        $this->assertSame('https://youtu.be/slc-id', $liveStream->url);
+    }
+
+    #[Test] public function sao_paulo_diacritics_are_normalized_for_location_matching(): void
+    {
+        $event = $this->createEvent(
+            eventName: 'IFSC World Cup Sao Paulo 2023',
+            location: 'Sao Paulo',
+        );
+        $videoCollection = new YouTubeVideoCollection();
+        $videoCollection->add(new YouTubeVideo(
+            title: 'Speed finals || São Paulo 2023',
+            duration: 82,
+            videoId: 'sao-paulo-id',
+            publishedAt: new DateTimeImmutable('2023-06-03T08:00:00Z'),
+            scheduledStartTime: null,
+            restrictedRegions: [],
+        ));
+
+        $liveStream = $this->linkMatcher->findStreamUrlForRound(
+            event: $event,
+            roundName: 'Speed Finals',
+            videoCollection: $videoCollection,
+        );
+
+        $this->assertSame('https://youtu.be/sao-paulo-id', $liveStream->url);
+    }
+
+    #[Test] public function opposite_gender_candidate_is_rejected(): void
+    {
+        $event = $this->createEvent(
+            eventName: 'IFSC World Cup Salt Lake City 2023',
+            location: 'Salt Lake City',
+        );
+        $videoCollection = new YouTubeVideoCollection();
+        $videoCollection->add(new YouTubeVideo(
+            title: 'Men\'s Speed qualification || Salt Lake City 2023',
+            duration: 73,
+            videoId: 'men-only',
+            publishedAt: new DateTimeImmutable('2023-05-21T08:00:00Z'),
+            scheduledStartTime: null,
+            restrictedRegions: [],
+        ));
+
+        $liveStream = $this->linkMatcher->findStreamUrlForRound(
+            event: $event,
+            roundName: 'Women\'s Speed Qualification',
+            videoCollection: $videoCollection,
+        );
+
+        $this->assertNull($liveStream->url);
+    }
+
+    #[Test] public function paraclimbing_qualification_is_found_for_para_event(): void
+    {
+        $event = $this->createEvent(
+            eventName: 'IFSC Para Climbing World Cup Salt Lake City 2026',
+            location: 'Salt Lake City',
+            localStartDate: '2026-05-20T08:00:00Z',
+            localEndDate: '2026-05-22T20:00:00Z',
+        );
+        $videoCollection = new YouTubeVideoCollection();
+        $videoCollection->add(new YouTubeVideo(
+            title: 'Para Climbing qualification | Salt Lake City 2026',
+            duration: 0,
+            videoId: 'para-qual-id',
+            publishedAt: new DateTimeImmutable('2026-05-21T11:00:00Z'),
+            scheduledStartTime: new DateTimeImmutable('2026-05-21T12:00:00Z'),
+            restrictedRegions: [],
+        ));
+
+        $liveStream = $this->linkMatcher->findStreamUrlForRound(
+            event: $event,
+            roundName: 'Paraclimbing Qualification',
+            videoCollection: $videoCollection,
+        );
+
+        $this->assertSame('https://youtu.be/para-qual-id', $liveStream->url);
+    }
+
     private function createVideoCollection(): YouTubeVideoCollection
     {
         $titles = [
@@ -180,29 +320,42 @@ final class YouTubeLinkMatcherTest extends TestCase
 
     private function createEventWithNameAndDescription(string $roundName, string $eventName, string $location): LiveStream
     {
-        $event = new IFSCEventInfo(
+        $event = $this->createEvent($eventName, $location);
+
+        return $this->linkMatcher->findStreamUrlForRound($event, $roundName, $this->createVideoCollection());
+    }
+
+    private function createEvent(
+        string $eventName,
+        string $location,
+        string $localStartDate = '2023-04-10T11:55:00Z',
+        string $localEndDate = '2023-04-10T12:55:00Z',
+    ): IFSCEventInfo {
+        return new IFSCEventInfo(
             eventId: 1292,
             eventName: $eventName,
             slug: 'ifsc-world-cup',
             leagueId: 37,
             leagueName: 'World Cups and World Championships',
             leagueSeasonId: 12,
-            localStartDate: '2023-04-10T11:55:00Z',
-            localEndDate: '2023-04-10T12:55:00Z',
+            localStartDate: $localStartDate,
+            localEndDate: $localEndDate,
             timeZone: new DateTimeZone('Europe/Madrid'),
             location: $location,
             country: 'JPN',
             disciplines: [],
             categories: [],
         );
-
-        return $this->linkMatcher->findStreamUrlForRound($event, $roundName, $this->createVideoCollection());
     }
 
     protected function setUp(): void
     {
+        $tagsParser = new IFSCTagsParser();
+        $textNormalizer = new YouTubeTextNormalizer();
+
         $this->linkMatcher = new YouTubeLinkMatcher(
-            new IFSCTagsParser(),
+            $tagsParser,
+            new YouTubeMatchScorer($tagsParser, $textNormalizer),
         );
     }
 }
