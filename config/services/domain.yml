@@ -53,6 +53,12 @@ services:
     arguments:
       - '@SportClimbing\IfscCalendar\Infrastructure\YouTube\YouTubeVideoProvider'
 
+  SportClimbing\IfscCalendar\Domain\YouTube\YouTubeTextNormalizer: ~
+
+  SportClimbing\IfscCalendar\Domain\YouTube\YouTubeMatchScorer:
+    class: SportClimbing\IfscCalendar\Domain\YouTube\YouTubeMatchScorer
+    autowire: true
+
   SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher:
     class: SportClimbing\IfscCalendar\Domain\YouTube\YouTubeLinkMatcher
     autowire: true
