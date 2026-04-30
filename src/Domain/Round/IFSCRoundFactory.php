@@ -90,9 +90,13 @@ final readonly class IFSCRoundFactory
             DateTimeInterface::RFC3339,
         );
 
-        return new DateTimeImmutable($schedulesStartTime)
-            ->modify('+5 minutes')
-            ->setTimezone($event->timeZone);
+        $startTime = new DateTimeImmutable($schedulesStartTime);
+
+        if (in_array((int) $startTime->format('i'), [25, 55], strict: true)) {
+            $startTime = $startTime->modify('+5 minutes');
+        }
+
+        return $startTime->setTimezone($event->timeZone);
     }
 
     private function findLiveStream(IFSCEventInfo $event, string $roundName): LiveStream
