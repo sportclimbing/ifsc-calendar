@@ -104,6 +104,26 @@ final class IFSCRoundFactoryTest extends TestCase
         $this->assertSame('2024-04-12T19:00:00+08:00', $this->formatDate($round->endTime));
     }
 
+    #[Test] public function youtube_time_without_rounding_is_used_as_is(): void
+    {
+        $roundFactory = $this->roundFactoryReturningLiveStreamWith(
+            scheduledStartTime: '2024-04-12T10:30:00Z',
+            duration: 60,
+        );
+
+        $round = $roundFactory->create(
+            event: $this->createEvent(),
+            roundName: "Men's & Women's Lead Qualification",
+            startTime: $this->createDateTime('2024-04-12 18:30'),
+            endTime: $this->createDateTime('2024-04-12 21:23'),
+            status: IFSCRoundStatus::PROVISIONAL,
+        );
+
+        $this->assertSame(IFSCRoundStatus::CONFIRMED, $round->status);
+        $this->assertSame('2024-04-12T18:30:00+08:00', $this->formatDate($round->startTime));
+        $this->assertSame('2024-04-12T19:30:00+08:00', $this->formatDate($round->endTime));
+    }
+
     private function roundFactoryReturningLiveStreamWith(?string $scheduledStartTime, int $duration): IFSCRoundFactory
     {
         return new IFSCRoundFactory(
