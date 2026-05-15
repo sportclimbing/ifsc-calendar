@@ -7,8 +7,12 @@
  */
 namespace SportClimbing\IfscCalendar\Domain\StartList;
 
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundCategory;
+
 final class IFSCStarter
 {
+    public ?IFSCRoundCategory $category = null;
+
     public function __construct(
         public readonly int $athleteId,
         public readonly string $firstName,

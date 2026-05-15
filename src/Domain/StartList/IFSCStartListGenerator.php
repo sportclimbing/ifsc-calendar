@@ -12,6 +12,8 @@ use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteException;
 use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteService;
 use SportClimbing\IfscCalendar\Domain\Ranking\IFSCAthleteRankingCalculator;
 
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundCategory;
+
 final readonly class IFSCStartListGenerator
 {
     private const int LIST_MAX_SIZE = 40;
@@ -36,6 +38,12 @@ final readonly class IFSCStartListGenerator
             $starter->score = $this->rankingCalculator->calculateScore($athlete);
             $starter->photoUrl = $athlete->photoUrl;
             $starter->instagram = $athlete->instagram;
+
+            $starter->category = match ($athlete->gender) {
+                'male' => IFSCRoundCategory::MEN,
+                'female' => IFSCRoundCategory::WOMEN,
+                default => null,
+            };
 
             $startList[] = $starter;
         }

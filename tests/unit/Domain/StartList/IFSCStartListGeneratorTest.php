@@ -12,6 +12,7 @@ use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteProviderInterface;
 use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteResult;
 use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteService;
 use SportClimbing\IfscCalendar\Domain\Ranking\IFSCAthleteRankingCalculator;
+use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundCategory;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListGenerator;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListProviderInterface;
@@ -116,6 +117,10 @@ final class IFSCStartListGeneratorTest extends TestCase
 
         $this->assertSame([3, 1, 2], $athleteProvider->requestedAthleteIds);
         $this->assertSame([1, 2, 3], array_map(static fn (IFSCStarter $starter): int => $starter->athleteId, $startList));
+        $this->assertSame(IFSCRoundCategory::WOMEN, $startList[0]->category);
+        $this->assertSame(IFSCRoundCategory::WOMEN, $startList[1]->category);
+        $this->assertSame(IFSCRoundCategory::WOMEN, $startList[2]->category);
+
         $this->assertSame('https://photos/1', $startList[0]->photoUrl);
         $this->assertSame('https://photos/2', $startList[1]->photoUrl);
         $this->assertSame('https://photos/3', $startList[2]->photoUrl);
