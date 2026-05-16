@@ -8,9 +8,7 @@
 namespace SportClimbing\IfscCalendar\Domain\Schedule;
 
 use DateTimeImmutable;
-use SportClimbing\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer;
-use SportClimbing\IfscCalendar\Domain\Tags\IFSCParsedTags;
 use SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser;
 
 final readonly class IFSCScheduleFactory
@@ -33,24 +31,5 @@ final readonly class IFSCScheduleFactory
             startsAt: $startsAt,
             endsAt: $endsAt,
         );
-    }
-
-    public function isRoundName(string $name): bool
-    {
-        return $this->isRound(
-            $this->tagsParser->fromString($name),
-        );
-    }
-
-    private function isRound(IFSCParsedTags $tags): bool
-    {
-        if (!$tags->getDisciplines() ||
-            !$tags->getRoundKind() ||
-            $tags->hasTag(Tag::PRE_ROUND)
-        ) {
-            return false;
-        }
-
-        return true;
     }
 }

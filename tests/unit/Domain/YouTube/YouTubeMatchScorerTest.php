@@ -152,6 +152,39 @@ final class YouTubeMatchScorerTest extends TestCase
         $this->assertNotNull($score);
     }
 
+    #[Test] public function para_series_event_finals_match_para_climbing_video(): void
+    {
+        $video = $this->createVideo(
+            title: 'Para Climbing finals | Salt Lake City 2026',
+            duration: 0,
+            publishedAt: '2026-05-15T21:07:47Z',
+            scheduledStartTime: '2026-05-16T18:00:00Z',
+        );
+
+        $score = $this->matchScorer->score(
+            video: $video,
+            roundTags: $this->roundTags("Men's & Women's Lead Final"),
+            event: new IFSCEventInfo(
+                eventId: 1477,
+                eventName: 'World Climbing Para Series Salt Lake City 2026',
+                slug: 'world-climbing-para-series-salt-lake-city-2026',
+                leagueId: 10,
+                leagueName: 'IFSC Paraclimbing',
+                leagueSeasonId: 99,
+                localStartDate: '2026-05-15T08:00:00Z',
+                localEndDate: '2026-05-16T20:00:00Z',
+                timeZone: new DateTimeZone('America/Denver'),
+                location: 'Salt Lake City',
+                country: 'USA',
+                disciplines: [],
+                categories: [],
+            ),
+        );
+
+        $this->assertNotNull($score);
+        $this->assertGreaterThanOrEqual(14, $score);
+    }
+
     #[Test] public function non_paraclimbing_video_is_rejected_for_para_event(): void
     {
         $video = $this->createVideo(

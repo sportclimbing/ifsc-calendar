@@ -50,13 +50,17 @@ final readonly class YouTubeMatchScorer
             $this->videoIsHighlights($videoTags) ||
             !$this->paraclimbingTagsAreCompatible($videoTags, $isParaclimbingEvent) ||
             !$this->roundKindMatches($roundTags, $videoTags) ||
-            !$this->disciplinesMatch($roundTags, $videoTags) ||
+            !$this->disciplinesMatch($roundTags, $videoTags, $isParaclimbingEvent) ||
             !$this->categoriesAreCompatible($roundTags, $videoTags)
         ) {
             return null;
         }
 
-        return $this->tagsScore($roundTags, $videoTags) +
+        $tagsForScoring = $isParaclimbingEvent
+            ? $this->removeTags($roundTags, ...self::DISCIPLINE_TAGS)
+            : $roundTags;
+
+        return $this->tagsScore($tagsForScoring, $videoTags) +
             $this->timingScore($video, $event) +
             $this->eventNameTokensScore($videoTitle, $event);
     }
@@ -169,7 +173,13 @@ final readonly class YouTubeMatchScorer
     {
         $eventTags = $this->fetchTagsFromTitle($event->eventName);
 
-        return $this->hasTag($eventTags, Tag::PARACLIMBING);
+        if ($this->hasTag($eventTags, Tag::PARACLIMBING)) {
+            return true;
+        }
+
+        $leagueTags = $this->fetchTagsFromTitle($event->leagueName);
+
+        return $this->hasTag($leagueTags, Tag::PARACLIMBING);
     }
 
     /** @param Tag[] $videoTags */
@@ -203,8 +213,12 @@ final readonly class YouTubeMatchScorer
      * @param Tag[] $roundTags
      * @param Tag[] $videoTags
      */
-    private function disciplinesMatch(array $roundTags, array $videoTags): bool
+    private function disciplinesMatch(array $roundTags, array $videoTags, bool $isParaclimbingEvent): bool
     {
+        if ($isParaclimbingEvent) {
+            return true;
+        }
+
         $requiredDisciplines = [];
 
         foreach (self::DISCIPLINE_TAGS as $disciplineTag) {
