@@ -25,6 +25,7 @@ use Exception;
 use SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
 use SportClimbing\IfscCalendar\Domain\Event\IFSCEvent;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
+use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
 use Override;
 
 final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
@@ -201,10 +202,12 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         $description .= "🐛 Report a bug/problem:\n";
         $description .= "https://github.com/sportclimbing/ifsc-calendar/issues\n";
 
-        if (array_slice($event->startList, 0, 20)) {
+        $startList = $this->getFilteredStartList($event, $round);
+
+        if (array_slice($startList, 0, 20)) {
             $description .= "\n📋 Start List:\n";
 
-            foreach ($event->startList as $athlete) {
+            foreach ($startList as $athlete) {
                 $description .= " - {$athlete->firstName} {$athlete->lastName} ({$athlete->country})\n";
             }
 
@@ -212,6 +215,19 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         }
 
         return $description;
+    }
+
+    /** @return IFSCStarter[] */
+    private function getFilteredStartList(IFSCEvent $event, ?IFSCRound $round): array
+    {
+        if (!$round || empty($round->categories)) {
+            return $event->startList;
+        }
+
+        return array_filter(
+            $event->startList,
+            fn (IFSCStarter $athlete): bool => $athlete->category === null || in_array($athlete->category, $round->categories, strict: true)
+        );
     }
 
     private function buildLocation(IFSCEvent $event): string
