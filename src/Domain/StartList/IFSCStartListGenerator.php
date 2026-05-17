@@ -8,15 +8,16 @@
 namespace SportClimbing\IfscCalendar\Domain\StartList;
 
 use Closure;
+use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthlete;
 use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteException;
 use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteService;
 use SportClimbing\IfscCalendar\Domain\Ranking\IFSCAthleteRankingCalculator;
 
-use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundCategory;
+use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteGender;
 
 final readonly class IFSCStartListGenerator
 {
-    private const int LIST_MAX_SIZE = 40;
+    private const int PER_GENDER_MAX = 20;
 
     public function __construct(
         private IFSCStartListProviderInterface $startListProvider,
@@ -37,13 +38,8 @@ final readonly class IFSCStartListGenerator
             $athlete = $this->athleteService->fetchAthlete($starter->athleteId);
             $starter->score = $this->rankingCalculator->calculateScore($athlete);
             $starter->photoUrl = $athlete->photoUrl;
-            $starter->instagram = $athlete->instagram;
-
-            $starter->category = match ($athlete->gender) {
-                'male' => IFSCRoundCategory::MEN,
-                'female' => IFSCRoundCategory::WOMEN,
-                default => null,
-            };
+            $starter->instagram = $this->normalizeInstagram($athlete->instagram);
+            $starter->gender = $this->getGender($athlete);
 
             $startList[] = $starter;
         }
@@ -51,9 +47,44 @@ final readonly class IFSCStartListGenerator
         usort($startList, $this->sortByScore());
 
         return new IFSCStartListResult(
-            starters: array_slice($startList, 0, self::LIST_MAX_SIZE),
+            starters: $this->selectTopByGender($startList),
             total: count($startList),
         );
+    }
+
+    /**
+     * @param IFSCStarter[] $startList
+     * @return IFSCStarter[]
+     */
+    private function selectTopByGender(array $startList): array
+    {
+        $men = $this->filterByGender($startList, IFSCAthleteGender::MEN);
+        $women = $this->filterByGender($startList, IFSCAthleteGender::WOMEN);
+
+        $selectedMen = $this->selectTopFromPool($men, array_slice($women, self::PER_GENDER_MAX));
+        $selectedWomen = $this->selectTopFromPool($women, array_slice($men, self::PER_GENDER_MAX));
+
+        $result = array_merge($selectedMen, $selectedWomen);
+        usort($result, $this->sortByScore());
+
+        return $result;
+    }
+
+    /**
+     * @param IFSCStarter[] $pool
+     * @param IFSCStarter[] $fillPool
+     * @return IFSCStarter[]
+     */
+    private function selectTopFromPool(array $pool, array $fillPool): array
+    {
+        $selected = array_slice($pool, 0, self::PER_GENDER_MAX);
+        $shortfall = self::PER_GENDER_MAX - count($selected);
+
+        if ($shortfall > 0) {
+            $selected = array_merge($selected, array_slice($fillPool, 0, $shortfall));
+        }
+
+        return $selected;
     }
 
     private function sortByScore(): Closure
@@ -66,6 +97,39 @@ final readonly class IFSCStartListGenerator
             }
 
             return $athlete1->athleteId <=> $athlete2->athleteId;
+        };
+    }
+
+    /** @return IFSCStarter[] */
+    public function filterByGender(array $startList, IFSCAthleteGender $gender): array
+    {
+        return array_values(array_filter($startList, fn (IFSCStarter $starter): bool => $starter->gender === $gender));
+    }
+
+    private function normalizeInstagram(?string $instagram): ?string
+    {
+        if ($instagram === null || $instagram === '') {
+            return null;
+        }
+
+        if (str_contains($instagram, 'instagram.com/')) {
+            preg_match('~instagram\.com/([^/?#]+)~', $instagram, $matches);
+            return $matches[1] ?? null;
+        }
+
+        return ltrim($instagram, '@');
+    }
+
+    /**
+     * @param IFSCAthlete $athlete
+     * @return IFSCAthleteGender|null
+     */
+    private function getGender(IFSCAthlete $athlete): ?IFSCAthleteGender
+    {
+        return match ($athlete->gender) {
+            'male' => IFSCAthleteGender::MEN,
+            'female' => IFSCAthleteGender::WOMEN,
+            default => null,
         };
     }
 

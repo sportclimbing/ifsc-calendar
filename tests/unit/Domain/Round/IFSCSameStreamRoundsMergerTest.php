@@ -11,7 +11,7 @@ use DateTimeImmutable;
 use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDisciplines;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
-use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundCategory;
+use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteGender;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundKind;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundNameNormalizer;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundStatus;
@@ -37,14 +37,14 @@ final class IFSCSameStreamRoundsMergerTest extends TestCase
     {
         $stream = new LiveStream(url: 'https://youtu.be/abc123');
 
-        $mens = $this->makeRound("Men's Lead Final", [IFSCRoundCategory::MEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 14:00', '2025-05-10 15:30');
-        $womens = $this->makeRound("Women's Lead Final", [IFSCRoundCategory::WOMEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 15:30', '2025-05-10 17:00');
+        $mens = $this->makeRound("Men's Lead Final", [IFSCAthleteGender::MEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 14:00', '2025-05-10 15:30');
+        $womens = $this->makeRound("Women's Lead Final", [IFSCAthleteGender::WOMEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 15:30', '2025-05-10 17:00');
 
         $result = $this->merger->merge([$mens, $womens]);
 
         $this->assertCount(1, $result);
         $this->assertSame("Men's & Women's Lead Final", $result[0]->name);
-        $this->assertSame([IFSCRoundCategory::MEN, IFSCRoundCategory::WOMEN], $result[0]->categories);
+        $this->assertSame([IFSCAthleteGender::MEN, IFSCAthleteGender::WOMEN], $result[0]->categories);
         $this->assertSame($mens->startTime, $result[0]->startTime);
         $this->assertSame('2025-05-10T17:00:00+00:00', $result[0]->endTime->format(DATE_RFC3339));
         $this->assertSame('https://youtu.be/abc123', $result[0]->liveStream->url);
@@ -54,14 +54,14 @@ final class IFSCSameStreamRoundsMergerTest extends TestCase
     {
         $stream = new LiveStream(url: 'https://youtu.be/abc123');
 
-        $womens = $this->makeRound("Women's Boulder Qualification", [IFSCRoundCategory::WOMEN], IFSCRoundKind::QUALIFICATION, $stream, '2025-05-10 09:00', '2025-05-10 12:00');
-        $mens = $this->makeRound("Men's Boulder Qualification", [IFSCRoundCategory::MEN], IFSCRoundKind::QUALIFICATION, $stream, '2025-05-10 12:00', '2025-05-10 15:00');
+        $womens = $this->makeRound("Women's Boulder Qualification", [IFSCAthleteGender::WOMEN], IFSCRoundKind::QUALIFICATION, $stream, '2025-05-10 09:00', '2025-05-10 12:00');
+        $mens = $this->makeRound("Men's Boulder Qualification", [IFSCAthleteGender::MEN], IFSCRoundKind::QUALIFICATION, $stream, '2025-05-10 12:00', '2025-05-10 15:00');
 
         $result = $this->merger->merge([$womens, $mens]);
 
         $this->assertCount(1, $result);
         $this->assertSame("Men's & Women's Boulder Qualification", $result[0]->name);
-        $this->assertSame([IFSCRoundCategory::MEN, IFSCRoundCategory::WOMEN], $result[0]->categories);
+        $this->assertSame([IFSCAthleteGender::MEN, IFSCAthleteGender::WOMEN], $result[0]->categories);
     }
 
     #[Test] public function rounds_with_different_stream_urls_are_not_merged(): void
@@ -69,8 +69,8 @@ final class IFSCSameStreamRoundsMergerTest extends TestCase
         $streamA = new LiveStream(url: 'https://youtu.be/aaa');
         $streamB = new LiveStream(url: 'https://youtu.be/bbb');
 
-        $mens = $this->makeRound("Men's Lead Final", [IFSCRoundCategory::MEN], IFSCRoundKind::FINAL, $streamA, '2025-05-10 14:00', '2025-05-10 15:30');
-        $womens = $this->makeRound("Women's Lead Final", [IFSCRoundCategory::WOMEN], IFSCRoundKind::FINAL, $streamB, '2025-05-10 15:30', '2025-05-10 17:00');
+        $mens = $this->makeRound("Men's Lead Final", [IFSCAthleteGender::MEN], IFSCRoundKind::FINAL, $streamA, '2025-05-10 14:00', '2025-05-10 15:30');
+        $womens = $this->makeRound("Women's Lead Final", [IFSCAthleteGender::WOMEN], IFSCRoundKind::FINAL, $streamB, '2025-05-10 15:30', '2025-05-10 17:00');
 
         $result = $this->merger->merge([$mens, $womens]);
 
@@ -81,8 +81,8 @@ final class IFSCSameStreamRoundsMergerTest extends TestCase
     {
         $noStream = new LiveStream();
 
-        $mens = $this->makeRound("Men's Lead Final", [IFSCRoundCategory::MEN], IFSCRoundKind::FINAL, $noStream, '2025-05-10 14:00', '2025-05-10 15:30');
-        $womens = $this->makeRound("Women's Lead Final", [IFSCRoundCategory::WOMEN], IFSCRoundKind::FINAL, $noStream, '2025-05-10 15:30', '2025-05-10 17:00');
+        $mens = $this->makeRound("Men's Lead Final", [IFSCAthleteGender::MEN], IFSCRoundKind::FINAL, $noStream, '2025-05-10 14:00', '2025-05-10 15:30');
+        $womens = $this->makeRound("Women's Lead Final", [IFSCAthleteGender::WOMEN], IFSCRoundKind::FINAL, $noStream, '2025-05-10 15:30', '2025-05-10 17:00');
 
         $result = $this->merger->merge([$mens, $womens]);
 
@@ -93,8 +93,8 @@ final class IFSCSameStreamRoundsMergerTest extends TestCase
     {
         $stream = new LiveStream(url: 'https://youtu.be/abc123');
 
-        $qual = $this->makeRound("Men's Lead Qualification", [IFSCRoundCategory::MEN], IFSCRoundKind::QUALIFICATION, $stream, '2025-05-10 09:00', '2025-05-10 12:00');
-        $final = $this->makeRound("Women's Lead Final", [IFSCRoundCategory::WOMEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 15:00', '2025-05-10 17:00');
+        $qual = $this->makeRound("Men's Lead Qualification", [IFSCAthleteGender::MEN], IFSCRoundKind::QUALIFICATION, $stream, '2025-05-10 09:00', '2025-05-10 12:00');
+        $final = $this->makeRound("Women's Lead Final", [IFSCAthleteGender::WOMEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 15:00', '2025-05-10 17:00');
 
         $result = $this->merger->merge([$qual, $final]);
 
@@ -105,8 +105,8 @@ final class IFSCSameStreamRoundsMergerTest extends TestCase
     {
         $stream = new LiveStream(url: 'https://youtu.be/abc123');
 
-        $lead = $this->makeRound("Men's Lead Final", [IFSCRoundCategory::MEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 14:00', '2025-05-10 15:30', IFSCDiscipline::LEAD);
-        $boulder = $this->makeRound("Women's Boulder Final", [IFSCRoundCategory::WOMEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 15:30', '2025-05-10 17:00', IFSCDiscipline::BOULDER);
+        $lead = $this->makeRound("Men's Lead Final", [IFSCAthleteGender::MEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 14:00', '2025-05-10 15:30', IFSCDiscipline::LEAD);
+        $boulder = $this->makeRound("Women's Boulder Final", [IFSCAthleteGender::WOMEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 15:30', '2025-05-10 17:00', IFSCDiscipline::BOULDER);
 
         $result = $this->merger->merge([$lead, $boulder]);
 
@@ -117,8 +117,8 @@ final class IFSCSameStreamRoundsMergerTest extends TestCase
     {
         $stream = new LiveStream(url: 'https://youtu.be/abc123');
 
-        $mens = $this->makeRound("Men's Lead Final", [IFSCRoundCategory::MEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 14:00', '2025-05-10 15:30', status: IFSCRoundStatus::PROVISIONAL);
-        $womens = $this->makeRound("Women's Lead Final", [IFSCRoundCategory::WOMEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 15:30', '2025-05-10 17:00', status: IFSCRoundStatus::CONFIRMED);
+        $mens = $this->makeRound("Men's Lead Final", [IFSCAthleteGender::MEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 14:00', '2025-05-10 15:30', status: IFSCRoundStatus::PROVISIONAL);
+        $womens = $this->makeRound("Women's Lead Final", [IFSCAthleteGender::WOMEN], IFSCRoundKind::FINAL, $stream, '2025-05-10 15:30', '2025-05-10 17:00', status: IFSCRoundStatus::CONFIRMED);
 
         $result = $this->merger->merge([$mens, $womens]);
 
@@ -131,9 +131,9 @@ final class IFSCSameStreamRoundsMergerTest extends TestCase
         $otherStream = new LiveStream(url: 'https://youtu.be/other');
         $noStream = new LiveStream();
 
-        $mens = $this->makeRound("Men's Lead Final", [IFSCRoundCategory::MEN], IFSCRoundKind::FINAL, $sharedStream, '2025-05-10 14:00', '2025-05-10 15:30');
-        $womens = $this->makeRound("Women's Lead Final", [IFSCRoundCategory::WOMEN], IFSCRoundKind::FINAL, $sharedStream, '2025-05-10 15:30', '2025-05-10 17:00');
-        $speed = $this->makeRound("Men's Speed Final", [IFSCRoundCategory::MEN], IFSCRoundKind::FINAL, $otherStream, '2025-05-10 18:00', '2025-05-10 19:00');
+        $mens = $this->makeRound("Men's Lead Final", [IFSCAthleteGender::MEN], IFSCRoundKind::FINAL, $sharedStream, '2025-05-10 14:00', '2025-05-10 15:30');
+        $womens = $this->makeRound("Women's Lead Final", [IFSCAthleteGender::WOMEN], IFSCRoundKind::FINAL, $sharedStream, '2025-05-10 15:30', '2025-05-10 17:00');
+        $speed = $this->makeRound("Men's Speed Final", [IFSCAthleteGender::MEN], IFSCRoundKind::FINAL, $otherStream, '2025-05-10 18:00', '2025-05-10 19:00');
         $boulderQual = $this->makeRound("Boulder Qualification", [], IFSCRoundKind::QUALIFICATION, $noStream, '2025-05-09 09:00', '2025-05-09 13:00');
 
         $result = $this->merger->merge([$mens, $womens, $speed, $boulderQual]);

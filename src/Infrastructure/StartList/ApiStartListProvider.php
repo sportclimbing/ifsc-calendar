@@ -7,6 +7,8 @@
  */
 namespace SportClimbing\IfscCalendar\Infrastructure\StartList;
 
+use Closure;
+use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListException;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListProviderInterface;
@@ -81,6 +83,7 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
             firstName: $firstName,
             lastName: $this->normalizeLastName($lastName),
             country: $country,
+            disciplines: $this->extractDisciplines($athlete),
         );
     }
 
@@ -117,10 +120,42 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
                 firstName: $firstName,
                 lastName: $this->normalizeLastName($lastName),
                 country: $country,
+                disciplines: $this->extractDisciplines($athlete),
             );
         }
 
         return $starters;
+    }
+
+    /** @return IFSCDiscipline[] */
+    private function extractDisciplines(object $athlete): array
+    {
+        $disciplines = [];
+
+        foreach ($athlete->d_cats as $dCat) {
+            $status = isset($dCat->status) && is_string($dCat->status)
+                ? IFSCStartListStatus::tryFrom($dCat->status)
+                : null;
+
+            if ($status === IFSCStartListStatus::NOT_ATTENDING_STATUS) {
+                continue;
+            }
+
+            $discipline = $this->parseDisciplineFromName($dCat->name);
+
+            if ($discipline !== null) {
+                $disciplines[] = $discipline;
+            }
+        }
+
+        return array_unique($disciplines, SORT_REGULAR);
+    }
+
+    private function parseDisciplineFromName(string $name): ?IFSCDiscipline
+    {
+        $firstWord = array_first(explode(' ', $name));
+
+        return IFSCDiscipline::tryFrom(strtolower($firstWord));
     }
 
     private function athleteShouldBeIncluded(object $athlete): bool

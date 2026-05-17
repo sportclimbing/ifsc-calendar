@@ -5,9 +5,9 @@
  * @link     https://github.com/nicoSWD
  * @author   Nicolas Oelgart <nico@ifsc.stream>
  */
-namespace SportClimbing\IfscCalendar\Domain\Round;
+namespace SportClimbing\IfscCalendar\Domain\Athlete;
 
-enum IFSCRoundCategory: string
+enum IFSCAthleteGender: string
 {
     case MEN = 'men';
     case WOMEN = 'women';
