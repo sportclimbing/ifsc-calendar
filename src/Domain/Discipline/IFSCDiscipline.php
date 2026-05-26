@@ -12,5 +12,18 @@ enum IFSCDiscipline: string
     case BOULDER = 'boulder';
     case LEAD = 'lead';
     case SPEED = 'speed';
+    case SPEED_RELAY = 'speed_relay';
     case COMBINED = 'combined';
+
+    public function displayName(): string
+    {
+        return str_replace('_', ' ', $this->value);
+    }
+
+    public function calendarDiscipline(): string
+    {
+        return $this === self::SPEED_RELAY
+            ? self::SPEED->value
+            : $this->value;
+    }
 }

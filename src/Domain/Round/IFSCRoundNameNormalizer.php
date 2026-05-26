@@ -45,7 +45,7 @@ final readonly class IFSCRoundNameNormalizer
      */
     private function disciplineNames(array $disciplines): array
     {
-        return array_map(static fn (IFSCDiscipline $discipline): string => $discipline->value, $disciplines);
+        return array_map(static fn (IFSCDiscipline $discipline): string => $discipline->displayName(), $disciplines);
     }
 
     private function buildCategories(IFSCParsedTags $tags): string
@@ -66,9 +66,9 @@ final readonly class IFSCRoundNameNormalizer
             $lastDiscipline = array_pop($disciplines);
             $disciplines = $this->disciplineNames($disciplines);
 
-            return implode(', ', $disciplines) . ' & ' . $lastDiscipline->value;
+            return implode(', ', $disciplines) . ' & ' . $lastDiscipline->displayName();
         } else {
-            return array_first($disciplines)->value;
+            return array_first($disciplines)->displayName();
         }
     }
 }

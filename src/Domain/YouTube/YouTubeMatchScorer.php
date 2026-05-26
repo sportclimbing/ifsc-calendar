@@ -17,6 +17,7 @@ final readonly class YouTubeMatchScorer
     private const array DISCIPLINE_TAGS = [
         Tag::BOULDER,
         Tag::LEAD,
+        Tag::SPEED_RELAY,
         Tag::SPEED,
         Tag::COMBINED,
     ];

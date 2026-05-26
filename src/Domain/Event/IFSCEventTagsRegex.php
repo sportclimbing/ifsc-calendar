@@ -13,7 +13,8 @@ enum IFSCEventTagsRegex: string
     case MEN = '(men|male)';
     case LEAD = 'lead';
     case BOULDER = 'boulder(ing)?';
-    case SPEED = 'speed';
+    case SPEED_RELAY = 'speed[\s_-]*relay';
+    case SPEED = 'speed(?![\s_-]*relay)';
     case COMBINED = 'combined';
     case PARACLIMBING = 'para[\s-]?climbing';
     case QUALIFICATION = 'qualifications?';
