@@ -259,7 +259,12 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
                 throw new RuntimeException(sprintf("Invalid discipline value for %s", $this->eventReference($eventData)));
             }
 
-            $parsed[$discipline] = IFSCDiscipline::from($discipline);
+            $parsedDiscipline = $this->parseDiscipline($discipline);
+            if (!$parsedDiscipline) {
+                continue;
+            }
+
+            $parsed[$parsedDiscipline->value] = $parsedDiscipline;
         }
 
         return array_values($parsed);
@@ -354,7 +359,9 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
         $disciplineKey = isset($roundPayload['discipline']) ? 'discipline' : 'kind';
         $kindKey = isset($roundPayload['discipline']) ? 'kind' : 'name';
 
-        $discipline = $this->requiredString($roundPayload, $disciplineKey);
+        $discipline = $this->parseRoundDiscipline(
+            $this->requiredString($roundPayload, $disciplineKey),
+        );
         $kind = $this->parseRoundKind(
             roundKind: $this->requiredString($roundPayload, $kindKey),
             eventData: $eventData,
@@ -365,6 +372,21 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
             kind: $kind,
             category: $this->requiredString($roundPayload, 'category'),
         );
+    }
+
+    private function parseRoundDiscipline(string $discipline): string
+    {
+        return $this->parseDiscipline($discipline)?->value ?? $this->normalizeDisciplineValue($discipline);
+    }
+
+    private function parseDiscipline(string $discipline): ?IFSCDiscipline
+    {
+        return IFSCDiscipline::tryFrom($this->normalizeDisciplineValue($discipline));
+    }
+
+    private function normalizeDisciplineValue(string $discipline): string
+    {
+        return strtolower(str_replace([' ', '-'], '_', trim($discipline)));
     }
 
     /** @param array<string,mixed> $eventData */
@@ -415,6 +437,8 @@ final readonly class IFSCEventsFetcher implements IFSCEventFetcherInterface
             callback: static fn (array $match): string => $match[1] . ' & ' . $match[2],
             subject: $round->discipline,
         );
+
+        $discipline = str_replace('_', ' ', $discipline);
 
         return sprintf("%s's %s %s", $round->category, $discipline, $round->kind->value) |> ucwords(...);
     }

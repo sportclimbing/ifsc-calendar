@@ -17,6 +17,7 @@ final readonly class IFSCParsedTags
     private const array DISCIPLINES = [
         IFSCDiscipline::BOULDER->value => Tag::BOULDER,
         IFSCDiscipline::LEAD->value => Tag::LEAD,
+        IFSCDiscipline::SPEED_RELAY->value => Tag::SPEED_RELAY,
         IFSCDiscipline::SPEED->value => Tag::SPEED,
         IFSCDiscipline::COMBINED->value => Tag::COMBINED,
     ];
@@ -51,7 +52,7 @@ final readonly class IFSCParsedTags
 
         foreach (self::DISCIPLINES as $name => $tag) {
             if ($this->hasTag($tag)) {
-                if ($tag === IFSCDiscipline::COMBINED) {
+                if ($tag === Tag::COMBINED) {
                     $disciplines[] = IFSCDiscipline::BOULDER;
                     $disciplines[] = IFSCDiscipline::LEAD;
                 } else {
