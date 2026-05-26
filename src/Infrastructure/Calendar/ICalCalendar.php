@@ -194,10 +194,13 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
             $description .= "🎟️ Buy Tickets:\n{$event->ticketsPurchaseUrl}\n\n";
         }
 
-        $description .= "💬 Join Discord:\n" . self::DISCORD_URL . "\n\n";
+        $description .= "🔮 Fantasy Climbing League:\n";
+        $description .= "https://fantasyclimbingleague.com/\n\n";
 
         $description .= "☕️ If you find this useful, please consider buying me a coffee:\n";
-        $description .= "https://www.buymeacoffee.com/sportclimbing\n\n";
+        $description .= "https://buymeacoffee.com/sportclimbing\n\n";
+
+        $description .= "💬 Join Discord:\n" . self::DISCORD_URL . "\n\n";
 
         $description .= "🐛 Report a bug/problem:\n";
         $description .= "https://github.com/sportclimbing/ifsc-calendar/issues\n";
