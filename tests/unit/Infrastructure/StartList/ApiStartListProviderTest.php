@@ -67,6 +67,28 @@ final class ApiStartListProviderTest extends TestCase
     "d_cats": [
       {"id": 7, "name": "BOULDER Women", "status": null}
     ]
+  },
+  {
+    "squad_id": 10,
+    "squad_members": [
+      {
+        "athlete_id": 2001,
+        "firstname": "Fay",
+        "lastname": "SQUAD ONE"
+      },
+      {
+        "athlete_id": 2002,
+        "firstname": "Gus",
+        "lastname": "SQUAD TWO"
+      }
+    ],
+    "name": "AUT 1",
+    "federation": "KVO",
+    "federation_id": 99,
+    "country": "AUT",
+    "d_cats": [
+      {"id": 9, "name": "SPEED RELAY Mixed"}
+    ]
   }
 ]
 JSON;
@@ -122,7 +144,7 @@ JSON;
         $this->assertArrayHasKey(RequestOptions::HEADERS, $httpClient->requestedOptions);
         $this->assertArrayHasKey(RequestOptions::COOKIES, $httpClient->requestedOptions);
         $this->assertSame('https://ifsc.results.info/', $httpClient->requestedOptions[RequestOptions::HEADERS]['referer']);
-        $this->assertSame([1001, 1003, 1004, 1005], array_map(static fn (IFSCStarter $starter): int => $starter->athleteId, $startList));
+        $this->assertSame([1001, 1003, 1004, 1005, 2001, 2002], array_map(static fn (IFSCStarter $starter): int => $starter->athleteId, $startList));
     }
 
     #[Test] public function http_failures_are_mapped_to_domain_exception(): void
