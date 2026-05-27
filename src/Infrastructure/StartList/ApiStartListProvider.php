@@ -7,7 +7,6 @@
  */
 namespace SportClimbing\IfscCalendar\Infrastructure\StartList;
 
-use Closure;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListException;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListProviderInterface;
@@ -43,17 +42,85 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
             fn (object $athlete): bool => $this->athleteShouldBeIncluded($athlete),
         );
 
-        return array_values(array_map($this->convertToStarterObject(), $includedAthletes));
+        $starters = [];
+
+        foreach ($includedAthletes as $athlete) {
+            foreach ($this->convertToStarterObjects($athlete) as $starter) {
+                $starters[$starter->athleteId] = $starter;
+            }
+        }
+
+        return array_values($starters);
     }
 
-    private function convertToStarterObject(): Closure
+    /** @return IFSCStarter[] */
+    private function convertToStarterObjects(object $athlete): array
     {
-        return fn (object $athlete): IFSCStarter => new IFSCStarter(
-            athleteId: $athlete->athlete_id,
-            firstName: $athlete->firstname,
-            lastName: $this->normalizeLastName($athlete->lastname),
-            country: $athlete->country,
+        $starter = $this->createStarterFromAthletePayload($athlete);
+
+        if ($starter !== null) {
+            return [$starter];
+        }
+
+        return $this->createStartersFromSquadPayload($athlete);
+    }
+
+    private function createStarterFromAthletePayload(object $athlete): ?IFSCStarter
+    {
+        $athleteId = $this->readInt($athlete->athlete_id ?? null);
+        $firstName = $this->readString($athlete->firstname ?? null);
+        $lastName = $this->readString($athlete->lastname ?? null);
+        $country = $this->readString($athlete->country ?? null);
+
+        if ($athleteId === null || $firstName === null || $lastName === null || $country === null) {
+            return null;
+        }
+
+        return new IFSCStarter(
+            athleteId: $athleteId,
+            firstName: $firstName,
+            lastName: $this->normalizeLastName($lastName),
+            country: $country,
         );
+    }
+
+    /** @return IFSCStarter[] */
+    private function createStartersFromSquadPayload(object $athlete): array
+    {
+        if (!isset($athlete->squad_members) || !is_array($athlete->squad_members)) {
+            return [];
+        }
+
+        $country = $this->readString($athlete->country ?? null);
+
+        if ($country === null) {
+            return [];
+        }
+
+        $starters = [];
+
+        foreach ($athlete->squad_members as $member) {
+            if (!is_object($member)) {
+                continue;
+            }
+
+            $athleteId = $this->readInt($member->athlete_id ?? null);
+            $firstName = $this->readString($member->firstname ?? null);
+            $lastName = $this->readString($member->lastname ?? null);
+
+            if ($athleteId === null || $firstName === null || $lastName === null) {
+                continue;
+            }
+
+            $starters[] = new IFSCStarter(
+                athleteId: $athleteId,
+                firstName: $firstName,
+                lastName: $this->normalizeLastName($lastName),
+                country: $country,
+            );
+        }
+
+        return $starters;
     }
 
     private function athleteShouldBeIncluded(object $athlete): bool
@@ -88,5 +155,21 @@ final readonly class ApiStartListProvider implements IFSCStartListProviderInterf
     private function normalizeLastName(string $lastName): string
     {
         return mb_convert_case($lastName, MB_CASE_TITLE, 'UTF-8');
+    }
+
+    private function readInt(mixed $value): ?int
+    {
+        return is_int($value) ? $value : null;
+    }
+
+    private function readString(mixed $value): ?string
+    {
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+
+        return $trimmed === '' ? null : $trimmed;
     }
 }
