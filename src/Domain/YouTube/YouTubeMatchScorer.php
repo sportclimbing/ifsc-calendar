@@ -98,6 +98,10 @@ final readonly class YouTubeMatchScorer
         }
 
         foreach ($this->eventNameTokens($this->textNormalizer->normalize($event->eventName)) as $token) {
+            if (is_numeric($token)) {
+                continue;
+            }
+
             if (str_contains($normalizedTitle, $token)) {
                 return true;
             }

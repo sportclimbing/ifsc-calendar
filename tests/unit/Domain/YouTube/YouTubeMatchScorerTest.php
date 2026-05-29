@@ -260,6 +260,38 @@ final class YouTubeMatchScorerTest extends TestCase
         $this->assertGreaterThanOrEqual(14, $score);
     }
 
+    #[Test] public function different_location_video_is_rejected_even_when_same_year(): void
+    {
+        $video = $this->createVideo(
+            title: "Lead semi-finals | Wujiang 2026",
+            duration: 90,
+            publishedAt: '2026-05-21T11:00:00Z',
+            scheduledStartTime: '2026-05-21T12:00:00Z',
+        );
+
+        $score = $this->matchScorer->score(
+            video: $video,
+            roundTags: $this->roundTags("Men's & Women's Lead Semi-Final"),
+            event: new IFSCEventInfo(
+                eventId: 1500,
+                eventName: 'World Climbing Series Chamonix 2026',
+                slug: 'world-climbing-series-chamonix-2026',
+                leagueId: 10,
+                leagueName: 'World Climbing Series',
+                leagueSeasonId: 99,
+                localStartDate: '2026-05-20T08:00:00Z',
+                localEndDate: '2026-05-22T20:00:00Z',
+                timeZone: new DateTimeZone('Europe/Paris'),
+                location: 'Chamonix',
+                country: 'FRA',
+                disciplines: [],
+                categories: [],
+            ),
+        );
+
+        $this->assertNull($score);
+    }
+
     /** @return Tag[] */
     private function roundTags(string $roundName): array
     {
