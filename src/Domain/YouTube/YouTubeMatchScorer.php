@@ -88,11 +88,26 @@ final readonly class YouTubeMatchScorer
             }
         }
 
-        return
+        if (
             str_contains(
                 str_replace(' ', '', $normalizedTitle),
                 str_replace(' ', '', $this->textNormalizer->normalize($event->location)),
-            );
+            )
+        ) {
+            return true;
+        }
+
+        foreach ($this->eventNameTokens($this->textNormalizer->normalize($event->eventName)) as $token) {
+            if (is_numeric($token)) {
+                continue;
+            }
+
+            if (str_contains($normalizedTitle, $token)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /** @param Tag[] $videoTags */
