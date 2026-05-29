@@ -227,6 +227,39 @@ final class YouTubeMatchScorerTest extends TestCase
         $this->assertNotNull($score);
     }
 
+    #[Test] public function event_name_tokens_match_when_location_differs(): void
+    {
+        $video = $this->createVideo(
+            title: "Women's Boulder semi-final | Comunidad de Madrid 2026",
+            duration: 120,
+            publishedAt: '2026-05-29T10:00:00Z',
+            scheduledStartTime: '2026-05-29T12:00:00Z',
+        );
+
+        $score = $this->matchScorer->score(
+            video: $video,
+            roundTags: $this->roundTags("Women's Boulder Semi-Final"),
+            event: new IFSCEventInfo(
+                eventId: 1479,
+                eventName: 'World Climbing Series Comunidad de Madrid 2026',
+                slug: 'world-climbing-series-comunidad-de-madrid-2026',
+                leagueId: 10,
+                leagueName: 'World Climbing Series',
+                leagueSeasonId: 99,
+                localStartDate: '2026-05-28T08:00:00Z',
+                localEndDate: '2026-05-30T20:00:00Z',
+                timeZone: new DateTimeZone('Europe/Madrid'),
+                location: 'Alcobendas',
+                country: 'ESP',
+                disciplines: [],
+                categories: [],
+            ),
+        );
+
+        $this->assertNotNull($score);
+        $this->assertGreaterThanOrEqual(14, $score);
+    }
+
     /** @return Tag[] */
     private function roundTags(string $roundName): array
     {

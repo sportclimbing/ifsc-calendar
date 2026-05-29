@@ -272,6 +272,33 @@ final class YouTubeLinkMatcherTest extends TestCase
         $this->assertSame('https://youtu.be/para-qual-id', $liveStream->url);
     }
 
+    #[Test] public function alcobendas_location_matches_comunidad_de_madrid_video_title(): void
+    {
+        $event = $this->createEvent(
+            eventName: 'World Climbing Series Comunidad de Madrid 2026',
+            location: 'Alcobendas',
+            localStartDate: '2026-05-28T08:00:00Z',
+            localEndDate: '2026-05-30T20:00:00Z',
+        );
+        $videoCollection = new YouTubeVideoCollection();
+        $videoCollection->add(new YouTubeVideo(
+            title: "Men's Boulder semi-final | Comunidad de Madrid 2026",
+            duration: 120,
+            videoId: 'sfA6nto-LFw',
+            publishedAt: new DateTimeImmutable('2026-05-28T22:16:13Z'),
+            scheduledStartTime: null,
+            restrictedRegions: [],
+        ));
+
+        $liveStream = $this->linkMatcher->findStreamUrlForRound(
+            event: $event,
+            roundName: "Men's Boulder Semi-Final",
+            videoCollection: $videoCollection,
+        );
+
+        $this->assertSame('https://youtu.be/sfA6nto-LFw', $liveStream->url);
+    }
+
     private function createVideoCollection(): YouTubeVideoCollection
     {
         $titles = [
