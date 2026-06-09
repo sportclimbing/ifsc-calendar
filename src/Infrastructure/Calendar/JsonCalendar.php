@@ -100,7 +100,8 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
             'first_name' => $starter->firstName,
             'last_name' => $starter->lastName,
             'country' => $starter->country,
-            'disciplines' => array_map(static fn (IFSCDiscipline $discipline): string => $discipline->value, $starter->disciplines),
+            'gender' => $starter->gender,
+            'disciplines' => $this->buildStarterDisciplines($starter),
             'photo_url' => $starter->photoUrl,
             'instagram' => $starter->instagram,
         ];
@@ -161,5 +162,11 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
     private function formatDate(DateTimeInterface $dateTime): string
     {
         return $dateTime->format(DateTimeInterface::RFC3339);
+    }
+
+    /** @return string[] */
+    private function buildStarterDisciplines(IFSCStarter $starter): array
+    {
+        return array_map(static fn (IFSCDiscipline $discipline): string => $discipline->value, $starter->disciplines);
     }
 }
