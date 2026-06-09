@@ -24,12 +24,10 @@ services:
   SportClimbing\IfscCalendar\Infrastructure\Calendar\ICalCalendar:
     class: SportClimbing\IfscCalendar\Infrastructure\Calendar\ICalCalendar
     arguments:
-      - '@SportClimbing\IfscCalendar\Infrastructure\Calendar\CalendarFactory'
+      - '@SportClimbing\IcsGenerator\CalendarFactory'
       - '%calendar_product_identifier%'
       - '%calendar_published_ttl%'
       - '%calendar_name%'
-
-  SportClimbing\IfscCalendar\Infrastructure\Calendar\CalendarFactory: ~
 
   # Start List
   SportClimbing\IfscCalendar\Infrastructure\StartList\ApiStartListProvider:
@@ -88,6 +86,7 @@ services:
     arguments:
       - '@nicoSWD\IfscVideos\Infrastructure\YouTube\YouTubeVideoProvider'
 
+  SportClimbing\IcsGenerator\CalendarFactory: ~
   Symfony\Component\EventDispatcher\EventDispatcher: ~
   Symfony\Component\Filesystem\Filesystem: ~
   GuzzleHttp\Client: ~

@@ -7,323 +7,103 @@
  */
 namespace SportClimbing\IfscCalendar\Infrastructure\Calendar;
 
-use DateInterval;
 use DateTimeImmutable;
-use DateTimeZone;
-use Eluceo\iCal\Domain\Entity\Calendar;
-use Eluceo\iCal\Domain\Entity\Event;
-use Eluceo\iCal\Domain\Entity\TimeZone;
-use Eluceo\iCal\Domain\Enum\EventStatus;
-use Eluceo\iCal\Domain\ValueObject\Alarm;
-use Eluceo\iCal\Domain\ValueObject\Alarm\DisplayAction;
-use Eluceo\iCal\Domain\ValueObject\Alarm\RelativeTrigger;
-use Eluceo\iCal\Domain\ValueObject\DateTime;
-use Eluceo\iCal\Domain\ValueObject\Location;
-use Eluceo\iCal\Domain\ValueObject\TimeSpan;
-use Eluceo\iCal\Domain\ValueObject\Uri;
 use Exception;
+use Override;
 use SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
-use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use SportClimbing\IfscCalendar\Domain\Event\IFSCEvent;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
-use Override;
+use SportClimbing\IcsGenerator\CalendarFactory;
+use SportClimbing\IcsGenerator\IcsGenerator;
 
 final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
 {
-    private const string DISCORD_URL = 'https://discord.gg/rbM5vjcVHM';
-    private const array SITE_URL_PARAMS = [
-        'utm_source' => 'calendar',
-    ];
+    private IcsGenerator $icsGenerator;
 
     public function __construct(
-        private CalendarFactory $calendarFactory,
-        private string $productIdentifier,
-        private string $publishedTtl,
-        private string $calendarName,
+        CalendarFactory $calendarFactory,
+        string $productIdentifier,
+        string $publishedTtl,
+        string $calendarName,
     ) {
+        $this->icsGenerator = new IcsGenerator(
+            calendarFactory: $calendarFactory,
+            productIdentifier: $productIdentifier,
+            publishedTtl: $publishedTtl,
+            calendarName: $calendarName,
+        );
     }
 
     /**
+     * @param IFSCEvent[] $events
      * @inheritDoc
      * @throws Exception
      */
     #[Override] public function generateForEvents(array $events): string
     {
-        return (string) $this->calendarFactory->createNamedCalendar(
-            $this->createCalenderFromEvents($events),
-            $this->calendarName,
+        return $this->icsGenerator->generateForEvents(
+            array_map($this->convertEventToArray(...), $events)
         );
     }
 
     /**
-     * @param IFSCEvent[] $events
-     * @throws Exception
+     * @return array<string, mixed>
      */
-    private function createCalenderFromEvents(array $events): Calendar
+    private function convertEventToArray(IFSCEvent $event): array
     {
-        $calendar = new Calendar($this->createEvents($events));
-        $calendar->setProductIdentifier($this->productIdentifier);
-        $calendar->setPublishedTTL(new DateInterval($this->publishedTtl));
-
-        $begin = new DateTimeImmutable('first day of January this year');
-        $end = new DateTimeImmutable('last day of December next year');
-
-        foreach ($this->collectTimeZones($events) as $timeZone) {
-            $calendar->addTimeZone(TimeZone::createFromPhpDateTimeZone($timeZone, $begin, $end));
-        }
-
-        return $calendar;
+        return [
+            'name' => $event->eventName,
+            'location' => $event->location,
+            'country' => $event->country,
+            'country_name' => $event->countryName,
+            'site_url' => $event->siteUrl,
+            'starts_at' => $this->formatDateTime($event->startsAt),
+            'ends_at' => $this->formatDateTime($event->endsAt),
+            'timezone' => $event->timeZone->getName(),
+            'league_name' => $event->leagueName,
+            'tickets' => [
+                'summary' => $event->ticketsSummary ?? '',
+                'purchase_url' => $event->ticketsPurchaseUrl ?? '',
+            ],
+            'rounds' => array_map(fn (IFSCRound $round): array => $this->convertRoundToArray($round), $event->rounds),
+            'start_list' => array_map($this->convertStarterToArray(...), $event->startList),
+        ];
     }
 
     /**
-     * @param IFSCEvent[] $events
-     * @return array<string, DateTimeZone>
+     * @return array<string, mixed>
      */
-    private function collectTimeZones(array $events): array
+    private function convertRoundToArray(IFSCRound $round): array
     {
-        $timeZones = [];
-
-        foreach ($events as $event) {
-            foreach ($event->rounds as $round) {
-                $tz = $round->startTime->getTimezone();
-                $timeZones[$tz->getName()] = $tz;
-            }
-            $tz = $event->startsAt->getTimezone();
-            $timeZones[$tz->getName()] = $tz;
-        }
-
-        return $timeZones;
+        return [
+            'name' => $round->name,
+            'categories' => array_map(fn ($c) => $c->value, $round->categories),
+            'disciplines' => array_map(fn ($d) => $d->calendarDiscipline(), $round->disciplines->all()),
+            'kind' => $round->kind->value,
+            'starts_at' => $this->formatDateTime($round->startTime),
+            'ends_at' => $this->formatDateTime($round->endTime),
+            'schedule_status' => $round->status->value,
+            'stream_url' => $round->liveStream->url,
+            'stream_blocked_regions' => $round->liveStream->restrictedRegions,
+        ];
     }
 
     /**
-     * @param IFSCEvent[] $events
-     * @return Event[]
-     * @throws Exception
+     * @return array<string, mixed>
      */
-    private function createEvents(array $events): array
+    private function convertStarterToArray(IFSCStarter $starter): array
     {
-        $calendarEvents = [];
-
-        foreach ($events as $event) {
-            if ($this->shouldIgnoreEvent($event)) {
-                continue;
-            }
-
-            $rounds = $this->getStreamableRounds($event);
-
-            if (!empty($rounds)) {
-                foreach ($rounds as $round) {
-                    $calendarEvents[] = $this->createEvent($event, $round);
-                }
-            } else {
-                $calendarEvents[] = $this->createEventWithoutRounds($event);
-            }
-        }
-
-        return $calendarEvents;
+        return [
+            'first_name' => $starter->firstName,
+            'last_name' => $starter->lastName,
+            'country' => $starter->country,
+            'category' => $starter->category?->value,
+        ];
     }
 
-    private function createEvent(IFSCEvent $event, IFSCRound $round): Event
+    private function formatDateTime(DateTimeImmutable $dt): string
     {
-        $calendarEvent = new Event()
-            ->setSummary(sprintf("%s - %s (%s)", $round->name, $event->location, $event->country))
-            ->setDescription($this->buildDescription($event, $round))
-            ->setUrl(new Uri($this->buildSiteUrl($event)))
-            ->setStatus($this->getEventStatus($round))
-            ->setLocation(new Location($this->buildLocation($event)))
-            ->setOccurrence($this->buildTimeSpan($round));
-
-        if ($round->status->isConfirmed()) {
-            $calendarEvent->addAlarm(
-                $this->createAlarmOneHourBefore($event, $round->name),
-            );
-        }
-
-        return $calendarEvent;
-    }
-
-    /** @throws Exception */
-    private function createEventWithoutRounds(IFSCEvent $event): Event
-    {
-        $calendarEvent = new Event()
-            ->setSummary(sprintf('%s (%s)', $event->eventName, $event->country))
-            ->setDescription($this->buildDescription($event))
-            ->setUrl(new Uri($this->buildSiteUrl($event)))
-            ->setStatus(EventStatus::TENTATIVE())
-            ->setLocation(new Location($this->buildLocation($event)))
-            ->setOccurrence($this->buildGenericTimeSpan($event));
-
-        $calendarEvent->addAlarm(
-            $this->createAlarmOneDayBefore($event, $event->eventName),
-        );
-
-        return $calendarEvent;
-    }
-
-    private function buildTimeSpan(IFSCRound $round): TimeSpan
-    {
-        return new TimeSpan(
-            new DateTime($round->startTime, applyTimeZone: true),
-            new DateTime($round->endTime, applyTimeZone: true),
-        );
-    }
-
-    private function buildGenericTimeSpan(IFSCEvent $event): TimeSpan
-    {
-        return new TimeSpan(
-            new DateTime($event->startsAt, applyTimeZone: true),
-            new DateTime($event->endsAt, applyTimeZone: true),
-        );
-    }
-
-    private function buildDescription(IFSCEvent $event, ?IFSCRound $round = null): string
-    {
-        $description = "{$event->eventName}\n\n";
-
-        if ($round?->status->isProvisional()) {
-            $description .= "⚠️ Schedule is provisional and might change. ";
-            $description .= "This calendar will update automatically once it's confirmed!\n\n";
-        } elseif ($round === null) {
-            $description .= "⚠️ Precise schedule has not been announced yet. ";
-            $description .= "This calendar will update automatically once it's published!\n\n";
-        }
-
-        $description .= "🍿 Stream URL:\n{$this->buildSiteUrl($event)}\n\n";
-
-        if ($event->ticketsPurchaseUrl) {
-            $description .= "🎟️ Buy Tickets:\n{$event->ticketsPurchaseUrl}\n\n";
-        }
-
-        $description .= "🔮 Fantasy Climbing League:\n";
-        $description .= "https://fantasyclimbingleague.com/\n\n";
-
-        $description .= "☕️ If you find this useful, please consider buying me a coffee:\n";
-        $description .= "https://buymeacoffee.com/sportclimbing\n\n";
-
-        $description .= "💬 Join Discord:\n" . self::DISCORD_URL . "\n\n";
-
-        $description .= "🐛 Report a bug/problem:\n";
-        $description .= "https://github.com/sportclimbing/ifsc-calendar/issues\n";
-
-        $startList = $this->getFilteredStartList($event, $round);
-
-        if (array_slice($startList, 0, 20)) {
-            $description .= "\n📋 Start List:\n";
-
-            foreach ($startList as $athlete) {
-                $description .= " - {$athlete->firstName} {$athlete->lastName} ({$athlete->country})\n";
-            }
-
-            $description .= " - ...\n";
-        }
-
-        return $description;
-    }
-
-    /** @return IFSCStarter[] */
-    private function getFilteredStartList(IFSCEvent $event, ?IFSCRound $round): array
-    {
-        if (!$round) {
-            return $event->startList;
-        }
-
-        if (empty($round->categories) && empty($round->disciplines->all())) {
-            return $event->startList;
-        }
-
-        return array_filter(
-            $event->startList,
-            fn (IFSCStarter $athlete): bool =>
-                $this->matchesRoundCategory($athlete, $round) &&
-                $this->matchesRoundDiscipline($athlete, $round)
-        );
-    }
-
-    private function matchesRoundCategory(IFSCStarter $athlete, IFSCRound $round): bool
-    {
-        if (empty($round->categories)) {
-            return true;
-        }
-
-        return $athlete->gender === null || in_array($athlete->gender, $round->categories, strict: true);
-    }
-
-    private function matchesRoundDiscipline(IFSCStarter $athlete, IFSCRound $round): bool
-    {
-        $roundDisciplines = $round->disciplines->all();
-
-        if (empty($roundDisciplines)) {
-            return true;
-        }
-
-        return array_any(
-            $athlete->disciplines,
-            static fn (IFSCDiscipline $discipline): bool => in_array($discipline, $roundDisciplines, strict: true),
-        );
-    }
-
-    private function buildLocation(IFSCEvent $event): string
-    {
-        if ($event->countryName !== '') {
-            return "{$event->location}, {$event->countryName}";
-        }
-
-        return "{$event->location} ({$event->country})";
-    }
-
-    private function buildSiteUrl(IFSCEvent $event): string
-    {
-        $separator = str_contains($event->siteUrl, '?') ? '&' : '?';
-        $params = http_build_query(self::SITE_URL_PARAMS);
-
-        return "{$event->siteUrl}{$separator}{$params}";
-    }
-
-    private function getEventStatus(IFSCRound $round): EventStatus
-    {
-        return $round->status->isConfirmed()
-            ? EventStatus::CONFIRMED()
-            : EventStatus::TENTATIVE();
-    }
-
-    /** @return IFSCRound[] */
-    private function getStreamableRounds(IFSCEvent $event): array
-    {
-        return array_filter($event->rounds, fn (IFSCRound $round): bool => $this->roundIsStreamable($round));
-    }
-
-    private function roundIsStreamable(IFSCRound $round): bool
-    {
-        return !$round->kind->isQualification() || $round->liveStream->hasUrl();
-    }
-
-    private function createAlarmOneHourBefore(IFSCEvent $event, string $name): Alarm
-    {
-        return $this->createAlarm($event, $name, timeBefore: '1 hour');
-    }
-
-    private function createAlarmOneDayBefore(IFSCEvent $event, string $name): Alarm
-    {
-        return $this->createAlarm($event, $name, timeBefore: '1 day');
-    }
-
-    private function createAlarm(IFSCEvent $event, string $name, string $timeBefore): Alarm
-    {
-        $trigger = new RelativeTrigger(
-            DateInterval::createFromDateString(datetime: "-{$timeBefore}"),
-        );
-
-        return new Alarm(
-            new DisplayAction(
-                description: "Reminder: {$name} - {$event->location} ({$event->country}) starts in {$timeBefore}!"
-            ),
-            $trigger->withRelationToEnd(),
-        );
-    }
-
-    private function shouldIgnoreEvent(IFSCEvent $event): bool
-    {
-        return $event->leagueName === 'Games';
+        return $dt->format('Y-m-d\TH:i:sP');
     }
 }
