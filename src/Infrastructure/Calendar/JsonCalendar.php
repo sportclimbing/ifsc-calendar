@@ -99,11 +99,11 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
             'athlete_id' => $starter->athleteId,
             'first_name' => $starter->firstName,
             'last_name' => $starter->lastName,
-            'country' => $starter->country,
             'gender' => $starter->gender,
-            'disciplines' => $this->buildStarterDisciplines($starter),
+            'country' => $starter->country,
             'photo_url' => $starter->photoUrl,
             'instagram' => $starter->instagram,
+            'disciplines' => $this->buildStarterDisciplines($starter),
         ];
 
         return array_map($format, $starters);
