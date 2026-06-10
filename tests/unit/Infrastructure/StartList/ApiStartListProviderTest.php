@@ -11,6 +11,7 @@ use GuzzleHttp\RequestOptions;
 use Override;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListException;
 use SportClimbing\IfscCalendar\Infrastructure\HttpClient\HttpClientInterface;
@@ -145,6 +146,21 @@ JSON;
         $this->assertArrayHasKey(RequestOptions::COOKIES, $httpClient->requestedOptions);
         $this->assertSame('https://ifsc.results.info/', $httpClient->requestedOptions[RequestOptions::HEADERS]['referer']);
         $this->assertSame([1001, 1003, 1004, 1005, 2001, 2002], array_map(static fn (IFSCStarter $starter): int => $starter->athleteId, $startList));
+
+        // Verify disciplines are parsed from d_cats
+        $disciplinesByAthleteId = [];
+        foreach ($startList as $starter) {
+            $disciplinesByAthleteId[$starter->athleteId] = $starter->disciplines;
+        }
+
+        // Athlete 1001: "BOULDER Men" (confirmed) → BOULDER
+        $this->assertSame([IFSCDiscipline::BOULDER], $disciplinesByAthleteId[1001]);
+        // Athlete 1003: "BOULDER Men" (not attending) + "LEAD Women" (confirmed) → only LEAD
+        $this->assertSame([IFSCDiscipline::LEAD], $disciplinesByAthleteId[1003]);
+        // Athlete 1004: "LEAD Women" (no status) → LEAD (attending by default)
+        $this->assertSame([IFSCDiscipline::LEAD], $disciplinesByAthleteId[1004]);
+        // Athlete 1005: "BOULDER Women" (null status) → BOULDER (attending by default)
+        $this->assertSame([IFSCDiscipline::BOULDER], $disciplinesByAthleteId[1005]);
     }
 
     #[Test] public function http_failures_are_mapped_to_domain_exception(): void

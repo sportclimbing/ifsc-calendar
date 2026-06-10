@@ -14,7 +14,7 @@ use SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
 use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use SportClimbing\IfscCalendar\Domain\Event\IFSCEvent;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
-use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundCategory;
+use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteGender;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
 use Override;
 
@@ -99,9 +99,11 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
             'athlete_id' => $starter->athleteId,
             'first_name' => $starter->firstName,
             'last_name' => $starter->lastName,
+            'gender' => $starter->gender,
             'country' => $starter->country,
             'photo_url' => $starter->photoUrl,
-            'instagram' => $this->normalizeInstagram($starter->instagram),
+            'instagram' => $starter->instagram,
+            'disciplines' => $this->buildStarterDisciplines($starter),
         ];
 
         return array_map($format, $starters);
@@ -137,7 +139,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
     /** @return string[] */
     private function buildCategories(IFSCRound $round): array
     {
-        return array_map(static fn (IFSCRoundCategory $category): string => $category->value, $round->categories);
+        return array_map(static fn (IFSCAthleteGender $category): string => $category->value, $round->categories);
     }
 
     private function countryName(string $countryCode): string
@@ -157,22 +159,14 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
         return \Locale::getDisplayRegion("und-{$isoCode}", 'en');
     }
 
-    private function normalizeInstagram(?string $instagram): ?string
-    {
-        if ($instagram === null || $instagram === '') {
-            return null;
-        }
-
-        if (str_contains($instagram, 'instagram.com/')) {
-            preg_match('~instagram\.com/([^/?#]+)~', $instagram, $matches);
-            return $matches[1] ?? null;
-        }
-
-        return ltrim($instagram, '@');
-    }
-
     private function formatDate(DateTimeInterface $dateTime): string
     {
         return $dateTime->format(DateTimeInterface::RFC3339);
+    }
+
+    /** @return string[] */
+    private function buildStarterDisciplines(IFSCStarter $starter): array
+    {
+        return array_map(static fn (IFSCDiscipline $discipline): string => $discipline->value, $starter->disciplines);
     }
 }

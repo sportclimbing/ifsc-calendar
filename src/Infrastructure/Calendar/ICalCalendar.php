@@ -23,6 +23,7 @@ use Eluceo\iCal\Domain\ValueObject\TimeSpan;
 use Eluceo\iCal\Domain\ValueObject\Uri;
 use Exception;
 use SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
+use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use SportClimbing\IfscCalendar\Domain\Event\IFSCEvent;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
@@ -223,13 +224,42 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
     /** @return IFSCStarter[] */
     private function getFilteredStartList(IFSCEvent $event, ?IFSCRound $round): array
     {
-        if (!$round || empty($round->categories)) {
+        if (!$round) {
+            return $event->startList;
+        }
+
+        if (empty($round->categories) && empty($round->disciplines->all())) {
             return $event->startList;
         }
 
         return array_filter(
             $event->startList,
-            fn (IFSCStarter $athlete): bool => $athlete->category === null || in_array($athlete->category, $round->categories, strict: true)
+            fn (IFSCStarter $athlete): bool =>
+                $this->matchesRoundCategory($athlete, $round) &&
+                $this->matchesRoundDiscipline($athlete, $round)
+        );
+    }
+
+    private function matchesRoundCategory(IFSCStarter $athlete, IFSCRound $round): bool
+    {
+        if (empty($round->categories)) {
+            return true;
+        }
+
+        return $athlete->gender === null || in_array($athlete->gender, $round->categories, strict: true);
+    }
+
+    private function matchesRoundDiscipline(IFSCStarter $athlete, IFSCRound $round): bool
+    {
+        $roundDisciplines = $round->disciplines->all();
+
+        if (empty($roundDisciplines)) {
+            return true;
+        }
+
+        return array_any(
+            $athlete->disciplines,
+            static fn (IFSCDiscipline $discipline): bool => in_array($discipline, $roundDisciplines, strict: true),
         );
     }
 
