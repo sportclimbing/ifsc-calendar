@@ -20,7 +20,7 @@ use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundKind;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundStatus;
 use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
 use SportClimbing\IfscCalendar\Domain\Stream\LiveStream;
-use SportClimbing\IfscCalendar\Infrastructure\Calendar\CalendarFactory;
+use SportClimbing\IcsGenerator\CalendarFactory;
 use SportClimbing\IfscCalendar\Infrastructure\Calendar\ICalCalendar;
 use SportClimbing\IfscCalendar\Infrastructure\Calendar\JsonCalendar;
 
