@@ -9,7 +9,7 @@ namespace SportClimbing\IfscCalendar\Domain\Tags;
 
 use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use SportClimbing\IfscCalendar\Domain\Event\IFSCEventTagsRegex as Tag;
-use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteGender;
+use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteCategory;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundKind;
 
 final readonly class IFSCParsedTags
@@ -29,8 +29,8 @@ final readonly class IFSCParsedTags
     ];
 
     private const array CATEGORIES = [
-        IFSCAthleteGender::WOMEN->value => Tag::WOMEN,
-        IFSCAthleteGender::MEN->value => Tag::MEN,
+        IFSCAthleteCategory::WOMEN->value => Tag::WOMEN,
+        IFSCAthleteCategory::MEN->value => Tag::MEN,
     ];
 
     /** @param Tag[] $tags */
@@ -75,20 +75,20 @@ final readonly class IFSCParsedTags
         return null;
     }
 
-    /** @return IFSCAthleteGender[] */
+    /** @return IFSCAthleteCategory[] */
     public function getCategories(): array
     {
         $categories = [];
 
         foreach (self::CATEGORIES as $name => $tag) {
             if ($this->hasTag($tag)) {
-                $categories[] = IFSCAthleteGender::from($name);
+                $categories[] = IFSCAthleteCategory::from($name);
             }
         }
 
         if (empty($categories)) {
-            $categories[] = IFSCAthleteGender::WOMEN;
-            $categories[] = IFSCAthleteGender::MEN;
+            $categories[] = IFSCAthleteCategory::WOMEN;
+            $categories[] = IFSCAthleteCategory::MEN;
         }
 
         return $categories;

@@ -15,7 +15,7 @@ use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDisciplines;
 use SportClimbing\IfscCalendar\Domain\Event\IFSCEvent;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
-use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteGender;
+use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteCategory;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundKind;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRoundStatus;
 use SportClimbing\IfscCalendar\Domain\Season\IFSCSeasonYear;
@@ -59,7 +59,7 @@ final class CalendarSpeedRelayFormattingTest extends TestCase
         $roundEnd = new DateTimeImmutable('2026-09-01 11:30:00', $timeZone);
         $round = new IFSCRound(
             name: "Men's Speed Relay Qualification",
-            categories: [IFSCAthleteGender::MEN],
+            categories: [IFSCAthleteCategory::MEN],
             disciplines: new IFSCDisciplines([IFSCDiscipline::SPEED_RELAY]),
             kind: IFSCRoundKind::QUALIFICATION,
             liveStream: new LiveStream(url: 'https://youtube.com/watch?v=relay-test'),

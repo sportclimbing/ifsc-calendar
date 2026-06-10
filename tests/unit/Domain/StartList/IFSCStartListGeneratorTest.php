@@ -12,7 +12,7 @@ use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteProviderInterface;
 use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteResult;
 use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteService;
 use SportClimbing\IfscCalendar\Domain\Ranking\IFSCAthleteRankingCalculator;
-use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteGender;
+use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteCategory;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListGenerator;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStartListProviderInterface;
@@ -118,9 +118,9 @@ final class IFSCStartListGeneratorTest extends TestCase
 
         $this->assertSame([3, 1, 2], $athleteProvider->requestedAthleteIds);
         $this->assertSame([1, 2, 3], array_map(static fn (IFSCStarter $starter): int => $starter->athleteId, $startList));
-        $this->assertSame(IFSCAthleteGender::WOMEN, $startList[0]->gender);
-        $this->assertSame(IFSCAthleteGender::WOMEN, $startList[1]->gender);
-        $this->assertSame(IFSCAthleteGender::WOMEN, $startList[2]->gender);
+        $this->assertSame(IFSCAthleteCategory::WOMEN, $startList[0]->category);
+        $this->assertSame(IFSCAthleteCategory::WOMEN, $startList[1]->category);
+        $this->assertSame(IFSCAthleteCategory::WOMEN, $startList[2]->category);
 
         $this->assertSame('https://photos/1', $startList[0]->photoUrl);
         $this->assertSame('https://photos/2', $startList[1]->photoUrl);
@@ -149,8 +149,8 @@ final class IFSCStartListGeneratorTest extends TestCase
         $this->assertSame(50, $result->total);
         $this->assertCount(40, $startList);
 
-        $menInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->gender === IFSCAthleteGender::MEN);
-        $womenInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->gender === IFSCAthleteGender::WOMEN);
+        $menInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->category === IFSCAthleteCategory::MEN);
+        $womenInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->category === IFSCAthleteCategory::WOMEN);
 
         $this->assertCount(20, $menInList);
         $this->assertCount(20, $womenInList);
@@ -196,8 +196,8 @@ final class IFSCStartListGeneratorTest extends TestCase
         $this->assertSame(40, $result->total);
         $this->assertCount(40, $startList);
 
-        $menInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->gender === IFSCAthleteGender::MEN);
-        $womenInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->gender === IFSCAthleteGender::WOMEN);
+        $menInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->category === IFSCAthleteCategory::MEN);
+        $womenInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->category === IFSCAthleteCategory::WOMEN);
 
         // Only 10 men exist, so all 10 should be included
         $this->assertCount(10, $menInList);
@@ -236,8 +236,8 @@ final class IFSCStartListGeneratorTest extends TestCase
         $this->assertSame(40, $result->total);
         $this->assertCount(40, $startList);
 
-        $menInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->gender === IFSCAthleteGender::MEN);
-        $womenInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->gender === IFSCAthleteGender::WOMEN);
+        $menInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->category === IFSCAthleteCategory::MEN);
+        $womenInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->category === IFSCAthleteCategory::WOMEN);
 
         // 30 men (top 20 + 10 filling women shortfall)
         $this->assertCount(30, $menInList);
@@ -270,8 +270,8 @@ final class IFSCStartListGeneratorTest extends TestCase
         $this->assertSame(15, $result->total);
         $this->assertCount(15, $startList);
 
-        $menInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->gender === IFSCAthleteGender::MEN);
-        $womenInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->gender === IFSCAthleteGender::WOMEN);
+        $menInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->category === IFSCAthleteCategory::MEN);
+        $womenInList = array_filter($startList, fn (IFSCStarter $s): bool => $s->category === IFSCAthleteCategory::WOMEN);
 
         $this->assertCount(8, $menInList);
         $this->assertCount(7, $womenInList);

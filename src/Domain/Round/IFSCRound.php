@@ -8,13 +8,13 @@
 namespace SportClimbing\IfscCalendar\Domain\Round;
 
 use DateTimeImmutable;
-use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteGender;
+use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteCategory;
 use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDisciplines;
 use SportClimbing\IfscCalendar\Domain\Stream\LiveStream;
 
 final readonly class IFSCRound
 {
-    /** @param IFSCAthleteGender[] $categories */
+    /** @param IFSCAthleteCategory[] $categories */
     public function __construct(
         public string $name,
         public array $categories,
