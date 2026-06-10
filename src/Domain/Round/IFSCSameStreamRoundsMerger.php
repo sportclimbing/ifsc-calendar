@@ -8,7 +8,7 @@
 namespace SportClimbing\IfscCalendar\Domain\Round;
 
 use DateTimeImmutable;
-use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteGender;
+use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteCategory;
 use SportClimbing\IfscCalendar\Domain\Tags\IFSCTagsParser;
 
 final readonly class IFSCSameStreamRoundsMerger
@@ -108,7 +108,7 @@ final readonly class IFSCSameStreamRoundsMerger
 
     /**
      * @param IFSCRound[] $rounds
-     * @return IFSCAthleteGender[]
+     * @return IFSCAthleteCategory[]
      */
     private function mergedCategories(array $rounds): array
     {
@@ -122,7 +122,7 @@ final readonly class IFSCSameStreamRoundsMerger
             }
         }
 
-        usort($categories, static fn (IFSCAthleteGender $a, IFSCAthleteGender $b) => $a->value <=> $b->value);
+        usort($categories, static fn (IFSCAthleteCategory $a, IFSCAthleteCategory $b) => $a->value <=> $b->value);
 
         return $categories;
     }

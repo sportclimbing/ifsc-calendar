@@ -13,7 +13,7 @@ use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteException;
 use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteService;
 use SportClimbing\IfscCalendar\Domain\Ranking\IFSCAthleteRankingCalculator;
 
-use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteGender;
+use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteCategory;
 
 final readonly class IFSCStartListGenerator
 {
@@ -39,7 +39,7 @@ final readonly class IFSCStartListGenerator
             $starter->score = $this->rankingCalculator->calculateScore($athlete);
             $starter->photoUrl = $athlete->photoUrl;
             $starter->instagram = $this->normalizeInstagram($athlete->instagram);
-            $starter->gender = $this->getGender($athlete);
+            $starter->category = $this->getCategory($athlete);
 
             $startList[] = $starter;
         }
@@ -58,8 +58,8 @@ final readonly class IFSCStartListGenerator
      */
     private function selectTopByGender(array $startList): array
     {
-        $men = $this->filterByGender($startList, IFSCAthleteGender::MEN);
-        $women = $this->filterByGender($startList, IFSCAthleteGender::WOMEN);
+        $men = $this->filterByGender($startList, IFSCAthleteCategory::MEN);
+        $women = $this->filterByGender($startList, IFSCAthleteCategory::WOMEN);
 
         $selectedMen = $this->selectTopFromPool($men, array_slice($women, self::PER_GENDER_MAX));
         $selectedWomen = $this->selectTopFromPool($women, array_slice($men, self::PER_GENDER_MAX));
@@ -101,9 +101,9 @@ final readonly class IFSCStartListGenerator
     }
 
     /** @return IFSCStarter[] */
-    public function filterByGender(array $startList, IFSCAthleteGender $gender): array
+    public function filterByGender(array $startList, IFSCAthleteCategory $category): array
     {
-        return array_values(array_filter($startList, fn (IFSCStarter $starter): bool => $starter->gender === $gender));
+        return array_values(array_filter($startList, fn (IFSCStarter $starter): bool => $starter->category === $category));
     }
 
     private function normalizeInstagram(?string $instagram): ?string
@@ -122,13 +122,13 @@ final readonly class IFSCStartListGenerator
 
     /**
      * @param IFSCAthlete $athlete
-     * @return IFSCAthleteGender|null
+     * @return IFSCAthleteCategory|null
      */
-    private function getGender(IFSCAthlete $athlete): ?IFSCAthleteGender
+    private function getCategory(IFSCAthlete $athlete): ?IFSCAthleteCategory
     {
         return match ($athlete->gender) {
-            'male' => IFSCAthleteGender::MEN,
-            'female' => IFSCAthleteGender::WOMEN,
+            'male' => IFSCAthleteCategory::MEN,
+            'female' => IFSCAthleteCategory::WOMEN,
             default => null,
         };
     }

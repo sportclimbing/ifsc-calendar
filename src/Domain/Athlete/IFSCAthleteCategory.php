@@ -7,7 +7,7 @@
  */
 namespace SportClimbing\IfscCalendar\Domain\Athlete;
 
-enum IFSCAthleteGender: string
+enum IFSCAthleteCategory: string
 {
     case MEN = 'men';
     case WOMEN = 'women';

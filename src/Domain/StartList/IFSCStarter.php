@@ -8,7 +8,7 @@
 namespace SportClimbing\IfscCalendar\Domain\StartList;
 
 use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
-use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteGender;
+use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteCategory;
 
 final class IFSCStarter
 {
@@ -18,7 +18,7 @@ final class IFSCStarter
         public readonly string $firstName,
         public readonly string $lastName,
         public readonly string $country,
-        public ?IFSCAthleteGender $gender = null,
+        public ?IFSCAthleteCategory $category = null,
         public readonly array $disciplines = [],
         public float $score = 0,
         public ?string $photoUrl = null,

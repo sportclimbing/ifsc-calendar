@@ -98,7 +98,7 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
             'first_name' => $starter->firstName,
             'last_name' => $starter->lastName,
             'country' => $starter->country,
-            'category' => $starter->gender?->value,
+            'category' => $starter->category?->value,
         ];
     }
 

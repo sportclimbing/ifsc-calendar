@@ -14,7 +14,7 @@ use SportClimbing\IfscCalendar\Domain\Calendar\IFSCCalendarGeneratorInterface;
 use SportClimbing\IfscCalendar\Domain\Discipline\IFSCDiscipline;
 use SportClimbing\IfscCalendar\Domain\Event\IFSCEvent;
 use SportClimbing\IfscCalendar\Domain\Round\IFSCRound;
-use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteGender;
+use SportClimbing\IfscCalendar\Domain\Athlete\IFSCAthleteCategory;
 use SportClimbing\IfscCalendar\Domain\StartList\IFSCStarter;
 use Override;
 
@@ -99,7 +99,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
             'athlete_id' => $starter->athleteId,
             'first_name' => $starter->firstName,
             'last_name' => $starter->lastName,
-            'gender' => $starter->gender,
+            'category' => $starter->category,
             'country' => $starter->country,
             'photo_url' => $starter->photoUrl,
             'instagram' => $starter->instagram,
@@ -139,7 +139,7 @@ final readonly class JsonCalendar implements IFSCCalendarGeneratorInterface
     /** @return string[] */
     private function buildCategories(IFSCRound $round): array
     {
-        return array_map(static fn (IFSCAthleteGender $category): string => $category->value, $round->categories);
+        return array_map(static fn (IFSCAthleteCategory $category): string => $category->value, $round->categories);
     }
 
     private function countryName(string $countryCode): string
