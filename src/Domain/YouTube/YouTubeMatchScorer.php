@@ -61,6 +61,10 @@ final readonly class YouTubeMatchScorer
             ? $this->removeTags($roundTags, ...self::DISCIPLINE_TAGS)
             : $roundTags;
 
+        if ($isParaclimbingEvent && !$this->hasTag($tagsForScoring, Tag::PARACLIMBING)) {
+            $tagsForScoring[] = Tag::PARACLIMBING;
+        }
+
         return $this->tagsScore($tagsForScoring, $videoTags) +
             $this->timingScore($video, $event) +
             $this->eventNameTokensScore($videoTitle, $event);
