@@ -26,12 +26,14 @@ final readonly class ICalCalendar implements IFSCCalendarGeneratorInterface
         string $productIdentifier,
         string $publishedTtl,
         string $calendarName,
+        bool $showNewCalendarNotice,
     ) {
         $this->icsGenerator = new IcsGenerator(
             calendarFactory: $calendarFactory,
             productIdentifier: $productIdentifier,
             publishedTtl: $publishedTtl,
             calendarName: $calendarName,
+            showNewCalendarNotice: $showNewCalendarNotice,
         );
     }
 
