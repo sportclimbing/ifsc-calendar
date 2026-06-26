@@ -44,6 +44,7 @@ final class CalendarSpeedRelayFormattingTest extends TestCase
             productIdentifier: '-//ifsc-calendar//tests//EN',
             publishedTtl: 'PT1H',
             calendarName: 'IFSC Calendar Tests',
+            showNewCalendarNotice: false,
         );
 
         $output = $calendar->generateForEvents([$this->createEventWithSpeedRelayRound()]);

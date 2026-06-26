@@ -28,6 +28,7 @@ services:
       - '%calendar_product_identifier%'
       - '%calendar_published_ttl%'
       - '%calendar_name%'
+      - '%show_calendar_config_notice%'
 
   # Start List
   SportClimbing\IfscCalendar\Infrastructure\StartList\ApiStartListProvider:
