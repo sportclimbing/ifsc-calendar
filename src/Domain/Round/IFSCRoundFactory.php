@@ -66,7 +66,7 @@ final readonly class IFSCRoundFactory
             name: $roundName,
             categories: $tags->getCategories(),
             disciplines: $this->getDisciplines($tags),
-            kind: $tags->getRoundKind(),
+            kind: $tags->getRoundKind() ?? IFSCRoundKind::FINAL,
             liveStream: $liveStream,
             startTime: $startTime,
             endTime: $endTime,
